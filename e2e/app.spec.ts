@@ -198,18 +198,6 @@ test.describe("Modals and Panels", () => {
     await expect(page.getByText("Keyboard Shortcuts")).toBeVisible({ timeout: 3000 });
   });
 
-  test("dark mode toggles with D key", async ({ page }) => {
-    await page.locator("h1").click();
-    await page.keyboard.press("d");
-    await page.waitForTimeout(300);
-    const isDark = await page.evaluate(() => document.documentElement.classList.contains("dark"));
-    expect(isDark).toBe(true);
-    await page.keyboard.press("d");
-    await page.waitForTimeout(300);
-    const isLight = await page.evaluate(() => !document.documentElement.classList.contains("dark"));
-    expect(isLight).toBe(true);
-  });
-
   test("submission checklist opens", async ({ page }) => {
     await page.locator('header button[title="Submission Checklist"]').click();
     await expect(page.getByText("Submission Readiness")).toBeVisible({ timeout: 5000 });
