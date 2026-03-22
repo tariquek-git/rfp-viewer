@@ -1,6 +1,7 @@
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import type { Question, RFPData } from "@/types";
+import { detectAIWriting, aiDetectLabel } from "@/lib/aiDetect";
 
 const COLORS = {
   green: [16, 185, 129] as [number, number, number],
@@ -154,6 +155,64 @@ export async function exportToPDF(data: RFPData) {
     },
   });
 
+  // === CLAUDE CPO ANALYSIS PAGE ===
+  doc.addPage();
+  y = 20;
+  doc.setFillColor(237, 233, 254);
+  doc.roundedRect(margin, y - 3, contentWidth, 10, 2, 2, "F");
+  doc.setFontSize(12);
+  doc.setTextColor(109, 40, 217);
+  doc.text("AI REVIEW NOTES — CLAUDE (CPO ANALYSIS)", margin + 5, y + 3);
+  y += 15;
+
+  doc.setFontSize(7);
+  doc.setTextColor(...COLORS.gray);
+  doc.text("Internal use only — do not include in final submission to BSB.", margin, y);
+  y += 8;
+
+  // AI Detection summary
+  const aiHighCount = questions.filter(q => detectAIWriting(q.bullet + " " + q.paragraph).level === "high").length;
+  const aiMedCount = questions.filter(q => detectAIWriting(q.bullet + " " + q.paragraph).level === "medium").length;
+
+  doc.setFontSize(9);
+  doc.setTextColor(109, 40, 217);
+  doc.text("AI Writing Detection", margin, y);
+  y += 5;
+  doc.setFontSize(7);
+  doc.setTextColor(...COLORS.dark);
+  doc.text(`${aiHighCount} High risk, ${aiMedCount} Medium risk responses detected. Main triggers: em-dashes, filler words, long sentences.`, margin, y);
+  y += 8;
+
+  doc.setFontSize(9);
+  doc.setTextColor(4, 120, 87); // green
+  doc.text("Strengths", margin, y);
+  y += 5;
+  doc.setFontSize(7);
+  doc.setTextColor(...COLORS.dark);
+  const strengthText = doc.splitTextToSize(`${Math.round((green/questions.length)*100)}% GREEN confidence. ${compliantY} fully compliant. Strong in Loyalty, Processing, Customer Experience. Named FI references (Affinity, Manulife) add credibility. Modern tech stack well-positioned.`, contentWidth);
+  doc.text(strengthText, margin, y);
+  y += strengthText.length * 3.5 + 3;
+
+  doc.setFontSize(9);
+  doc.setTextColor(185, 28, 28); // red
+  doc.text("Weaknesses", margin, y);
+  y += 5;
+  doc.setFontSize(7);
+  doc.setTextColor(...COLORS.dark);
+  const weakText = doc.splitTextToSize(`${red} critical gaps: Visa/STAR/NYCE network (Tech 6), data architecture (Tech 24, 28), in-branch card printing (A&F 15), multi-network settlement (Proc 26), debit support (ProdOps 45-46). These are capability gaps — rewriting won't fix them. BSB will challenge directly.`, contentWidth);
+  doc.text(weakText, margin, y);
+  y += weakText.length * 3.5 + 3;
+
+  doc.setFontSize(9);
+  doc.setTextColor(37, 99, 235); // blue
+  doc.text("Recommendations", margin, y);
+  y += 5;
+  doc.setFontSize(7);
+  doc.setTextColor(...COLORS.dark);
+  const recText = doc.splitTextToSize(`1) Position non-compliant items as credit-first strategy, not gaps. 2) For network questions, present concrete partnership timeline. 3) Run Humanize on ${aiHighCount} high-risk AI-flagged responses. 4) Debit questions should state out-of-scope with future transition plan. 5) Fill in Knowledge Base with real metrics before AI rewrite pass.`, contentWidth);
+  doc.text(recText, margin, y);
+  y += recText.length * 3.5 + 3;
+
   // === RESPONSES ===
   for (const cat of categories) {
     const catQs = questions.filter(q => q.category === cat);
@@ -198,6 +257,15 @@ export async function exportToPDF(data: RFPData) {
 
       doc.setTextColor(...(q.committee_score >= 7 ? COLORS.green : q.committee_score >= 5 ? COLORS.yellow : COLORS.red));
       doc.text(`Score: ${q.committee_score}/10`, compX + 30, y);
+
+      // AI detection badge
+      const aiDetect = detectAIWriting(q.bullet + " " + q.paragraph);
+      const aiCol = aiDetect.level === "high" ? COLORS.red : aiDetect.level === "medium" ? COLORS.yellow : COLORS.green;
+      const aiBg = aiDetect.level === "high" ? COLORS.redBg : aiDetect.level === "medium" ? COLORS.yellowBg : COLORS.greenBg;
+      doc.setFillColor(...aiBg);
+      doc.roundedRect(compX + 55, y - 3, 20, 5, 1, 1, "F");
+      doc.setTextColor(...aiCol);
+      doc.text(`AI: ${aiDetectLabel(aiDetect.level)}`, compX + 65, y, { align: "center" });
       y += 6;
 
       // Requirement box
@@ -250,6 +318,36 @@ export async function exportToPDF(data: RFPData) {
         const ratLines = doc.splitTextToSize(`Source: ${q.rationale.slice(0, 150)}`, contentWidth);
         doc.text(ratLines, margin, y);
         y += ratLines.length * 2.8 + 1;
+      }
+
+      // Claude analysis note (purple box) for flagged items
+      if (aiDetect.level !== "low" && aiDetect.triggers.length > 0) {
+        checkPage(12);
+        doc.setFillColor(237, 233, 254); // purple-50
+        const noteText = `CLAUDE: AI score ${aiDetect.score} (${aiDetectLabel(aiDetect.level)}). ${aiDetect.triggers.slice(0, 3).join(", ")}. ${aiDetect.suggestion.slice(0, 120)}`;
+        const noteLines = doc.splitTextToSize(noteText, contentWidth - 6);
+        const noteH = noteLines.length * 2.8 + 4;
+        doc.roundedRect(margin, y - 1, contentWidth, noteH, 1, 1, "F");
+        doc.setFontSize(5.5);
+        doc.setTextColor(109, 40, 217); // purple-700
+        doc.text(noteLines, margin + 3, y + 2);
+        y += noteH + 1;
+      }
+
+      // Claude recommendation for RED items
+      if (q.confidence === "RED") {
+        checkPage(10);
+        doc.setFillColor(237, 233, 254);
+        const recText = q.compliant === "N"
+          ? "CLAUDE: Capability gap — position as deliberate credit-first focus. Present partnership/roadmap timeline to BSB."
+          : "CLAUDE: Partial compliance — clearly separate what IS covered vs what needs config/partnership. Prepare for Q&A probing.";
+        const recLines = doc.splitTextToSize(recText, contentWidth - 6);
+        const recH = recLines.length * 2.8 + 4;
+        doc.roundedRect(margin, y - 1, contentWidth, recH, 1, 1, "F");
+        doc.setFontSize(5.5);
+        doc.setTextColor(109, 40, 217);
+        doc.text(recLines, margin + 3, y + 2);
+        y += recH + 1;
       }
 
       // Separator
