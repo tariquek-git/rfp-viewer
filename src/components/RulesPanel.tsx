@@ -50,8 +50,10 @@ export default function RulesPanel({ onClose, rules, onUpdateRules }: RulesPanel
               </div>
             ))}
             <div className="flex gap-2 mt-4">
-              <textarea value={newRule} onChange={(e) => setNewRule(e.target.value)}
-                placeholder='e.g. "Always start with Brim-specific data points, not generalizations"'
+              <textarea
+                value={newRule}
+                onChange={(e) => setNewRule(e.target.value)}
+                placeholder='e.g. "Always start with client-specific data points, not generalizations"'
                 className="border rounded px-3 py-2 text-sm flex-1 resize-none h-16 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); addRule(); } }}
               />
