@@ -1,11 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
+import { sanitizeQuestionForAI, validateField, sanitizeRules, sanitizeString } from "@/lib/sanitize";
 
 const client = new Anthropic();
 
 export async function POST(req: NextRequest) {
   try {
-    const { question, field, globalRules, rowRules, feedback, knowledgeBase } = await req.json();
+    const body = await req.json();
+    const question = sanitizeQuestionForAI(body.question || {});
+    const field = validateField(body.field);
+    if (!field) return NextResponse.json({ error: "Invalid field" }, { status: 400 });
+    const globalRules = sanitizeRules(body.globalRules);
+    const rowRules = sanitizeString(body.rowRules, 2000);
+    const feedback = Array.isArray(body.feedback) ? body.feedback.slice(0, 20) : [];
+    const knowledgeBase = body.knowledgeBase || {};
 
     const formatInstruction = field === "bullet"
       ? "Respond in bullet-point format. Use clear, scannable bullet points that a procurement committee can quickly evaluate."

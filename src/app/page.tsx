@@ -1,30 +1,33 @@
 "use client";
 
-import { useState, useMemo, useCallback, useEffect } from "react";
+import { useState, useMemo, useCallback, useEffect, lazy, Suspense } from "react";
 import { Save, Download, FileJson, CloudUpload, CloudDownload, Sparkles, BookOpen, Settings, LayoutGrid, BarChart3, SlidersHorizontal, RotateCcw, ChevronDown, Circle, History, Search, ClipboardCheck, FileText, Scan, Moon, Sun, Keyboard, DollarSign, Calendar, Shield, Target, BookText, ClipboardList, GitCompareArrows, FileStack } from "lucide-react";
 import { useRFPState } from "@/hooks/useRFPState";
 import GridView from "@/components/GridView";
 import type { TableDensity } from "@/components/GridView";
-import ContextView from "@/components/ContextView";
-import RulesPanel from "@/components/RulesPanel";
-import DetailPanel from "@/components/DetailPanel";
-import KnowledgeBaseView from "@/components/KnowledgeBase";
-import ComplianceView from "@/components/ComplianceView";
-import SubmissionView from "@/components/SubmissionView";
-import PricingView from "@/components/PricingView";
-import TimelineView from "@/components/TimelineView";
-import SLAView from "@/components/SLAView";
-import WinThemesPanel from "@/components/WinThemes";
-import BulkActions from "@/components/BulkActions";
-import ConsistencyResults from "@/components/ConsistencyResults";
-import ExecutiveSummary from "@/components/ExecutiveSummary";
-import NarrativeAudit from "@/components/NarrativeAudit";
-import SubmissionChecklist from "@/components/SubmissionChecklist";
 import ProgressBar from "@/components/ProgressBar";
-import KeyboardShortcutsPanel, { useKeyboardShortcuts } from "@/components/KeyboardShortcuts";
-import Onboarding from "@/components/Onboarding";
-import VersionCompare from "@/components/VersionCompare";
-import TemplateManager from "@/components/TemplateManager";
+import BulkActions from "@/components/BulkActions";
+import { useKeyboardShortcuts } from "@/components/KeyboardShortcuts";
+
+// Lazy load heavy components (only loaded when their tab/modal is active)
+const ContextView = lazy(() => import("@/components/ContextView"));
+const RulesPanel = lazy(() => import("@/components/RulesPanel"));
+const DetailPanel = lazy(() => import("@/components/DetailPanel"));
+const KnowledgeBaseView = lazy(() => import("@/components/KnowledgeBase"));
+const ComplianceView = lazy(() => import("@/components/ComplianceView"));
+const SubmissionView = lazy(() => import("@/components/SubmissionView"));
+const PricingView = lazy(() => import("@/components/PricingView"));
+const TimelineView = lazy(() => import("@/components/TimelineView"));
+const SLAView = lazy(() => import("@/components/SLAView"));
+const WinThemesPanel = lazy(() => import("@/components/WinThemes"));
+const ConsistencyResults = lazy(() => import("@/components/ConsistencyResults"));
+const ExecutiveSummary = lazy(() => import("@/components/ExecutiveSummary"));
+const NarrativeAudit = lazy(() => import("@/components/NarrativeAudit"));
+const SubmissionChecklist = lazy(() => import("@/components/SubmissionChecklist"));
+const KeyboardShortcutsPanel = lazy(() => import("@/components/KeyboardShortcuts").then(m => ({ default: m.default })));
+const Onboarding = lazy(() => import("@/components/Onboarding"));
+const VersionCompare = lazy(() => import("@/components/VersionCompare"));
+const TemplateManager = lazy(() => import("@/components/TemplateManager"));
 import { ToastContainer } from "@/components/Toast";
 import type { ConsistencyIssue, ViewTab } from "@/types";
 
@@ -289,6 +292,7 @@ export default function Home() {
       )}
 
       {/* Main Content */}
+      <Suspense fallback={<div className="flex-1 flex items-center justify-center text-gray-400 text-sm">Loading...</div>}>
       <div className="flex-1 overflow-hidden relative">
         {state.activeTab === "grid" && (
           <GridView questions={state.filteredQuestions} getConfidenceColor={state.getConfidenceColor}
@@ -329,6 +333,7 @@ export default function Home() {
       )}
       {showShortcuts && <KeyboardShortcutsPanel onClose={() => setShowShortcuts(false)} />}
       {showOnboarding && <Onboarding onClose={closeOnboarding} />}
+      </Suspense>
 
       {/* Footer */}
       <footer className="border-t border-gray-200 dark:border-gray-800 px-6 py-1.5 text-[10px] text-gray-400 flex justify-between flex-shrink-0 bg-gray-50/50 dark:bg-gray-900/50">
