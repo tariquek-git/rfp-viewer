@@ -6,11 +6,12 @@ import { FileText, Shield, AlertTriangle, CheckCircle, Crosshair, Scale, Trendin
 
 interface ContextViewProps {
   data: RFPData;
+  onNavigate?: (tab: string, filter?: { confidence?: string; category?: string }) => void;
 }
 
-function StatCard({ value, label, icon: Icon, accent }: { value: number | string; label: string; icon: React.ElementType; accent: string }) {
+function StatCard({ value, label, icon: Icon, accent, onClick }: { value: number | string; label: string; icon: React.ElementType; accent: string; onClick?: () => void }) {
   return (
-    <div className={`bg-white border border-gray-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow`}>
+    <div onClick={onClick} className={`bg-white border border-gray-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow ${onClick ? "cursor-pointer hover:border-blue-300" : ""}`}>
       <div className="flex items-start justify-between">
         <div>
           <div className={`text-3xl font-bold ${accent}`}>{value}</div>
@@ -34,7 +35,7 @@ function RiskCard({ value, label, sublabel, accent, border }: { value: number; l
   );
 }
 
-function SectionScoreCard({ name, score, count, high, med, low }: { name: string; score: number; count: number; high: number; med: number; low: number }) {
+function SectionScoreCard({ name, score, count, high, med, low, onClick }: { name: string; score: number; count: number; high: number; med: number; low: number; onClick?: () => void }) {
   const grade = score >= 7.5 ? "A" : score >= 6.5 ? "B" : score >= 5.5 ? "C" : "D";
   const gradeColors: Record<string, string> = {
     A: "bg-emerald-100 text-emerald-700 border-emerald-200",
@@ -46,7 +47,7 @@ function SectionScoreCard({ name, score, count, high, med, low }: { name: string
   const lowPct = total > 0 ? Math.round((low / total) * 100) : 0;
 
   return (
-    <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm hover:shadow-md transition-all hover:border-gray-300 cursor-pointer group">
+    <div onClick={onClick} className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm hover:shadow-md transition-all hover:border-blue-300 cursor-pointer group">
       <div className="flex items-center justify-between mb-3">
         <h4 className="font-semibold text-sm text-gray-900 group-hover:text-blue-600 transition-colors">{name}</h4>
         <span className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold border ${gradeColors[grade]}`}>{grade}</span>
@@ -72,7 +73,7 @@ function SectionScoreCard({ name, score, count, high, med, low }: { name: string
   );
 }
 
-export default function ContextView({ data }: ContextViewProps) {
+export default function ContextView({ data, onNavigate }: ContextViewProps) {
   const sectionStats = useMemo(() => {
     const sections: Record<string, { count: number; totalScore: number; high: number; med: number; low: number }> = {};
     for (const q of data.questions) {
@@ -108,10 +109,10 @@ export default function ContextView({ data }: ContextViewProps) {
     <div className="overflow-auto h-full p-6 space-y-6 bg-gray-50/30">
       {/* Top Stats */}
       <div className="grid grid-cols-4 gap-4">
-        <StatCard value={data.stats.total} label="Total Questions" icon={FileText} accent="text-gray-900" />
-        <StatCard value={data.stats.green} label={`GREEN (${greenPct}%)`} icon={CheckCircle} accent="text-emerald-600" />
-        <StatCard value={data.stats.yellow} label="YELLOW — need strengthening" icon={AlertTriangle} accent="text-amber-600" />
-        <StatCard value={data.stats.red} label="RED — gaps / risks" icon={Shield} accent="text-red-600" />
+        <StatCard value={data.stats.total} label="Total Questions" icon={FileText} accent="text-gray-900" onClick={() => onNavigate?.("grid")} />
+        <StatCard value={data.stats.green} label={`GREEN (${greenPct}%) — click to filter`} icon={CheckCircle} accent="text-emerald-600" onClick={() => onNavigate?.("grid", { confidence: "GREEN" })} />
+        <StatCard value={data.stats.yellow} label="YELLOW — click to filter" icon={AlertTriangle} accent="text-amber-600" onClick={() => onNavigate?.("grid", { confidence: "YELLOW" })} />
+        <StatCard value={data.stats.red} label="RED — click to filter" icon={Shield} accent="text-red-600" onClick={() => onNavigate?.("grid", { confidence: "RED" })} />
       </div>
 
       {/* Strategic & Regulatory */}
@@ -153,7 +154,7 @@ export default function ContextView({ data }: ContextViewProps) {
             const s = sectionStats[cat];
             if (!s) return null;
             const avg = s.count > 0 ? s.totalScore / s.count : 0;
-            return <SectionScoreCard key={cat} name={cat} score={avg} count={s.count} high={s.high} med={s.med} low={s.low} />;
+            return <SectionScoreCard key={cat} name={cat} score={avg} count={s.count} high={s.high} med={s.med} low={s.low} onClick={() => onNavigate?.("grid", { category: cat })} />;
           })}
         </div>
       </div>

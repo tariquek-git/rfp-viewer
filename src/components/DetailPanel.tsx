@@ -181,7 +181,7 @@ export default function DetailPanel({
   const paragraphDiffKey = `${q.ref}:paragraph`;
 
   return (
-    <div className="absolute right-0 top-0 bottom-0 w-[600px] bg-white border-l shadow-xl z-30 flex flex-col panel-slide-in">
+    <div className="absolute right-0 top-0 bottom-0 w-[560px] bg-white border-l shadow-xl z-30 flex flex-col panel-slide-in">
       <div className="flex items-center justify-between px-6 py-4 border-b flex-shrink-0">
         <div>
           <h2 className="text-lg font-semibold text-gray-900">{q.ref}</h2>
@@ -189,7 +189,7 @@ export default function DetailPanel({
         </div>
         <div className="flex items-center gap-2">
           {dirty && <button onClick={() => { onSave(q); setDirty(false); }} className="bg-blue-500 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-blue-600">Save</button>}
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-xl leading-none">×</button>
+          <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 text-lg font-bold">×</button>
         </div>
       </div>
 

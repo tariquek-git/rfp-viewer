@@ -77,6 +77,12 @@ export default function Home() {
 
   const handleUpdateCompliant = useCallback((ref: string, value: string) => { state.handleCellEdit(ref, "compliant", value); }, [state]);
 
+  const handleDashboardNavigate = useCallback((tab: string, filter?: { confidence?: string; category?: string }) => {
+    state.setActiveTab(tab as ViewTab);
+    if (filter?.confidence) state.setConfidenceFilter(filter.confidence);
+    if (filter?.category) state.setActiveCategory(filter.category);
+  }, [state]);
+
   const formatTimeSince = (ts: number | null) => {
     if (!ts) return "";
     const diff = Math.floor((Date.now() - ts) / 1000);
@@ -303,7 +309,7 @@ export default function Home() {
             sortConfig={state.sortConfig} onSort={state.setSortConfig} onCycleStatus={state.cycleStatus}
             pendingDiffKeys={pendingDiffKeys} density={density} onChangeDensity={setDensity} />
         )}
-        {state.activeTab === "context" && <ContextView data={state.data} />}
+        {state.activeTab === "context" && <ContextView data={state.data} onNavigate={handleDashboardNavigate} />}
         {state.activeTab === "knowledgebase" && <KnowledgeBaseView kb={state.knowledgeBase} onUpdate={state.updateKnowledgeBase} onSave={state.saveToLocal} />}
         {state.activeTab === "pricing" && <PricingView pricing={state.pricingModel} onUpdate={state.updatePricing} />}
         {state.activeTab === "timeline" && <TimelineView milestones={state.milestones} onUpdate={state.updateMilestones} />}

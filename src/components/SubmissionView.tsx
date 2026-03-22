@@ -136,7 +136,7 @@ h3{font-size:14px;margin-top:16px;color:#374151}
   return (
     <div className="overflow-auto h-full bg-white dark:bg-gray-950">
       {/* Toolbar */}
-      <div className="print:hidden sticky top-0 bg-white dark:bg-gray-950 border-b px-6 py-3 flex items-center justify-between z-10">
+      <div className="print:hidden sticky top-0 bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between z-10">
         <div>
           <h2 className="text-sm font-semibold">Submission Preview</h2>
           <p className="text-xs text-gray-400">Formatted for print / PDF export</p>
