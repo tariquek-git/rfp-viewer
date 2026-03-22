@@ -1,6 +1,6 @@
 "use client";
 
-import { X, ChevronDown, Sparkles } from "lucide-react";
+import { X, ChevronDown } from "lucide-react";
 import { useState } from "react";
 import type { WorkflowStatus } from "@/types";
 

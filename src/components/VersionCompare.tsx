@@ -21,12 +21,12 @@ export default function VersionCompare({ versions, currentQuestions, onClose }: 
   const [leftIdx, setLeftIdx] = useState(versions.length > 1 ? versions.length - 2 : 0);
   const [rightIdx, setRightIdx] = useState(-1); // -1 = current
 
-  const leftQuestions = versions[leftIdx]?.data.questions || [];
-  const rightQuestions = rightIdx === -1 ? currentQuestions : versions[rightIdx]?.data.questions || [];
   const leftLabel = versions[leftIdx]?.label || "?";
   const rightLabel = rightIdx === -1 ? "Current" : versions[rightIdx]?.label || "?";
 
   const diffs = useMemo(() => {
+    const leftQuestions = versions[leftIdx]?.data.questions || [];
+    const rightQuestions = rightIdx === -1 ? currentQuestions : versions[rightIdx]?.data.questions || [];
     const result: Diff[] = [];
     const fields: (keyof Question)[] = ["bullet", "paragraph", "rationale", "notes", "confidence", "compliant", "status", "committee_score"];
     const rightMap = new Map(rightQuestions.map(q => [q.ref, q]));
@@ -43,7 +43,7 @@ export default function VersionCompare({ versions, currentQuestions, onClose }: 
       }
     }
     return result;
-  }, [leftQuestions, rightQuestions]);
+  }, [versions, leftIdx, rightIdx, currentQuestions]);
 
   const groupedDiffs = useMemo(() => {
     const map: Record<string, Diff[]> = {};

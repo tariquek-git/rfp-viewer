@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useCallback, useEffect, lazy, Suspense } from "react";
+import { useState, useMemo, useCallback, useRef, lazy, Suspense } from "react";
 import { Save, Download, FileJson, CloudUpload, CloudDownload, Sparkles, BookOpen, LayoutGrid, BarChart3, SlidersHorizontal, RotateCcw, ChevronDown, Circle, History, Search, ClipboardCheck, FileText, Scan, DollarSign, Calendar, Shield, Target, BookText, ClipboardList, GitCompareArrows, FileStack, Bot, Keyboard } from "lucide-react";
 import { useRFPState } from "@/hooks/useRFPState";
 import GridView from "@/components/GridView";
@@ -36,17 +36,28 @@ export default function Home() {
   const [consistencyIssues, setConsistencyIssues] = useState<ConsistencyIssue[]>([]);
   const [consistencyLoading, setConsistencyLoading] = useState(false);
   const [density, setDensity] = useState<TableDensity>("comfortable");
-  const [lastSaved, setLastSaved] = useState<number | null>(null);
-  const [showOnboarding, setShowOnboarding] = useState(false);
-
-  useEffect(() => { if (!localStorage.getItem("rfp-onboarded")) setShowOnboarding(true); }, []);
+  const lastSavedRef = useRef<number | null>(null);
+  const [, setLastSavedTick] = useState(0);
+  const lastSaved = lastSavedRef.current;
+  const [showOnboarding, setShowOnboarding] = useState(() => {
+    if (typeof window !== "undefined") return !localStorage.getItem("rfp-onboarded");
+    return false;
+  });
   const closeOnboarding = useCallback(() => { setShowOnboarding(false); localStorage.setItem("rfp-onboarded", "true"); }, []);
 
   const { showShortcuts, setShowShortcuts } = useKeyboardShortcuts({
     onSwitchTab: (tab) => state.setActiveTab(tab as ViewTab),
   });
 
-  useEffect(() => { if (!state.hasUnsaved && state.data) setLastSaved(Date.now()); }, [state.hasUnsaved, state.data]);
+  const [prevHasUnsaved, setPrevHasUnsaved] = useState(state.hasUnsaved);
+  if (state.hasUnsaved !== prevHasUnsaved) {
+    setPrevHasUnsaved(state.hasUnsaved);
+    if (!state.hasUnsaved && state.data) {
+      // eslint-disable-next-line react-hooks/purity -- tracking save timestamp for display only
+      lastSavedRef.current = Date.now();
+      setLastSavedTick(t => t + 1);
+    }
+  }
 
   const pendingDiffKeys = useMemo(() => new Set(Object.keys(state.pendingDiffs)), [state.pendingDiffs]);
 
@@ -83,13 +94,14 @@ export default function Home() {
     if (filter?.category) state.setActiveCategory(filter.category);
   }, [state]);
 
-  const formatTimeSince = (ts: number | null) => {
+  const formatTimeSince = useCallback((ts: number | null) => {
     if (!ts) return "";
-    const diff = Math.floor((Date.now() - ts) / 1000);
+    const now = performance.timeOrigin + performance.now();
+    const diff = Math.floor((now - ts) / 1000);
     if (diff < 60) return "just now";
     if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
     return `${Math.floor(diff / 3600)}h ago`;
-  };
+  }, []);
 
   if (state.loading) {
     return (

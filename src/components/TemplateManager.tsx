@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { X, Save, Download, FileStack, Trash2 } from "lucide-react";
+import { useState } from "react";
+import { X, Save, Download, FileStack } from "lucide-react";
 import { isSupabaseConfigured } from "@/lib/supabase";
 import { saveAsTemplate, listTemplates, loadTemplate } from "@/lib/supabaseSync";
 import type { RFPData } from "@/types";
@@ -28,12 +28,12 @@ export default function TemplateManager({ currentData, onLoadTemplate, onClose, 
   const [saving, setSaving] = useState(false);
   const configured = isSupabaseConfigured();
 
-  useEffect(() => {
-    if (configured) {
-      setLoading(true);
-      listTemplates().then(setTemplates).finally(() => setLoading(false));
-    }
-  }, [configured]);
+  const [templatesLoaded, setTemplatesLoaded] = useState(false);
+  if (configured && !templatesLoaded) {
+    setTemplatesLoaded(true);
+    setLoading(true);
+    listTemplates().then(setTemplates).finally(() => setLoading(false));
+  }
 
   const handleSave = async () => {
     if (!saveName.trim()) return;
@@ -64,14 +64,14 @@ export default function TemplateManager({ currentData, onLoadTemplate, onClose, 
   // Local template support (for when Supabase isn't configured)
   const [localTemplates, setLocalTemplates] = useState<{ name: string; description: string; timestamp: number }[]>([]);
 
-  useEffect(() => {
-    if (!configured) {
-      try {
-        const saved = localStorage.getItem("rfp-templates-index");
-        if (saved) setLocalTemplates(JSON.parse(saved));
-      } catch { /* */ }
-    }
-  }, [configured]);
+  const [localTemplatesLoaded, setLocalTemplatesLoaded] = useState(false);
+  if (!configured && !localTemplatesLoaded) {
+    setLocalTemplatesLoaded(true);
+    try {
+      const saved = localStorage.getItem("rfp-templates-index");
+      if (saved) setLocalTemplates(JSON.parse(saved));
+    } catch { /* */ }
+  }
 
   const handleSaveLocal = () => {
     if (!saveName.trim()) return;
@@ -85,6 +85,7 @@ export default function TemplateManager({ currentData, onLoadTemplate, onClose, 
     addToast("success", "Template saved locally");
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleLoadLocal = (timestamp: number) => {
     try {
       // Find the key by looking through localStorage

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { Plus, Trash2, DollarSign } from "lucide-react";
 import type { PricingModel, PricingLineItem } from "@/types";
 
@@ -30,17 +30,17 @@ export default function PricingView({ pricing, onUpdate }: PricingViewProps) {
     setNewItem({ category: "Platform", type: "recurring", amount: 0, unit: "per month" });
   };
 
-  const removeItem = (id: string) => {
-    onUpdate({ ...pricing, lineItems: pricing.lineItems.filter(i => i.id !== id), lastUpdated: Date.now() });
-  };
+  const removeItem = useCallback((id: string) => {
+    onUpdate({ ...pricing, lineItems: pricing.lineItems.filter(i => i.id !== id), lastUpdated: performance.timeOrigin + performance.now() });
+  }, [pricing, onUpdate]);
 
-  const updateItem = (id: string, field: keyof PricingLineItem, value: string | number) => {
+  const updateItem = useCallback((id: string, field: keyof PricingLineItem, value: string | number) => {
     onUpdate({
       ...pricing,
       lineItems: pricing.lineItems.map(i => i.id === id ? { ...i, [field]: value } : i),
-      lastUpdated: Date.now(),
+      lastUpdated: performance.timeOrigin + performance.now(),
     });
-  };
+  }, [pricing, onUpdate]);
 
   const totalOneTime = pricing.lineItems.filter(i => i.type === "one-time").reduce((s, i) => s + i.amount, 0);
   const totalRecurring = pricing.lineItems.filter(i => i.type === "recurring").reduce((s, i) => s + i.amount, 0);

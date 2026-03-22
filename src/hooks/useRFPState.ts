@@ -4,7 +4,7 @@ import { useEffect, useState, useMemo, useCallback } from "react";
 import type {
   RFPData, Question, ViewTab, CellHistory, CellHistoryEntry,
   FeedbackItem, Version, KnowledgeBase, ValidationRule, PendingDiff, SortConfig,
-  PricingModel, WinTheme, TimelineMilestone, SLACommitment, QAEntry, ChecklistItem,
+  PricingModel, WinTheme, TimelineMilestone, SLACommitment,
 } from "@/types";
 import { computeWordDiff } from "@/lib/diff";
 import { pushToCloud, pullFromCloud } from "@/lib/supabaseSync";
@@ -105,15 +105,6 @@ export function useRFPState() {
       .catch((e) => { console.error(e); setLoading(false); });
   }, []);
 
-  // === Keyboard Shortcuts ===
-  useEffect(() => {
-    const handler = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === "s") { e.preventDefault(); saveToLocal(); }
-    };
-    window.addEventListener("keydown", handler);
-    return () => window.removeEventListener("keydown", handler);
-  });
-
   // === Save / Persist ===
   const saveToLocal = useCallback(() => {
     if (!data) return;
@@ -130,6 +121,15 @@ export function useRFPState() {
     setHasUnsaved(false);
     addToast("success", "Changes saved locally");
   }, [data, cellHistory, globalRules, validationRules, feedbackItems, knowledgeBase, pricingModel, winThemes, milestones, slaCommitments, addToast]);
+
+  // === Keyboard Shortcuts ===
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "s") { e.preventDefault(); saveToLocal(); }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [saveToLocal]);
 
   const saveVersion = useCallback((label?: string) => {
     if (!data) return;

@@ -1,8 +1,8 @@
 "use client";
 
 import { useMemo } from "react";
-import { CheckCircle, Circle, AlertTriangle, ClipboardList } from "lucide-react";
-import type { ChecklistItem, RFPData, PricingModel, SLACommitment, TimelineMilestone, WinTheme, KnowledgeBase } from "@/types";
+import { CheckCircle, AlertTriangle, ClipboardList } from "lucide-react";
+import type { RFPData, PricingModel, SLACommitment, TimelineMilestone, WinTheme, KnowledgeBase } from "@/types";
 
 interface SubmissionChecklistProps {
   data: RFPData;

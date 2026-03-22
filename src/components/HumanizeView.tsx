@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo, useCallback } from "react";
-import { Sparkles, Check, X, RefreshCw, Eye } from "lucide-react";
+import { Sparkles, Check } from "lucide-react";
 import type { Question } from "@/types";
 import { detectAIWriting, aiDetectClasses, aiDetectLabel, type AIDetectResult } from "@/lib/aiDetect";
 

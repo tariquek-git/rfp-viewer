@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { ChevronDown } from "lucide-react";
 import type { Question, PendingDiff, CritiqueResult, FeedbackItem, CellHistoryEntry } from "@/types";
 import FeedbackPanel from "./FeedbackPanel";
@@ -104,7 +104,12 @@ export default function DetailPanel({
   const [rescoring, setRescoring] = useState(false);
   const [humanizing, setHumanizing] = useState<"bullet" | "paragraph" | null>(null);
 
-  useEffect(() => { setQ({ ...question }); setDirty(false); }, [question]);
+  const [questionKey, setQuestionKey] = useState(question.ref);
+  if (question.ref !== questionKey) {
+    setQuestionKey(question.ref);
+    setQ({ ...question });
+    setDirty(false);
+  }
 
   const update = (field: keyof Question, value: string | boolean | number) => {
     setQ({ ...q, [field]: value } as Question);

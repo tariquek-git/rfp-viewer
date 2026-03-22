@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRef, useCallback } from "react";
-import { FileText, Circle, Check, X, Minus, Columns3, ChevronUp, ChevronDown, GitCompareArrows, AlignVerticalSpaceAround } from "lucide-react";
+import { FileText, Circle, Check, Minus, Columns3, ChevronUp, ChevronDown, GitCompareArrows, AlignVerticalSpaceAround } from "lucide-react";
 import type { Question, SortConfig, WorkflowStatus } from "@/types";
 import { countWords, getWordCountColor, getWordCountClasses } from "@/lib/wordCount";
 import { detectAIWriting, aiDetectClasses, aiDetectLabel } from "@/lib/aiDetect";
@@ -11,7 +11,7 @@ export type TableDensity = "compact" | "comfortable" | "spacious";
 
 interface GridViewProps {
   questions: Question[];
-  getConfidenceColor: (conf: string) => string;
+  getConfidenceColor?: (conf: string) => string;
   onSelectQuestion: (q: Question) => void;
   onCellEdit: (ref: string, field: keyof Question, value: string) => void;
   selectedRows: Set<string>;
@@ -235,19 +235,8 @@ function DensityToggle({ density, onChange }: { density: TableDensity; onChange:
   );
 }
 
-function HoverTooltip({ text }: { text: string }) {
-  if (!text || text.length < 60) return null;
-  return (
-    <div className="row-tooltip hidden group-hover:block mb-2">
-      <div className="bg-gray-900 text-white text-xs rounded-lg px-3 py-2 shadow-xl max-w-[400px] leading-relaxed">
-        {text.slice(0, 300)}{text.length > 300 ? "..." : ""}
-      </div>
-    </div>
-  );
-}
-
 export default function GridView({
-  questions, getConfidenceColor, onSelectQuestion, onCellEdit,
+  questions, onSelectQuestion, onCellEdit,
   selectedRows, onToggleRow, onSelectAll, sortConfig, onSort, onCycleStatus, pendingDiffKeys,
   density = "comfortable", onChangeDensity,
 }: GridViewProps) {

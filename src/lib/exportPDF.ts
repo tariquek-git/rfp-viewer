@@ -1,6 +1,6 @@
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
-import type { Question, RFPData } from "@/types";
+import type { RFPData } from "@/types";
 import type { ExportOptions } from "@/lib/exportWord";
 import { detectAIWriting, aiDetectLabel } from "@/lib/aiDetect";
 

@@ -195,7 +195,7 @@ test.describe("RFP Data Integrity", () => {
       byCategory[q.category].push(q.number);
     }
 
-    for (const [cat, numbers] of Object.entries(byCategory)) {
+    for (const [, numbers] of Object.entries(byCategory)) {
       const sorted = [...numbers].sort((a, b) => a - b);
       // Check sequential (1, 2, 3, ...)
       for (let i = 0; i < sorted.length; i++) {

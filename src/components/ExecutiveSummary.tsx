@@ -42,7 +42,7 @@ export default function ExecutiveSummary({ onClose, onGenerate }: ExecutiveSumma
     try {
       const result = await onGenerate();
       setSummary(result);
-    } catch (e) {
+    } catch {
       setError("Failed to generate summary. Please try again.");
     }
     setLoading(false);

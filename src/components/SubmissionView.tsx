@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Printer, Download, ChevronDown, AlertTriangle, CheckCircle, XCircle, Minus, FileText, FileSpreadsheet } from "lucide-react";
+import { Printer, Download, AlertTriangle, CheckCircle, XCircle, Minus, FileText, FileSpreadsheet } from "lucide-react";
 import type { Question, RFPData, KnowledgeBase, ValidationRule } from "@/types";
 import { exportToWord } from "@/lib/exportWord";
 import { exportToPDF } from "@/lib/exportPDF";

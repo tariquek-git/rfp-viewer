@@ -1,10 +1,10 @@
 import {
   Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell,
-  WidthType, AlignmentType, HeadingLevel, BorderStyle, ShadingType,
-  PageBreak, Header, Footer, TabStopPosition, TabStopType,
+  WidthType, AlignmentType, HeadingLevel, ShadingType,
+  PageBreak, Header, Footer,
 } from "docx";
 import { saveAs } from "file-saver";
-import type { Question, RFPData, KnowledgeBase, ValidationRule } from "@/types";
+import type { RFPData, KnowledgeBase, ValidationRule } from "@/types";
 import { detectAIWriting, aiDetectLabel } from "@/lib/aiDetect";
 
 export interface ExportOptions {
