@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useMemo, useCallback } from "react";
-import { Save, Download, FileJson, CloudUpload, Sparkles, BookOpen, Settings, LayoutGrid, BarChart3, SlidersHorizontal, RotateCcw, ChevronDown, Circle, History } from "lucide-react";
+import { Save, Download, FileJson, CloudUpload, Sparkles, BookOpen, Settings, LayoutGrid, BarChart3, SlidersHorizontal, RotateCcw, ChevronDown, Circle, History, Search } from "lucide-react";
 import type { RFPData, Question, ViewTab } from "@/types";
 import GridView from "@/components/GridView";
 import ContextView from "@/components/ContextView";
@@ -257,73 +257,75 @@ export default function Home() {
 
       {/* Filter & Action Bar (Grid view) */}
       {activeTab === "grid" && (
-        <div className="border-b border-gray-200 px-6 py-2.5 flex-shrink-0 bg-white">
+        <div className="border-b border-gray-200 px-6 py-2.5 flex-shrink-0 bg-white space-y-2">
+          {/* Row 1: Search + Actions */}
           <div className="flex items-center gap-2">
-            {/* Search */}
             <div className="relative flex-shrink-0">
-              <input type="text" placeholder="Search..." value={search} onChange={(e) => setSearch(e.target.value)}
-                className="border border-gray-200 rounded-md pl-3 pr-8 py-1.5 text-sm w-64 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 bg-gray-50/50" />
+              <Search size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400" />
+              <input type="text" placeholder="Search questions, topics, responses..." value={search} onChange={(e) => setSearch(e.target.value)}
+                className="border border-gray-200 rounded-lg pl-8 pr-3 py-1.5 text-sm w-72 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 bg-gray-50 placeholder:text-gray-400" />
             </div>
 
-            {/* Filter toggle */}
             <button onClick={() => setShowFilters(!showFilters)}
-              className={`flex items-center gap-1 px-2.5 py-1.5 rounded-md text-xs font-medium border transition-all ${showFilters ? "border-blue-300 text-blue-600 bg-blue-50" : "border-gray-200 text-gray-500 hover:bg-gray-50"}`}>
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border transition-all ${showFilters ? "border-blue-300 text-blue-600 bg-blue-50" : "border-gray-200 text-gray-500 hover:bg-gray-50"}`}>
               <SlidersHorizontal size={13} /> Filters
               <ChevronDown size={12} className={`transition-transform ${showFilters ? "rotate-180" : ""}`} />
             </button>
 
-            {/* Filters (collapsible) */}
-            {showFilters && (
-              <>
-                <select value={confidenceFilter} onChange={(e) => setConfidenceFilter(e.target.value)} className="border border-gray-200 rounded-md px-2 py-1.5 text-xs text-gray-600 bg-white">
-                  <option>All Confidence</option><option>GREEN</option><option>YELLOW</option><option>RED</option>
-                </select>
-                <select value={compliantFilter} onChange={(e) => setCompliantFilter(e.target.value)} className="border border-gray-200 rounded-md px-2 py-1.5 text-xs text-gray-600 bg-white">
-                  <option>All Compliant</option><option>Y</option><option>N</option><option>Partial</option>
-                </select>
-                <select value={deliveryFilter} onChange={(e) => setDeliveryFilter(e.target.value)} className="border border-gray-200 rounded-md px-2 py-1.5 text-xs text-gray-600 bg-white">
-                  <option>All Delivery</option><option>OOB</option><option>Config</option><option>Custom</option>
-                </select>
-                <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="border border-gray-200 rounded-md px-2 py-1.5 text-xs text-gray-600 bg-white">
-                  <option>All Status</option><option>Draft</option><option>Reviewed</option><option>Final</option><option>QA</option>
-                </select>
-                <button onClick={resetFilters} className="flex items-center gap-1 text-xs text-gray-400 hover:text-blue-500 font-medium">
-                  <RotateCcw size={11} /> Reset
-                </button>
-              </>
-            )}
+            <span className="text-xs text-gray-400">{filteredQuestions.length} of {data.stats.total}</span>
 
-            {/* Spacer */}
             <div className="flex-1" />
 
-            {/* Action buttons */}
             <div className="flex items-center gap-1.5">
-              <button onClick={handleSave} className="flex items-center gap-1.5 bg-blue-600 text-white px-3 py-1.5 rounded-md text-xs font-medium hover:bg-blue-700 shadow-sm">
+              <button onClick={handleSave} className="flex items-center gap-1.5 bg-blue-600 text-white px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-blue-700 shadow-sm">
                 <Save size={13} /> Save
               </button>
-              <button onClick={handleExportCSV} className="flex items-center gap-1.5 border border-gray-200 text-gray-600 px-2.5 py-1.5 rounded-md text-xs font-medium hover:bg-gray-50">
+              <button onClick={handleExportCSV} className="flex items-center gap-1.5 border border-gray-200 text-gray-600 px-2.5 py-1.5 rounded-lg text-xs font-medium hover:bg-gray-50">
                 <Download size={13} /> CSV
               </button>
-              <button onClick={handleExportJSON} className="flex items-center gap-1.5 border border-gray-200 text-gray-600 px-2.5 py-1.5 rounded-md text-xs font-medium hover:bg-gray-50">
+              <button onClick={handleExportJSON} className="flex items-center gap-1.5 border border-gray-200 text-gray-600 px-2.5 py-1.5 rounded-lg text-xs font-medium hover:bg-gray-50">
                 <FileJson size={13} /> JSON
               </button>
               <div className="w-px h-5 bg-gray-200" />
-              <button className="flex items-center gap-1.5 border border-gray-200 text-gray-600 px-2.5 py-1.5 rounded-md text-xs font-medium hover:bg-gray-50">
+              <button className="flex items-center gap-1.5 border border-gray-200 text-gray-600 px-2.5 py-1.5 rounded-lg text-xs font-medium hover:bg-gray-50">
                 <CloudUpload size={13} /> Push
               </button>
-              <button onClick={() => saveVersion()} className="flex items-center gap-1.5 border border-gray-200 text-gray-600 px-2.5 py-1.5 rounded-md text-xs font-medium hover:bg-gray-50">
+              <button onClick={() => saveVersion()} className="flex items-center gap-1.5 border border-gray-200 text-gray-600 px-2.5 py-1.5 rounded-lg text-xs font-medium hover:bg-gray-50">
                 <History size={13} /> v{versions.length + 1}
               </button>
               <div className="w-px h-5 bg-gray-200" />
-              <button className="flex items-center gap-1.5 bg-gradient-to-r from-violet-600 to-purple-600 text-white px-3 py-1.5 rounded-md text-xs font-medium hover:from-violet-700 hover:to-purple-700 shadow-sm">
+              <button className="flex items-center gap-1.5 bg-gradient-to-r from-violet-600 to-purple-600 text-white px-3 py-1.5 rounded-lg text-xs font-medium hover:from-violet-700 hover:to-purple-700 shadow-sm">
                 <Sparkles size={13} /> AI Rewrite
                 <span className="bg-white/20 px-1.5 py-0.5 rounded text-[10px]">{data.stats.yellow + data.stats.red}</span>
               </button>
             </div>
-
-            {/* Count */}
-            <span className="text-xs text-gray-400 ml-1">{filteredQuestions.length}/{data.stats.total}</span>
           </div>
+
+          {/* Row 2: Filters (collapsible) */}
+          {showFilters && (
+            <div className="flex items-center gap-2 pt-0.5">
+              <span className="text-[10px] text-gray-400 uppercase tracking-wider font-semibold mr-1">Filter by</span>
+              <select value={confidenceFilter} onChange={(e) => setConfidenceFilter(e.target.value)}
+                className="border border-gray-200 rounded-lg px-2.5 py-1.5 text-xs text-gray-600 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400">
+                <option>All Confidence</option><option>GREEN</option><option>YELLOW</option><option>RED</option>
+              </select>
+              <select value={compliantFilter} onChange={(e) => setCompliantFilter(e.target.value)}
+                className="border border-gray-200 rounded-lg px-2.5 py-1.5 text-xs text-gray-600 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400">
+                <option>All Compliant</option><option>Y</option><option>N</option><option>Partial</option>
+              </select>
+              <select value={deliveryFilter} onChange={(e) => setDeliveryFilter(e.target.value)}
+                className="border border-gray-200 rounded-lg px-2.5 py-1.5 text-xs text-gray-600 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400">
+                <option>All Delivery</option><option>OOB</option><option>Config</option><option>Custom</option>
+              </select>
+              <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}
+                className="border border-gray-200 rounded-lg px-2.5 py-1.5 text-xs text-gray-600 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400">
+                <option>All Status</option><option>Draft</option><option>Reviewed</option><option>Final</option><option>QA</option>
+              </select>
+              <button onClick={resetFilters} className="flex items-center gap-1 text-xs text-gray-400 hover:text-blue-500 font-medium ml-1">
+                <RotateCcw size={11} /> Reset
+              </button>
+            </div>
+          )}
         </div>
       )}
 
