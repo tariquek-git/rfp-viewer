@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo, useCallback, useEffect } from "react";
-import { Save, Download, FileJson, CloudUpload, Sparkles, BookOpen, Settings, LayoutGrid, BarChart3, SlidersHorizontal, RotateCcw, ChevronDown, Circle, History, Search, ClipboardCheck, FileText, Scan, Moon, Sun, Keyboard, DollarSign, Calendar, Shield, Target, BookText, ClipboardList } from "lucide-react";
+import { Save, Download, FileJson, CloudUpload, CloudDownload, Sparkles, BookOpen, Settings, LayoutGrid, BarChart3, SlidersHorizontal, RotateCcw, ChevronDown, Circle, History, Search, ClipboardCheck, FileText, Scan, Moon, Sun, Keyboard, DollarSign, Calendar, Shield, Target, BookText, ClipboardList, GitCompareArrows, FileStack } from "lucide-react";
 import { useRFPState } from "@/hooks/useRFPState";
 import GridView from "@/components/GridView";
 import type { TableDensity } from "@/components/GridView";
@@ -23,6 +23,8 @@ import SubmissionChecklist from "@/components/SubmissionChecklist";
 import ProgressBar from "@/components/ProgressBar";
 import KeyboardShortcutsPanel, { useKeyboardShortcuts } from "@/components/KeyboardShortcuts";
 import Onboarding from "@/components/Onboarding";
+import VersionCompare from "@/components/VersionCompare";
+import TemplateManager from "@/components/TemplateManager";
 import { ToastContainer } from "@/components/Toast";
 import type { ConsistencyIssue, ViewTab } from "@/types";
 
@@ -172,6 +174,9 @@ export default function Home() {
           <button onClick={() => state.setShowChecklist(true)} className="p-1.5 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800" title="Submission Checklist">
             <ClipboardList size={15} />
           </button>
+          <button onClick={() => state.setShowTemplates(true)} className="p-1.5 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800" title="Templates">
+            <FileStack size={15} />
+          </button>
           <button onClick={toggleDarkMode} className="p-1.5 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800" title={darkMode ? "Light mode" : "Dark mode"}>
             {darkMode ? <Sun size={15} /> : <Moon size={15} />}
           </button>
@@ -228,12 +233,20 @@ export default function Home() {
                 <FileJson size={12} /> JSON
               </button>
               <div className="w-px h-4 bg-gray-200 dark:bg-gray-700" />
-              <button className="flex items-center gap-1 border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 px-2 py-1.5 rounded-lg text-[11px] font-medium hover:bg-gray-50 dark:hover:bg-gray-800">
+              <button onClick={state.handlePushToCloud} className="flex items-center gap-1 border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 px-2 py-1.5 rounded-lg text-[11px] font-medium hover:bg-gray-50 dark:hover:bg-gray-800" title="Push to Supabase">
                 <CloudUpload size={12} /> Push
+              </button>
+              <button onClick={state.handlePullFromCloud} className="flex items-center gap-1 border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 px-2 py-1.5 rounded-lg text-[11px] font-medium hover:bg-gray-50 dark:hover:bg-gray-800" title="Pull from Supabase">
+                <CloudDownload size={12} /> Pull
               </button>
               <button onClick={() => state.saveVersion()} className="flex items-center gap-1 border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 px-2 py-1.5 rounded-lg text-[11px] font-medium hover:bg-gray-50 dark:hover:bg-gray-800">
                 <History size={12} /> v{state.versions.length + 1}
               </button>
+              {state.versions.length > 0 && (
+                <button onClick={() => state.setShowVersionCompare(true)} className="flex items-center gap-1 border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 px-2 py-1.5 rounded-lg text-[11px] font-medium hover:bg-gray-50 dark:hover:bg-gray-800" title="Compare versions">
+                  <GitCompareArrows size={12} />
+                </button>
+              )}
               <div className="w-px h-4 bg-gray-200 dark:bg-gray-700" />
               <button onClick={handleConsistencyCheck} className="flex items-center gap-1 border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 px-2 py-1.5 rounded-lg text-[11px] font-medium hover:bg-gray-50 dark:hover:bg-gray-800" title="Consistency Check">
                 <Scan size={12} /> Check
@@ -308,6 +321,12 @@ export default function Home() {
       {state.showSummary && <ExecutiveSummary onClose={() => state.setShowSummary(false)} onGenerate={handleGenerateSummary} />}
       {state.showNarrativeAudit && <NarrativeAudit onClose={() => state.setShowNarrativeAudit(false)} onRun={handleNarrativeAudit} />}
       {state.showChecklist && <SubmissionChecklist data={state.data} pricing={state.pricingModel} slas={state.slaCommitments} milestones={state.milestones} winThemes={state.winThemes} knowledgeBase={state.knowledgeBase} statusCounts={state.statusCounts} onClose={() => state.setShowChecklist(false)} />}
+      {state.showVersionCompare && state.versions.length > 0 && (
+        <VersionCompare versions={state.versions} currentQuestions={state.data?.questions || []} onClose={() => state.setShowVersionCompare(false)} />
+      )}
+      {state.showTemplates && state.data && (
+        <TemplateManager currentData={state.data} onLoadTemplate={state.loadTemplateData} onClose={() => state.setShowTemplates(false)} addToast={state.addToast} />
+      )}
       {showShortcuts && <KeyboardShortcutsPanel onClose={() => setShowShortcuts(false)} />}
       {showOnboarding && <Onboarding onClose={closeOnboarding} />}
 

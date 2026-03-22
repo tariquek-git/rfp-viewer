@@ -7,6 +7,7 @@ import type {
   PricingModel, WinTheme, TimelineMilestone, SLACommitment, QAEntry, ChecklistItem,
 } from "@/types";
 import { computeWordDiff } from "@/lib/diff";
+import { pushToCloud, pullFromCloud } from "@/lib/supabaseSync";
 import { useToast } from "@/components/Toast";
 
 const EMPTY_KB: KnowledgeBase = {
@@ -57,6 +58,8 @@ export function useRFPState() {
   const [showWinThemes, setShowWinThemes] = useState(false);
   const [showChecklist, setShowChecklist] = useState(false);
   const [showNarrativeAudit, setShowNarrativeAudit] = useState(false);
+  const [showVersionCompare, setShowVersionCompare] = useState(false);
+  const [showTemplates, setShowTemplates] = useState(false);
 
   const { toasts, addToast, removeToast } = useToast();
 
@@ -398,6 +401,47 @@ export function useRFPState() {
   }, []);
 
   // === CPO feature updaters ===
+  // === Cloud Sync ===
+  const handlePushToCloud = useCallback(async () => {
+    if (!data) return;
+    addToast("info", "Pushing to cloud...");
+    const result = await pushToCloud({
+      questions: data.questions, globalRules, validationRules, feedbackItems,
+      knowledgeBase, pricingModel, winThemes, milestones, slaCommitments, versions,
+    });
+    addToast(result.success ? "success" : "error", result.message);
+  }, [data, globalRules, validationRules, feedbackItems, knowledgeBase, pricingModel, winThemes, milestones, slaCommitments, versions, addToast]);
+
+  const handlePullFromCloud = useCallback(async () => {
+    addToast("info", "Pulling from cloud...");
+    const result = await pullFromCloud();
+    if (result.success && result.data) {
+      // Merge into local state
+      if (result.data.questions.length > 0) {
+        setData(prev => prev ? { ...prev, questions: result.data!.questions } : prev);
+      }
+      if (result.data.globalRules.length > 0) setGlobalRules(result.data.globalRules);
+      if (result.data.validationRules.length > 0) setValidationRules(result.data.validationRules);
+      if (result.data.feedbackItems.length > 0) setFeedbackItems(result.data.feedbackItems);
+      if (result.data.knowledgeBase.companyFacts) setKnowledgeBase(result.data.knowledgeBase);
+      if (result.data.pricingModel.lineItems.length > 0) setPricingModel(result.data.pricingModel);
+      if (result.data.winThemes.length > 0) setWinThemes(result.data.winThemes);
+      if (result.data.milestones.length > 0) setMilestones(result.data.milestones);
+      if (result.data.slaCommitments.length > 0) setSLACommitments(result.data.slaCommitments);
+      setHasUnsaved(true);
+      addToast("success", "Pulled from cloud — save to persist locally");
+    } else {
+      addToast("error", result.message);
+    }
+  }, [addToast]);
+
+  // === Load Template ===
+  const loadTemplateData = useCallback((templateData: RFPData) => {
+    setData(templateData);
+    setHasUnsaved(true);
+    addToast("success", "Template loaded — save to persist");
+  }, [addToast]);
+
   const updatePricing = useCallback((p: PricingModel) => { setPricingModel(p); setHasUnsaved(true); }, []);
   const updateWinThemes = useCallback((t: WinTheme[]) => { setWinThemes(t); setHasUnsaved(true); }, []);
   const updateMilestones = useCallback((m: TimelineMilestone[]) => { setMilestones(m); setHasUnsaved(true); }, []);
@@ -431,7 +475,10 @@ export function useRFPState() {
     // Modals
     showConsistency, setShowConsistency, showSummary, setShowSummary,
     showChecklist, setShowChecklist, showNarrativeAudit, setShowNarrativeAudit,
-    showWinThemes, setShowWinThemes,
+    showWinThemes, setShowWinThemes, showVersionCompare, setShowVersionCompare,
+    showTemplates, setShowTemplates,
+    // Cloud sync
+    handlePushToCloud, handlePullFromCloud, loadTemplateData,
     // CPO features
     pricingModel, updatePricing,
     winThemes, updateWinThemes,
