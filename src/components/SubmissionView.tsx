@@ -1,8 +1,10 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Printer, Download, ChevronDown, AlertTriangle, CheckCircle, XCircle, Minus } from "lucide-react";
+import { Printer, Download, ChevronDown, AlertTriangle, CheckCircle, XCircle, Minus, FileText, FileSpreadsheet } from "lucide-react";
 import type { Question, RFPData } from "@/types";
+import { exportToWord } from "@/lib/exportWord";
+import { exportToPDF } from "@/lib/exportPDF";
 
 interface SubmissionViewProps {
   questions: Question[];
@@ -38,6 +40,21 @@ function DeliveryLabel({ q }: { q: Question }) {
 export default function SubmissionView({ questions, categories, data }: SubmissionViewProps) {
   const [mode, setMode] = useState<ExportMode>("full");
   const [showAdvisory, setShowAdvisory] = useState(true);
+  const [exporting, setExporting] = useState<string | null>(null);
+
+  const handleWordExport = async () => {
+    if (!data) return;
+    setExporting("word");
+    try { await exportToWord(data); } catch (e) { console.error(e); }
+    setExporting(null);
+  };
+
+  const handlePDFExport = async () => {
+    if (!data) return;
+    setExporting("pdf");
+    try { await exportToPDF(data); } catch (e) { console.error(e); }
+    setExporting(null);
+  };
 
   const grouped = useMemo(() => {
     const map: Record<string, Question[]> = {};
@@ -131,13 +148,21 @@ h3{font-size:14px;margin-top:16px;color:#374151}
             <input type="checkbox" checked={showAdvisory} onChange={e => setShowAdvisory(e.target.checked)} className="rounded" />
             Show advisory
           </label>
+          <button onClick={handlePDFExport} disabled={exporting === "pdf"}
+            className="flex items-center gap-1.5 bg-red-600 text-white px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-red-700 disabled:opacity-50">
+            <FileText size={13} /> {exporting === "pdf" ? "Exporting..." : "PDF"}
+          </button>
+          <button onClick={handleWordExport} disabled={exporting === "word"}
+            className="flex items-center gap-1.5 bg-blue-600 text-white px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-blue-700 disabled:opacity-50">
+            <FileSpreadsheet size={13} /> {exporting === "word" ? "Exporting..." : "Word (.docx)"}
+          </button>
           <button onClick={handleExportHTML}
             className="flex items-center gap-1.5 border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-gray-50 dark:hover:bg-gray-800">
-            <Download size={13} /> Export HTML
+            <Download size={13} /> HTML
           </button>
           <button onClick={() => window.print()}
-            className="flex items-center gap-1.5 bg-gray-900 text-white px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-gray-800">
-            <Printer size={13} /> Print / PDF
+            className="flex items-center gap-1.5 border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-gray-50 dark:hover:bg-gray-800">
+            <Printer size={13} /> Print
           </button>
         </div>
       </div>
