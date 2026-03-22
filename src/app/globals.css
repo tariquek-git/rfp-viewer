@@ -160,15 +160,57 @@ thead .sticky-col-ref {
 .donut-ring { fill: none; }
 .donut-segment { fill: none; stroke-linecap: round; }
 
+/* Dark mode: force higher contrast for readability */
+.dark {
+  color-scheme: dark;
+}
+.dark body {
+  background: #0a0a0a;
+  color: #e5e7eb;
+}
+.dark input, .dark select, .dark textarea {
+  color: #e5e7eb;
+}
+.dark table th {
+  background: #1f2937;
+  color: #d1d5db;
+}
+.dark table td {
+  color: #d1d5db;
+}
+/* Fix dark mode text that's too faint */
+.dark .text-gray-700 { color: #d1d5db; }
+.dark .text-gray-600 { color: #c0c4cc; }
+.dark .text-gray-500 { color: #9ca3af; }
+.dark .text-gray-900 { color: #f3f4f6; }
+.dark .text-gray-800 { color: #e5e7eb; }
+.dark .bg-white { background: #111827; }
+.dark .bg-gray-50 { background: #1a1f2e; }
+.dark .bg-gray-50\/50 { background: rgba(26,31,46,0.5); }
+.dark .bg-gray-50\/30 { background: rgba(26,31,46,0.3); }
+.dark .border-gray-200 { border-color: #374151; }
+.dark .border-gray-100 { border-color: #1f2937; }
+.dark .divide-gray-100 > :not(:last-child) { border-color: #1f2937; }
+.dark .hover\:bg-gray-50:hover { background: #1f2937; }
+.dark .hover\:bg-blue-50\/60:hover { background: rgba(30,58,138,0.3); }
+.dark .bg-red-50\/50 { background: rgba(127,29,29,0.15); }
+.dark .bg-amber-50\/30 { background: rgba(120,53,15,0.1); }
+
 /* Print styles for Submission View */
 @media print {
-  body { background: white !important; }
+  /* Force light mode for print */
+  * { color: #111827 !important; background: white !important; border-color: #e5e7eb !important; }
+  body { background: white !important; font-size: 11px !important; }
   .print\:hidden { display: none !important; }
   .print\:break-before-page { break-before: page; }
-  .print\:px-0 { padding-left: 0 !important; padding-right: 0 !important; }
-  .print\:py-0 { padding-top: 0 !important; padding-bottom: 0 !important; }
+  .print\:break-inside-avoid { break-inside: avoid; }
+  .print\:px-6 { padding-left: 1.5rem !important; padding-right: 1.5rem !important; }
+  .print\:py-4 { padding-top: 1rem !important; padding-bottom: 1rem !important; }
   .print\:max-w-none { max-width: none !important; }
-  .print\:mb-12 { margin-bottom: 3rem !important; }
-  .print\:mb-8 { margin-bottom: 2rem !important; }
+  .print\:mb-16 { margin-bottom: 4rem !important; }
   header, footer, nav { display: none !important; }
+  /* Keep colored badges visible in print */
+  .bg-emerald-50, .bg-amber-50, .bg-red-50 { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .bg-emerald-500, .bg-amber-500, .bg-red-500 { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .text-emerald-600, .text-amber-600, .text-red-600 { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 }

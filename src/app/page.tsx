@@ -307,7 +307,7 @@ export default function Home() {
         {state.activeTab === "timeline" && <TimelineView milestones={state.milestones} onUpdate={state.updateMilestones} />}
         {state.activeTab === "sla" && <SLAView slas={state.slaCommitments} onUpdate={state.updateSLAs} />}
         {state.activeTab === "compliance" && <ComplianceView questions={state.filteredQuestions} categories={state.data.categories} onUpdateCompliant={handleUpdateCompliant} />}
-        {state.activeTab === "submission" && <SubmissionView questions={state.data.questions} categories={state.data.categories} />}
+        {state.activeTab === "submission" && <SubmissionView questions={state.data.questions} categories={state.data.categories} data={state.data} />}
 
         {state.showRules && <RulesPanel onClose={() => state.setShowRules(false)} rules={state.globalRules} onUpdateRules={state.setGlobalRules} validationRules={state.validationRules} onUpdateValidationRules={state.updateValidationRules} />}
         {state.showWinThemes && <WinThemesPanel themes={state.winThemes} onUpdate={state.updateWinThemes} questions={state.data.questions} onClose={() => state.setShowWinThemes(false)} />}
