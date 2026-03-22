@@ -7,6 +7,7 @@ import FeedbackPanel from "./FeedbackPanel";
 import DiffView from "./DiffView";
 import CritiquePanel from "./CritiquePanel";
 import { countWords, getWordCountColor, getWordCountClasses } from "@/lib/wordCount";
+import { detectAIWriting, aiDetectClasses, aiDetectLabel } from "@/lib/aiDetect";
 
 interface DetailPanelProps {
   question: Question;
@@ -101,6 +102,7 @@ export default function DetailPanel({
   const [critiquing, setCritiquing] = useState<"bullet" | "paragraph" | null>(null);
   const [critiqueResults, setCritiqueResults] = useState<Record<string, CritiqueResult>>({});
   const [rescoring, setRescoring] = useState(false);
+  const [humanizing, setHumanizing] = useState<"bullet" | "paragraph" | null>(null);
 
   useEffect(() => { setQ({ ...question }); setDirty(false); }, [question]);
 
@@ -150,6 +152,26 @@ export default function DetailPanel({
     setRescoring(false);
   };
 
+  const handleHumanize = async (field: "bullet" | "paragraph") => {
+    setHumanizing(field);
+    try {
+      const text = q[field];
+      const detection = detectAIWriting(text);
+      const res = await fetch("/api/humanize", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text, triggers: detection.triggers, context: `${q.category} - ${q.topic}` }),
+      });
+      const result = await res.json();
+      if (result.text) { update(field, result.text); }
+    } catch (e) { console.error("Humanize failed:", e); }
+    setHumanizing(null);
+  };
+
+  // AI detection for current responses
+  const bulletDetect = detectAIWriting(q.bullet);
+  const paragraphDetect = detectAIWriting(q.paragraph);
+
   const confClass = q.confidence === "GREEN" ? "text-green-600 bg-green-50 border-green-200" :
     q.confidence === "YELLOW" ? "text-yellow-600 bg-yellow-50 border-yellow-200" :
     q.confidence === "RED" ? "text-red-600 bg-red-50 border-red-200" : "text-gray-600";
@@ -193,9 +215,22 @@ export default function DetailPanel({
 
         {/* Bullet response */}
         <div className="flex items-center justify-between mb-1">
-          <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Response (Bullet)</label>
+          <div className="flex items-center gap-2">
+            <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Response (Bullet)</label>
+            {bulletDetect.level !== "low" && (
+              <span className={`text-[9px] px-1.5 py-0.5 rounded border font-semibold ${aiDetectClasses(bulletDetect.level)}`} title={bulletDetect.triggers.join(", ")}>
+                {aiDetectLabel(bulletDetect.level)}
+              </span>
+            )}
+          </div>
           <div className="flex items-center gap-2">
             {historyFor("bullet").length > 0 && <span className="text-xs text-gray-400">{historyFor("bullet").length} edits</span>}
+            {bulletDetect.level !== "low" && (
+              <button onClick={() => handleHumanize("bullet")} disabled={humanizing === "bullet"}
+                className="text-xs bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded hover:bg-emerald-200 disabled:opacity-50 font-medium">
+                {humanizing === "bullet" ? "..." : "Humanize"}
+              </button>
+            )}
             <button onClick={() => handleCritique("bullet")} disabled={critiquing === "bullet"}
               className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded hover:bg-blue-200 disabled:opacity-50 font-medium">
               {critiquing === "bullet" ? "..." : "Critique"}
@@ -219,9 +254,22 @@ export default function DetailPanel({
 
         {/* Paragraph response */}
         <div className="flex items-center justify-between mb-1 mt-4">
-          <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Response (Paragraph)</label>
+          <div className="flex items-center gap-2">
+            <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Response (Paragraph)</label>
+            {paragraphDetect.level !== "low" && (
+              <span className={`text-[9px] px-1.5 py-0.5 rounded border font-semibold ${aiDetectClasses(paragraphDetect.level)}`} title={paragraphDetect.triggers.join(", ")}>
+                {aiDetectLabel(paragraphDetect.level)}
+              </span>
+            )}
+          </div>
           <div className="flex items-center gap-2">
             {historyFor("paragraph").length > 0 && <span className="text-xs text-gray-400">{historyFor("paragraph").length} edits</span>}
+            {paragraphDetect.level !== "low" && (
+              <button onClick={() => handleHumanize("paragraph")} disabled={humanizing === "paragraph"}
+                className="text-xs bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded hover:bg-emerald-200 disabled:opacity-50 font-medium">
+                {humanizing === "paragraph" ? "..." : "Humanize"}
+              </button>
+            )}
             <button onClick={() => handleCritique("paragraph")} disabled={critiquing === "paragraph"}
               className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded hover:bg-blue-200 disabled:opacity-50 font-medium">
               {critiquing === "paragraph" ? "..." : "Critique"}

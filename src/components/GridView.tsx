@@ -5,6 +5,7 @@ import { useRef, useCallback } from "react";
 import { FileText, Circle, Check, X, Minus, Columns3, ChevronUp, ChevronDown, GitCompareArrows, AlignVerticalSpaceAround } from "lucide-react";
 import type { Question, SortConfig, WorkflowStatus } from "@/types";
 import { countWords, getWordCountColor, getWordCountClasses } from "@/lib/wordCount";
+import { detectAIWriting, aiDetectClasses, aiDetectLabel } from "@/lib/aiDetect";
 
 export type TableDensity = "compact" | "comfortable" | "spacious";
 
@@ -24,7 +25,7 @@ interface GridViewProps {
   onChangeDensity?: (d: TableDensity) => void;
 }
 
-type ColumnKey = "number" | "ref" | "topic" | "requirement" | "bullet" | "paragraph" | "confidence" | "compliant" | "delivery" | "status" | "rationale" | "notes" | "pricing" | "capability" | "availability" | "strategic" | "reg_enable" | "committee_score" | "committee_risk";
+type ColumnKey = "number" | "ref" | "topic" | "requirement" | "bullet" | "paragraph" | "confidence" | "compliant" | "delivery" | "status" | "ai_detect" | "rationale" | "notes" | "pricing" | "capability" | "availability" | "strategic" | "reg_enable" | "committee_score" | "committee_risk";
 
 interface ColumnDef {
   key: ColumnKey;
@@ -50,6 +51,7 @@ const ALL_COLUMNS: (ColumnDef & { source: ColumnSource })[] = [
   { key: "compliant", label: "Compliant", shortLabel: "Compl.", defaultVisible: true, width: "w-24", type: "badge", source: "brim", sortable: true },
   { key: "delivery", label: "Delivery", shortLabel: "Delivery", defaultVisible: true, width: "w-28", type: "tags", source: "brim" },
   { key: "status", label: "Status", shortLabel: "Status", defaultVisible: true, width: "w-24", type: "status", source: "brim", sortable: true },
+  { key: "ai_detect", label: "AI Detect", shortLabel: "AI", defaultVisible: true, width: "w-20", type: "badge", source: "analysis" },
   { key: "rationale", label: "Rationale", shortLabel: "Rationale", defaultVisible: false, width: "min-w-[220px]", editable: true, source: "brim" },
   { key: "notes", label: "Notes", shortLabel: "Notes", defaultVisible: false, width: "min-w-[200px]", editable: true, source: "brim" },
   { key: "pricing", label: "Pricing", shortLabel: "Pricing", defaultVisible: false, width: "min-w-[180px]", editable: true, source: "brim" },
@@ -318,6 +320,10 @@ export default function GridView({
       case "compliant": return <CompliantBadge value={q.compliant} />;
       case "delivery": return <DeliveryTags q={q} />;
       case "status": return <StatusBadge value={q.status} onClick={() => onCycleStatus(q.ref)} />;
+      case "ai_detect": {
+        const detect = detectAIWriting(q.bullet + " " + q.paragraph);
+        return <span className={`text-[9px] px-1.5 py-0.5 rounded border font-semibold ${aiDetectClasses(detect.level)}`}>{aiDetectLabel(detect.level)}</span>;
+      }
       case "strategic": return <BoolCell value={q.strategic} />;
       case "reg_enable": return <BoolCell value={q.reg_enable} />;
       case "committee_score": return <ScoreCell value={q.committee_score} />;
