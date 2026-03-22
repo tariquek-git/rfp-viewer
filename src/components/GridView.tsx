@@ -52,15 +52,15 @@ const ALL_COLUMNS: (ColumnDef & { source: ColumnSource })[] = [
   { key: "delivery", label: "Delivery", shortLabel: "Delivery", defaultVisible: true, width: "w-28", type: "tags", source: "brim" },
   { key: "status", label: "Status", shortLabel: "Status", defaultVisible: true, width: "w-24", type: "status", source: "brim", sortable: true },
   { key: "ai_detect", label: "AI Detect", shortLabel: "AI", defaultVisible: true, width: "w-20", type: "badge", source: "analysis" },
-  { key: "rationale", label: "Rationale", shortLabel: "Rationale", defaultVisible: false, width: "min-w-[220px]", editable: true, source: "brim" },
-  { key: "notes", label: "Notes", shortLabel: "Notes", defaultVisible: false, width: "min-w-[200px]", editable: true, source: "brim" },
-  { key: "pricing", label: "Pricing", shortLabel: "Pricing", defaultVisible: false, width: "min-w-[180px]", editable: true, source: "brim" },
-  { key: "capability", label: "Capability", shortLabel: "Cap.", defaultVisible: false, width: "min-w-[180px]", source: "brim" },
-  { key: "availability", label: "Availability", shortLabel: "Avail.", defaultVisible: false, width: "min-w-[180px]", source: "brim" },
-  { key: "strategic", label: "Strategic", shortLabel: "Strat.", defaultVisible: false, width: "w-20", type: "bool", source: "analysis" },
-  { key: "reg_enable", label: "Reg Enable", shortLabel: "Reg.", defaultVisible: false, width: "w-20", type: "bool", source: "analysis" },
+  { key: "rationale", label: "Rationale", shortLabel: "Rationale", defaultVisible: true, width: "min-w-[220px]", editable: true, source: "brim" },
+  { key: "notes", label: "Notes", shortLabel: "Notes", defaultVisible: true, width: "min-w-[200px]", editable: true, source: "brim" },
+  { key: "pricing", label: "Pricing", shortLabel: "Pricing", defaultVisible: true, width: "min-w-[180px]", editable: true, source: "brim" },
+  { key: "capability", label: "Capability", shortLabel: "Cap.", defaultVisible: true, width: "min-w-[180px]", source: "brim" },
+  { key: "availability", label: "Availability", shortLabel: "Avail.", defaultVisible: true, width: "min-w-[180px]", source: "brim" },
+  { key: "strategic", label: "Strategic", shortLabel: "Strat.", defaultVisible: true, width: "w-20", type: "bool", source: "analysis" },
+  { key: "reg_enable", label: "Reg Enable", shortLabel: "Reg.", defaultVisible: true, width: "w-20", type: "bool", source: "analysis" },
   { key: "committee_score", label: "Committee Score", shortLabel: "Score", defaultVisible: true, width: "w-20", type: "score", source: "analysis", sortable: true },
-  { key: "committee_risk", label: "Committee Risk", shortLabel: "Risk", defaultVisible: false, width: "min-w-[200px]", source: "analysis" },
+  { key: "committee_risk", label: "Committee Risk", shortLabel: "Risk", defaultVisible: true, width: "min-w-[200px]", source: "analysis" },
 ];
 
 const SOURCE_HEADER_COLORS: Record<ColumnSource, string> = {

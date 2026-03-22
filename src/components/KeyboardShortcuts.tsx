@@ -6,7 +6,6 @@ import { X, Keyboard } from "lucide-react";
 const SHORTCUTS = [
   { keys: ["⌘", "S"], description: "Save changes" },
   { keys: ["?"], description: "Toggle this shortcuts panel" },
-  { keys: ["D"], description: "Toggle dark mode" },
   { keys: ["Esc"], description: "Close panel / modal" },
   { keys: ["↑", "↓"], description: "Navigate between rows (when grid focused)" },
   { keys: ["Enter"], description: "Open detail panel for focused row" },
