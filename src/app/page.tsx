@@ -1,328 +1,274 @@
 "use client";
 
-import { useEffect, useState, useMemo, useCallback } from "react";
-import { Save, Download, FileJson, CloudUpload, Sparkles, BookOpen, Settings, LayoutGrid, BarChart3, SlidersHorizontal, RotateCcw, ChevronDown, Circle, History, Search } from "lucide-react";
-import type { RFPData, Question, ViewTab } from "@/types";
+import { useState, useMemo, useCallback, useEffect } from "react";
+import { Save, Download, FileJson, CloudUpload, Sparkles, BookOpen, Settings, LayoutGrid, BarChart3, SlidersHorizontal, RotateCcw, ChevronDown, Circle, History, Search, ClipboardCheck, FileText, Scan, Moon, Sun, Keyboard, DollarSign, Calendar, Shield, Target, BookText, ClipboardList } from "lucide-react";
+import { useRFPState } from "@/hooks/useRFPState";
 import GridView from "@/components/GridView";
+import type { TableDensity } from "@/components/GridView";
 import ContextView from "@/components/ContextView";
 import RulesPanel from "@/components/RulesPanel";
 import DetailPanel from "@/components/DetailPanel";
-import { ToastContainer, useToast } from "@/components/Toast";
-import type { FeedbackItem } from "@/components/FeedbackPanel";
-
-type CellHistory = Record<string, { value: string; timestamp: number; source: "human" | "ai" }[]>;
+import KnowledgeBaseView from "@/components/KnowledgeBase";
+import ComplianceView from "@/components/ComplianceView";
+import SubmissionView from "@/components/SubmissionView";
+import PricingView from "@/components/PricingView";
+import TimelineView from "@/components/TimelineView";
+import SLAView from "@/components/SLAView";
+import WinThemesPanel from "@/components/WinThemes";
+import BulkActions from "@/components/BulkActions";
+import ConsistencyResults from "@/components/ConsistencyResults";
+import ExecutiveSummary from "@/components/ExecutiveSummary";
+import NarrativeAudit from "@/components/NarrativeAudit";
+import SubmissionChecklist from "@/components/SubmissionChecklist";
+import ProgressBar from "@/components/ProgressBar";
+import KeyboardShortcutsPanel, { useKeyboardShortcuts } from "@/components/KeyboardShortcuts";
+import Onboarding from "@/components/Onboarding";
+import { ToastContainer } from "@/components/Toast";
+import type { ConsistencyIssue, ViewTab } from "@/types";
 
 export default function Home() {
-  const [data, setData] = useState<RFPData | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<ViewTab>("grid");
-  const [activeCategory, setActiveCategory] = useState<string>("All");
-  const [search, setSearch] = useState("");
-  const [confidenceFilter, setConfidenceFilter] = useState("All Confidence");
-  const [compliantFilter, setCompliantFilter] = useState("All Compliant");
-  const [deliveryFilter, setDeliveryFilter] = useState("All Delivery");
-  const [statusFilter, setStatusFilter] = useState("All Status");
-  const [coverageFilter, setCoverageFilter] = useState("All Coverage");
-  const [showRules, setShowRules] = useState(false);
-  const [showFilters, setShowFilters] = useState(true);
-  const [selectedQuestion, setSelectedQuestion] = useState<Question | null>(null);
-  const [cellHistory, setCellHistory] = useState<CellHistory>({});
-  const [feedbackItems, setFeedbackItems] = useState<FeedbackItem[]>([]);
-  const [versions, setVersions] = useState<{ label: string; timestamp: number; data: RFPData }[]>([]);
-  const [hasUnsaved, setHasUnsaved] = useState(false);
-  const [globalRules, setGlobalRules] = useState<string[]>([]);
-  const { toasts, addToast, removeToast } = useToast();
+  const state = useRFPState();
+  const [consistencyIssues, setConsistencyIssues] = useState<ConsistencyIssue[]>([]);
+  const [consistencyLoading, setConsistencyLoading] = useState(false);
+  const [darkMode, setDarkMode] = useState(false);
+  const [density, setDensity] = useState<TableDensity>("comfortable");
+  const [lastSaved, setLastSaved] = useState<number | null>(null);
+  const [showOnboarding, setShowOnboarding] = useState(false);
 
   useEffect(() => {
-    fetch("/rfp_data.json")
-      .then((r) => r.json())
-      .then((d) => {
-        setData(d);
-        const saved = localStorage.getItem("rfp-edits");
-        if (saved) try { const edits = JSON.parse(saved); if (edits.questions) setData(edits); } catch {}
-        const savedHistory = localStorage.getItem("rfp-cell-history");
-        if (savedHistory) try { setCellHistory(JSON.parse(savedHistory)); } catch {}
-        const savedRules = localStorage.getItem("rfp-global-rules");
-        if (savedRules) try { setGlobalRules(JSON.parse(savedRules)); } catch {}
-        const savedFeedback = localStorage.getItem("rfp-feedback");
-        if (savedFeedback) try { setFeedbackItems(JSON.parse(savedFeedback)); } catch {}
-        const savedVersions = localStorage.getItem("rfp-versions");
-        if (savedVersions) try { setVersions(JSON.parse(savedVersions)); } catch {}
-        setLoading(false);
-      })
-      .catch((e) => { console.error(e); setLoading(false); });
+    const saved = localStorage.getItem("rfp-dark-mode");
+    if (saved === "true") { setDarkMode(true); document.documentElement.classList.add("dark"); }
   }, []);
 
-  useEffect(() => {
-    const handler = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === "s") { e.preventDefault(); saveToLocal(); }
-    };
-    window.addEventListener("keydown", handler);
-    return () => window.removeEventListener("keydown", handler);
+  const toggleDarkMode = useCallback(() => {
+    setDarkMode(prev => {
+      const next = !prev;
+      if (next) document.documentElement.classList.add("dark"); else document.documentElement.classList.remove("dark");
+      localStorage.setItem("rfp-dark-mode", String(next));
+      return next;
+    });
+  }, []);
+
+  useEffect(() => { if (!localStorage.getItem("rfp-onboarded")) setShowOnboarding(true); }, []);
+  const closeOnboarding = useCallback(() => { setShowOnboarding(false); localStorage.setItem("rfp-onboarded", "true"); }, []);
+
+  const { showShortcuts, setShowShortcuts } = useKeyboardShortcuts({
+    onToggleDarkMode: toggleDarkMode,
+    onSwitchTab: (tab) => state.setActiveTab(tab as ViewTab),
   });
 
-  const saveToLocal = useCallback(() => {
-    if (!data) return;
-    localStorage.setItem("rfp-edits", JSON.stringify(data));
-    localStorage.setItem("rfp-cell-history", JSON.stringify(cellHistory));
-    localStorage.setItem("rfp-global-rules", JSON.stringify(globalRules));
-    localStorage.setItem("rfp-feedback", JSON.stringify(feedbackItems));
-    setHasUnsaved(false);
-    addToast("success", "Changes saved locally");
-  }, [data, cellHistory, globalRules, feedbackItems, addToast]);
+  useEffect(() => { if (!state.hasUnsaved && state.data) setLastSaved(Date.now()); }, [state.hasUnsaved, state.data]);
 
-  const addCellHistory = useCallback((ref: string, field: string, value: string, source: "human" | "ai") => {
-    setCellHistory((prev) => {
-      const key = `${ref}:${field}`;
-      return { ...prev, [key]: [...(prev[key] || []), { value, timestamp: Date.now(), source }] };
-    });
-  }, []);
+  const pendingDiffKeys = useMemo(() => new Set(Object.keys(state.pendingDiffs)), [state.pendingDiffs]);
 
-  const updateQuestion = useCallback((updated: Question) => {
-    if (!data) return;
-    setData({ ...data, questions: data.questions.map((q) => (q.ref === updated.ref ? updated : q)) });
-    setHasUnsaved(true);
-    if (selectedQuestion?.ref === updated.ref) setSelectedQuestion(updated);
-  }, [data, selectedQuestion]);
+  const handleConsistencyCheck = useCallback(async () => {
+    if (!state.data) return;
+    state.setShowConsistency(true); setConsistencyLoading(true);
+    try {
+      const qs = state.activeCategory !== "All" ? state.data.questions.filter(q => q.category === state.activeCategory) : state.data.questions;
+      const res = await fetch("/api/consistency", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ questions: qs, knowledgeBase: state.knowledgeBase }) });
+      setConsistencyIssues((await res.json()).issues || []);
+    } catch { setConsistencyIssues([]); }
+    setConsistencyLoading(false);
+  }, [state]);
 
-  const handleCellEdit = useCallback((ref: string, field: keyof Question, value: string) => {
-    if (!data) return;
-    const q = data.questions.find((q) => q.ref === ref);
-    if (!q) return;
-    addCellHistory(ref, field, value, "human");
-    updateQuestion({ ...q, [field]: value });
-  }, [data, addCellHistory, updateQuestion]);
+  const handleGenerateSummary = useCallback(async () => {
+    if (!state.data) throw new Error("No data");
+    const res = await fetch("/api/summary", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ questions: state.data.questions, stats: state.data.stats, knowledgeBase: state.knowledgeBase }) });
+    if (!res.ok) throw new Error("Failed");
+    return res.json();
+  }, [state.data, state.knowledgeBase]);
 
-  const handleAiRewrite = useCallback(async (question: Question, field: "bullet" | "paragraph", rowRules: string, feedback: FeedbackItem[]): Promise<string> => {
-    const res = await fetch("/api/rewrite", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ question, field, globalRules, rowRules, feedback }),
-    });
-    const { text, error } = await res.json();
-    if (error) { addToast("error", "AI rewrite failed"); throw new Error(error); }
-    addCellHistory(question.ref, field, text, "ai");
-    addToast("success", `AI rewrote ${field} response`);
-    return text;
-  }, [globalRules, addCellHistory, addToast]);
+  const handleNarrativeAudit = useCallback(async () => {
+    if (!state.data) throw new Error("No data");
+    const res = await fetch("/api/narrative-audit", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ questions: state.data.questions, winThemes: state.winThemes, knowledgeBase: state.knowledgeBase }) });
+    if (!res.ok) throw new Error("Failed");
+    return res.json();
+  }, [state.data, state.winThemes, state.knowledgeBase]);
 
-  const handleAddFeedback = useCallback((ref: string, field: string, comment: string) => {
-    setFeedbackItems(prev => [...prev, { ref, field, comment, timestamp: Date.now(), resolved: false }]);
-    setHasUnsaved(true);
-    addToast("info", "Feedback added");
-  }, [addToast]);
+  const handleUpdateCompliant = useCallback((ref: string, value: string) => { state.handleCellEdit(ref, "compliant", value); }, [state]);
 
-  const handleResolveFeedback = useCallback((ref: string, timestamp: number) => {
-    setFeedbackItems(prev => prev.map(f => f.ref === ref && f.timestamp === timestamp ? { ...f, resolved: true } : f));
-    setHasUnsaved(true);
-  }, []);
+  const formatTimeSince = (ts: number | null) => {
+    if (!ts) return "";
+    const diff = Math.floor((Date.now() - ts) / 1000);
+    if (diff < 60) return "just now";
+    if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+    return `${Math.floor(diff / 3600)}h ago`;
+  };
 
-  const saveVersion = useCallback((label?: string) => {
-    if (!data) return;
-    const v = { label: label || `v${versions.length + 1}`, timestamp: Date.now(), data: JSON.parse(JSON.stringify(data)) };
-    const newVersions = [...versions, v];
-    setVersions(newVersions);
-    localStorage.setItem("rfp-versions", JSON.stringify(newVersions));
-  }, [data, versions]);
-
-  const handleSave = useCallback(() => { saveToLocal(); saveVersion("Auto-save"); }, [saveToLocal, saveVersion]);
-
-  const filteredQuestions = useMemo(() => {
-    if (!data) return [];
-    let qs = data.questions;
-    if (activeCategory !== "All") qs = qs.filter((q) => q.category === activeCategory);
-    if (search) { const s = search.toLowerCase(); qs = qs.filter((q) => q.ref.toLowerCase().includes(s) || q.topic.toLowerCase().includes(s) || q.requirement.toLowerCase().includes(s) || q.bullet.toLowerCase().includes(s) || q.paragraph.toLowerCase().includes(s)); }
-    if (confidenceFilter !== "All Confidence") qs = qs.filter((q) => q.confidence === confidenceFilter);
-    if (compliantFilter !== "All Compliant") qs = qs.filter((q) => q.compliant === compliantFilter);
-    return qs;
-  }, [data, activeCategory, search, confidenceFilter, compliantFilter]);
-
-  const handleExportCSV = useCallback(() => {
-    if (!data) return;
-    const headers = ["#", "Reference", "Topic", "BSB Requirement", "Response (Bullet)", "Response (Paragraph)", "Confidence", "Compliant"];
-    const rows = filteredQuestions.map((q) => [q.number, q.ref, q.topic, q.requirement, q.bullet, q.paragraph, q.confidence, q.compliant]);
-    const csv = [headers.join(","), ...rows.map((r) => r.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(","))].join("\n");
-    const blob = new Blob([csv], { type: "text/csv" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a"); a.href = url; a.download = "rfp_export.csv"; a.click();
-    URL.revokeObjectURL(url);
-    addToast("success", "Exported as CSV");
-  }, [data, filteredQuestions, addToast]);
-
-  const handleExportJSON = useCallback(() => {
-    if (!data) return;
-    const blob = new Blob([JSON.stringify(filteredQuestions, null, 2)], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a"); a.href = url; a.download = "rfp_export.json"; a.click();
-    URL.revokeObjectURL(url);
-    addToast("success", "Exported as JSON");
-  }, [data, filteredQuestions, addToast]);
-
-  const resetFilters = useCallback(() => {
-    setSearch(""); setConfidenceFilter("All Confidence"); setCompliantFilter("All Compliant");
-    setDeliveryFilter("All Delivery"); setStatusFilter("All Status"); setCoverageFilter("All Coverage");
-    setActiveCategory("All");
-  }, []);
-
-  const categoryStats = useMemo(() => {
-    if (!data) return {};
-    const stats: Record<string, number> = { All: data.questions.length };
-    for (const q of data.questions) stats[q.category] = (stats[q.category] || 0) + 1;
-    return stats;
-  }, [data]);
-
-  const getConfidenceColor = useCallback((conf: string) => {
-    if (conf === "GREEN" || conf === "High") return "bg-green-500";
-    if (conf === "YELLOW" || conf === "Medium") return "bg-yellow-400";
-    if (conf === "RED" || conf === "Low") return "bg-red-500";
-    return "bg-gray-300";
-  }, []);
-
-  const unresolvedFeedback = feedbackItems.filter(f => !f.resolved).length;
-
-  // Loading skeleton
-  if (loading) {
+  if (state.loading) {
     return (
-      <div className="flex flex-col h-screen bg-white">
-        <div className="border-b px-6 py-4"><div className="skeleton h-6 w-48 mb-2" /><div className="skeleton h-4 w-72" /></div>
-        <div className="border-b px-6 py-3 flex gap-2">{Array.from({ length: 8 }).map((_, i) => <div key={i} className="skeleton h-7 w-24 rounded" />)}</div>
+      <div className="flex flex-col h-screen bg-white dark:bg-gray-950">
+        <div className="border-b dark:border-gray-800 px-6 py-4"><div className="skeleton h-6 w-48 mb-2" /><div className="skeleton h-4 w-72" /></div>
+        <div className="border-b dark:border-gray-800 px-6 py-3 flex gap-2">{Array.from({ length: 8 }).map((_, i) => <div key={i} className="skeleton h-7 w-24 rounded" />)}</div>
         <div className="flex-1 p-6 space-y-3">{Array.from({ length: 10 }).map((_, i) => <div key={i} className="skeleton h-16 w-full rounded" />)}</div>
       </div>
     );
   }
 
-  if (!data) return <div className="flex items-center justify-center h-screen"><p className="text-gray-500">Failed to load data.</p></div>;
+  if (!state.data) return <div className="flex items-center justify-center h-screen"><p className="text-gray-500">Failed to load data.</p></div>;
+
+  const NAV_TABS = [
+    { key: "grid" as const, icon: LayoutGrid, label: "Grid" },
+    { key: "context" as const, icon: BarChart3, label: "Dashboard" },
+    { key: "knowledgebase" as const, icon: BookOpen, label: "KB" },
+    { key: "pricing" as const, icon: DollarSign, label: "Pricing" },
+    { key: "timeline" as const, icon: Calendar, label: "Timeline" },
+    { key: "sla" as const, icon: Shield, label: "SLA" },
+    { key: "compliance" as const, icon: ClipboardCheck, label: "Compliance" },
+    { key: "submission" as const, icon: FileText, label: "Submit" },
+  ];
 
   return (
-    <div className="flex flex-col h-screen bg-white">
-      <ToastContainer toasts={toasts} onRemove={removeToast} />
+    <div className="flex flex-col h-screen bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100">
+      <ToastContainer toasts={state.toasts} onRemove={state.removeToast} />
 
       {/* Header */}
-      <header className="border-b border-gray-200 px-6 py-3 flex items-center justify-between flex-shrink-0 bg-white">
-        <div className="flex items-center gap-4">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center">
-            <BookOpen size={16} className="text-white" />
+      <header className="border-b border-gray-200 dark:border-gray-800 px-4 py-2.5 flex items-center justify-between flex-shrink-0 bg-white dark:bg-gray-950">
+        <div className="flex items-center gap-3">
+          <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center">
+            <BookOpen size={14} className="text-white" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-lg font-bold text-gray-900">BSB Credit Card RFP</h1>
-              {hasUnsaved && <span className="text-[10px] bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded font-medium">Unsaved</span>}
+              <h1 className="text-base font-bold">BSB Credit Card RFP</h1>
+              {state.hasUnsaved ? (
+                <span className="text-[9px] bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 px-1.5 py-0.5 rounded font-medium">Unsaved</span>
+              ) : lastSaved && (
+                <span className="text-[9px] text-gray-400 font-medium">Saved {formatTimeSince(lastSaved)}</span>
+              )}
             </div>
-            <p className="text-xs text-gray-400">Brim Financial · {data.stats.total} Questions · {data.categories.length} Categories</p>
+            <p className="text-[10px] text-gray-400">{state.data.stats.total} Qs · {state.data.categories.length} Categories</p>
           </div>
         </div>
 
         {/* Nav Tabs */}
-        <div className="flex items-center bg-gray-100 rounded-lg p-0.5">
-          <button onClick={() => { setActiveTab("grid"); setSelectedQuestion(null); }}
-            className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-md text-sm font-medium transition-all ${activeTab === "grid" ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700"}`}>
-            <LayoutGrid size={14} /> Grid
-          </button>
-          <button onClick={() => { setActiveTab("context"); setSelectedQuestion(null); }}
-            className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-md text-sm font-medium transition-all ${activeTab === "context" ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700"}`}>
-            <BarChart3 size={14} /> Dashboard
-          </button>
+        <div className="flex items-center bg-gray-100 dark:bg-gray-800 rounded-lg p-0.5 overflow-x-auto">
+          {NAV_TABS.map(tab => (
+            <button key={tab.key} onClick={() => { state.setActiveTab(tab.key); state.setSelectedQuestion(null); }}
+              className={`flex items-center gap-1 px-2.5 py-1.5 rounded-md text-[11px] font-medium whitespace-nowrap transition-all ${state.activeTab === tab.key ? "bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm" : "text-gray-500 dark:text-gray-400 hover:text-gray-700"}`}>
+              <tab.icon size={12} /> {tab.label}
+            </button>
+          ))}
         </div>
 
-        {/* Right side: stats + actions */}
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-3 text-xs font-medium">
-            <span className="flex items-center gap-1"><Circle size={7} fill="#10b981" className="text-emerald-500" />{data.stats.green}</span>
-            <span className="flex items-center gap-1"><Circle size={7} fill="#f59e0b" className="text-amber-500" />{data.stats.yellow}</span>
-            <span className="flex items-center gap-1"><Circle size={7} fill="#ef4444" className="text-red-500" />{data.stats.red}</span>
+        {/* Right side */}
+        <div className="flex items-center gap-2">
+          <ProgressBar {...state.statusCounts} />
+          <div className="flex items-center gap-1.5 text-[10px] font-medium">
+            <span className="flex items-center gap-0.5"><Circle size={6} fill="#10b981" className="text-emerald-500" />{state.data.stats.green}</span>
+            <span className="flex items-center gap-0.5"><Circle size={6} fill="#f59e0b" className="text-amber-500" />{state.data.stats.yellow}</span>
+            <span className="flex items-center gap-0.5"><Circle size={6} fill="#ef4444" className="text-red-500" />{state.data.stats.red}</span>
           </div>
-          <div className="w-px h-6 bg-gray-200" />
-          <button onClick={() => setShowRules(!showRules)}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium border transition-all ${showRules ? "border-blue-300 text-blue-600 bg-blue-50" : "border-gray-200 text-gray-500 hover:bg-gray-50"}`}>
-            <BookOpen size={14} /> Rules
+          <div className="w-px h-5 bg-gray-200 dark:bg-gray-700" />
+          <button onClick={() => state.setShowWinThemes(!state.showWinThemes)}
+            className={`p-1.5 rounded-md text-xs ${state.showWinThemes ? "text-violet-600 bg-violet-50 dark:bg-violet-900/20" : "text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800"}`} title="Win Themes">
+            <Target size={15} />
           </button>
-          <button className="p-2 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100">
-            <Settings size={16} />
+          <button onClick={() => state.setShowRules(!state.showRules)}
+            className={`p-1.5 rounded-md text-xs ${state.showRules ? "text-blue-600 bg-blue-50 dark:bg-blue-900/20" : "text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800"}`} title="Rules">
+            <BookOpen size={15} />
+          </button>
+          <button onClick={() => state.setShowChecklist(true)} className="p-1.5 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800" title="Submission Checklist">
+            <ClipboardList size={15} />
+          </button>
+          <button onClick={toggleDarkMode} className="p-1.5 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800" title={darkMode ? "Light mode" : "Dark mode"}>
+            {darkMode ? <Sun size={15} /> : <Moon size={15} />}
+          </button>
+          <button onClick={() => setShowShortcuts(true)} className="p-1.5 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800" title="Keyboard shortcuts (?)">
+            <Keyboard size={15} />
           </button>
         </div>
       </header>
 
       {/* Category Tabs */}
-      <div className="border-b border-gray-200 px-6 py-2 flex gap-1 overflow-x-auto flex-shrink-0 bg-gray-50/50">
-        {["All", ...data.categories].map((cat) => {
-          const isActive = activeCategory === cat;
-          return (
-            <button key={cat} onClick={() => setActiveCategory(cat)}
-              className={`px-3 py-1.5 rounded-md text-xs font-medium whitespace-nowrap transition-all ${isActive ? "bg-blue-600 text-white shadow-sm" : "text-gray-500 hover:bg-gray-100 hover:text-gray-700"}`}>
-              {cat} <span className={`ml-0.5 ${isActive ? "text-blue-200" : "text-gray-400"}`}>{categoryStats[cat] || 0}</span>
-            </button>
-          );
-        })}
-      </div>
+      {(state.activeTab === "grid" || state.activeTab === "compliance") && (
+        <div className="border-b border-gray-200 dark:border-gray-800 px-6 py-1.5 flex gap-1 overflow-x-auto flex-shrink-0 bg-gray-50/50 dark:bg-gray-900/50">
+          {["All", ...state.data.categories].map((cat) => {
+            const isActive = state.activeCategory === cat;
+            const catStat = state.categoryStats[cat];
+            return (
+              <button key={cat} onClick={() => state.setActiveCategory(cat)}
+                className={`px-2.5 py-1 rounded-md text-[11px] font-medium whitespace-nowrap ${isActive ? "bg-blue-600 text-white shadow-sm" : "text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}>
+                {cat} <span className={isActive ? "text-blue-200" : "text-gray-400"}>{catStat?.total || 0}</span>
+                {catStat && catStat.total > 0 && <span className={`ml-0.5 text-[8px] ${isActive ? "text-blue-200" : "text-gray-300 dark:text-gray-500"}`}>({catStat.approved}/{catStat.total})</span>}
+              </button>
+            );
+          })}
+        </div>
+      )}
 
       {/* Filter & Action Bar (Grid view) */}
-      {activeTab === "grid" && (
-        <div className="border-b border-gray-200 px-6 py-2.5 flex-shrink-0 bg-white space-y-2">
-          {/* Row 1: Search + Actions */}
+      {state.activeTab === "grid" && (
+        <div className="border-b border-gray-200 dark:border-gray-800 px-6 py-2 flex-shrink-0 bg-white dark:bg-gray-950 space-y-1.5">
           <div className="flex items-center gap-2">
             <div className="relative flex-shrink-0">
-              <Search size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400" />
-              <input type="text" placeholder="Search questions, topics, responses..." value={search} onChange={(e) => setSearch(e.target.value)}
-                className="border border-gray-200 rounded-lg pl-8 pr-3 py-1.5 text-sm w-72 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 bg-gray-50 placeholder:text-gray-400" />
+              <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400" />
+              <input type="text" placeholder="Search..." value={state.search} onChange={(e) => state.setSearch(e.target.value)}
+                className="border border-gray-200 dark:border-gray-700 rounded-lg pl-8 pr-3 py-1.5 text-xs w-64 focus:outline-none focus:ring-2 focus:ring-blue-500/20 bg-gray-50 dark:bg-gray-800 dark:text-gray-100 placeholder:text-gray-400" />
             </div>
-
-            <button onClick={() => setShowFilters(!showFilters)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border transition-all ${showFilters ? "border-blue-300 text-blue-600 bg-blue-50" : "border-gray-200 text-gray-500 hover:bg-gray-50"}`}>
-              <SlidersHorizontal size={13} /> Filters
-              <ChevronDown size={12} className={`transition-transform ${showFilters ? "rotate-180" : ""}`} />
+            <button onClick={() => state.setShowFilters(!state.showFilters)}
+              className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-medium border ${state.showFilters ? "border-blue-300 text-blue-600 bg-blue-50 dark:bg-blue-900/20" : "border-gray-200 dark:border-gray-700 text-gray-500"}`}>
+              <SlidersHorizontal size={12} /> Filters <ChevronDown size={10} className={state.showFilters ? "rotate-180" : ""} />
             </button>
+            <span className="text-[10px] text-gray-400">{state.filteredQuestions.length}/{state.data.stats.total}</span>
 
-            <span className="text-xs text-gray-400">{filteredQuestions.length} of {data.stats.total}</span>
+            {state.selectedRows.size > 0 && <BulkActions selectedCount={state.selectedRows.size} onChangeStatus={state.bulkSetStatus} onClearSelection={() => state.selectAllFiltered([])} />}
 
             <div className="flex-1" />
 
-            <div className="flex items-center gap-1.5">
-              <button onClick={handleSave} className="flex items-center gap-1.5 bg-blue-600 text-white px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-blue-700 shadow-sm">
-                <Save size={13} /> Save
+            <div className="flex items-center gap-1">
+              <button onClick={state.handleSave} className="flex items-center gap-1 bg-blue-600 text-white px-2.5 py-1.5 rounded-lg text-[11px] font-medium hover:bg-blue-700 shadow-sm">
+                <Save size={12} /> Save
               </button>
-              <button onClick={handleExportCSV} className="flex items-center gap-1.5 border border-gray-200 text-gray-600 px-2.5 py-1.5 rounded-lg text-xs font-medium hover:bg-gray-50">
-                <Download size={13} /> CSV
+              <button onClick={state.handleExportCSV} className="flex items-center gap-1 border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 px-2 py-1.5 rounded-lg text-[11px] font-medium hover:bg-gray-50 dark:hover:bg-gray-800">
+                <Download size={12} /> CSV
               </button>
-              <button onClick={handleExportJSON} className="flex items-center gap-1.5 border border-gray-200 text-gray-600 px-2.5 py-1.5 rounded-lg text-xs font-medium hover:bg-gray-50">
-                <FileJson size={13} /> JSON
+              <button onClick={state.handleExportJSON} className="flex items-center gap-1 border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 px-2 py-1.5 rounded-lg text-[11px] font-medium hover:bg-gray-50 dark:hover:bg-gray-800">
+                <FileJson size={12} /> JSON
               </button>
-              <div className="w-px h-5 bg-gray-200" />
-              <button className="flex items-center gap-1.5 border border-gray-200 text-gray-600 px-2.5 py-1.5 rounded-lg text-xs font-medium hover:bg-gray-50">
-                <CloudUpload size={13} /> Push
+              <div className="w-px h-4 bg-gray-200 dark:bg-gray-700" />
+              <button className="flex items-center gap-1 border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 px-2 py-1.5 rounded-lg text-[11px] font-medium hover:bg-gray-50 dark:hover:bg-gray-800">
+                <CloudUpload size={12} /> Push
               </button>
-              <button onClick={() => saveVersion()} className="flex items-center gap-1.5 border border-gray-200 text-gray-600 px-2.5 py-1.5 rounded-lg text-xs font-medium hover:bg-gray-50">
-                <History size={13} /> v{versions.length + 1}
+              <button onClick={() => state.saveVersion()} className="flex items-center gap-1 border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 px-2 py-1.5 rounded-lg text-[11px] font-medium hover:bg-gray-50 dark:hover:bg-gray-800">
+                <History size={12} /> v{state.versions.length + 1}
               </button>
-              <div className="w-px h-5 bg-gray-200" />
-              <button className="flex items-center gap-1.5 bg-gradient-to-r from-violet-600 to-purple-600 text-white px-3 py-1.5 rounded-lg text-xs font-medium hover:from-violet-700 hover:to-purple-700 shadow-sm">
-                <Sparkles size={13} /> AI Rewrite
-                <span className="bg-white/20 px-1.5 py-0.5 rounded text-[10px]">{data.stats.yellow + data.stats.red}</span>
+              <div className="w-px h-4 bg-gray-200 dark:bg-gray-700" />
+              <button onClick={handleConsistencyCheck} className="flex items-center gap-1 border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 px-2 py-1.5 rounded-lg text-[11px] font-medium hover:bg-gray-50 dark:hover:bg-gray-800" title="Consistency Check">
+                <Scan size={12} /> Check
+              </button>
+              <button onClick={() => state.setShowNarrativeAudit(true)} className="flex items-center gap-1 border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 px-2 py-1.5 rounded-lg text-[11px] font-medium hover:bg-gray-50 dark:hover:bg-gray-800" title="Narrative Audit">
+                <BookText size={12} /> Audit
+              </button>
+              <button onClick={() => state.setShowSummary(true)} className="flex items-center gap-1 border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 px-2 py-1.5 rounded-lg text-[11px] font-medium hover:bg-gray-50 dark:hover:bg-gray-800">
+                <FileText size={12} /> Summary
+              </button>
+              <button className="flex items-center gap-1 bg-gradient-to-r from-violet-600 to-purple-600 text-white px-2.5 py-1.5 rounded-lg text-[11px] font-medium hover:from-violet-700 hover:to-purple-700 shadow-sm">
+                <Sparkles size={12} /> AI Rewrite <span className="bg-white/20 px-1 py-0 rounded text-[9px]">{state.data.stats.yellow + state.data.stats.red}</span>
               </button>
             </div>
           </div>
 
-          {/* Row 2: Filters (collapsible) */}
-          {showFilters && (
-            <div className="flex items-center gap-2 pt-0.5">
-              <span className="text-[10px] text-gray-400 uppercase tracking-wider font-semibold mr-1">Filter by</span>
-              <select value={confidenceFilter} onChange={(e) => setConfidenceFilter(e.target.value)}
-                className="border border-gray-200 rounded-lg px-2.5 py-1.5 text-xs text-gray-600 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400">
-                <option>All Confidence</option><option>GREEN</option><option>YELLOW</option><option>RED</option>
+          {state.showFilters && (
+            <div className="flex items-center gap-1.5 pt-0.5">
+              <span className="text-[9px] text-gray-400 uppercase tracking-wider font-semibold mr-1">Filter</span>
+              {[
+                { value: state.confidenceFilter, onChange: state.setConfidenceFilter, options: ["All Confidence", "GREEN", "YELLOW", "RED"] },
+                { value: state.compliantFilter, onChange: state.setCompliantFilter, options: ["All Compliant", "Y", "N", "Partial"] },
+                { value: state.deliveryFilter, onChange: state.setDeliveryFilter, options: ["All Delivery", "OOB", "Config", "Custom"] },
+              ].map((f, i) => (
+                <select key={i} value={f.value} onChange={(e) => f.onChange(e.target.value)}
+                  className="border border-gray-200 dark:border-gray-700 rounded-lg px-2 py-1 text-[11px] text-gray-600 dark:text-gray-300 bg-white dark:bg-gray-800 focus:outline-none">
+                  {f.options.map(o => <option key={o}>{o}</option>)}
+                </select>
+              ))}
+              <select value={state.statusFilter} onChange={(e) => state.setStatusFilter(e.target.value)}
+                className="border border-gray-200 dark:border-gray-700 rounded-lg px-2 py-1 text-[11px] text-gray-600 dark:text-gray-300 bg-white dark:bg-gray-800 focus:outline-none">
+                <option>All Status</option><option value="draft">Draft</option><option value="reviewed">Reviewed</option><option value="approved">Approved</option><option value="flagged">Flagged</option>
               </select>
-              <select value={compliantFilter} onChange={(e) => setCompliantFilter(e.target.value)}
-                className="border border-gray-200 rounded-lg px-2.5 py-1.5 text-xs text-gray-600 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400">
-                <option>All Compliant</option><option>Y</option><option>N</option><option>Partial</option>
-              </select>
-              <select value={deliveryFilter} onChange={(e) => setDeliveryFilter(e.target.value)}
-                className="border border-gray-200 rounded-lg px-2.5 py-1.5 text-xs text-gray-600 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400">
-                <option>All Delivery</option><option>OOB</option><option>Config</option><option>Custom</option>
-              </select>
-              <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}
-                className="border border-gray-200 rounded-lg px-2.5 py-1.5 text-xs text-gray-600 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400">
-                <option>All Status</option><option>Draft</option><option>Reviewed</option><option>Final</option><option>QA</option>
-              </select>
-              <button onClick={resetFilters} className="flex items-center gap-1 text-xs text-gray-400 hover:text-blue-500 font-medium ml-1">
-                <RotateCcw size={11} /> Reset
+              <button onClick={state.resetFilters} className="flex items-center gap-0.5 text-[11px] text-gray-400 hover:text-blue-500 font-medium ml-1">
+                <RotateCcw size={10} /> Reset
               </button>
             </div>
           )}
@@ -331,28 +277,48 @@ export default function Home() {
 
       {/* Main Content */}
       <div className="flex-1 overflow-hidden relative">
-        {activeTab === "grid" && (
-          <GridView questions={filteredQuestions} getConfidenceColor={getConfidenceColor} onSelectQuestion={setSelectedQuestion} onCellEdit={handleCellEdit} />
+        {state.activeTab === "grid" && (
+          <GridView questions={state.filteredQuestions} getConfidenceColor={state.getConfidenceColor}
+            onSelectQuestion={state.setSelectedQuestion} onCellEdit={state.handleCellEdit}
+            selectedRows={state.selectedRows} onToggleRow={state.toggleRow} onSelectAll={state.selectAllFiltered}
+            sortConfig={state.sortConfig} onSort={state.setSortConfig} onCycleStatus={state.cycleStatus}
+            pendingDiffKeys={pendingDiffKeys} density={density} onChangeDensity={setDensity} />
         )}
-        {activeTab === "context" && <ContextView data={data} />}
-        {showRules && <RulesPanel onClose={() => setShowRules(false)} rules={globalRules} onUpdateRules={(r) => { setGlobalRules(r); setHasUnsaved(true); }} />}
-        {selectedQuestion && (
-          <DetailPanel question={selectedQuestion} onClose={() => setSelectedQuestion(null)}
-            onSave={(updated) => { updateQuestion(updated); addCellHistory(updated.ref, "detail-save", "", "human"); }}
-            onAiRewrite={handleAiRewrite} cellHistory={cellHistory}
-            feedbackItems={feedbackItems} onAddFeedback={handleAddFeedback} onResolveFeedback={handleResolveFeedback}
-          />
+        {state.activeTab === "context" && <ContextView data={state.data} />}
+        {state.activeTab === "knowledgebase" && <KnowledgeBaseView kb={state.knowledgeBase} onUpdate={state.updateKnowledgeBase} onSave={state.saveToLocal} />}
+        {state.activeTab === "pricing" && <PricingView pricing={state.pricingModel} onUpdate={state.updatePricing} />}
+        {state.activeTab === "timeline" && <TimelineView milestones={state.milestones} onUpdate={state.updateMilestones} />}
+        {state.activeTab === "sla" && <SLAView slas={state.slaCommitments} onUpdate={state.updateSLAs} />}
+        {state.activeTab === "compliance" && <ComplianceView questions={state.filteredQuestions} categories={state.data.categories} onUpdateCompliant={handleUpdateCompliant} />}
+        {state.activeTab === "submission" && <SubmissionView questions={state.data.questions} categories={state.data.categories} />}
+
+        {state.showRules && <RulesPanel onClose={() => state.setShowRules(false)} rules={state.globalRules} onUpdateRules={state.setGlobalRules} validationRules={state.validationRules} onUpdateValidationRules={state.updateValidationRules} />}
+        {state.showWinThemes && <WinThemesPanel themes={state.winThemes} onUpdate={state.updateWinThemes} questions={state.data.questions} onClose={() => state.setShowWinThemes(false)} />}
+        {state.selectedQuestion && (
+          <DetailPanel question={state.selectedQuestion} onClose={() => state.setSelectedQuestion(null)}
+            onSave={(updated) => { state.updateQuestion(updated); state.addCellHistory(updated.ref, "detail-save", "", "human"); }}
+            onAiRewrite={state.handleAiRewrite} cellHistory={state.cellHistory}
+            feedbackItems={state.feedbackItems} onAddFeedback={state.handleAddFeedback} onResolveFeedback={state.handleResolveFeedback}
+            pendingDiffs={state.pendingDiffs} onAcceptDiff={state.acceptDiff} onRejectDiff={state.rejectDiff} onAcceptEditedDiff={state.acceptEditedDiff} />
         )}
       </div>
 
+      {/* Modals */}
+      {state.showConsistency && <ConsistencyResults issues={consistencyIssues} loading={consistencyLoading} onClose={() => state.setShowConsistency(false)} onNavigate={(ref) => { const q = state.data?.questions.find(q => q.ref === ref); if (q) { state.setSelectedQuestion(q); state.setShowConsistency(false); } }} />}
+      {state.showSummary && <ExecutiveSummary onClose={() => state.setShowSummary(false)} onGenerate={handleGenerateSummary} />}
+      {state.showNarrativeAudit && <NarrativeAudit onClose={() => state.setShowNarrativeAudit(false)} onRun={handleNarrativeAudit} />}
+      {state.showChecklist && <SubmissionChecklist data={state.data} pricing={state.pricingModel} slas={state.slaCommitments} milestones={state.milestones} winThemes={state.winThemes} knowledgeBase={state.knowledgeBase} statusCounts={state.statusCounts} onClose={() => state.setShowChecklist(false)} />}
+      {showShortcuts && <KeyboardShortcutsPanel onClose={() => setShowShortcuts(false)} />}
+      {showOnboarding && <Onboarding onClose={closeOnboarding} />}
+
       {/* Footer */}
-      <footer className="border-t border-gray-200 px-6 py-2 text-[11px] text-gray-400 flex justify-between flex-shrink-0 bg-gray-50/50">
-        <div className="flex items-center gap-4">
-          <span className="flex items-center gap-1"><kbd className="px-1 py-0.5 bg-gray-100 rounded text-[10px] font-mono border border-gray-200">⌘S</kbd> save</span>
-          <span>Click cell to edit</span>
-          <span>Click ref to open detail</span>
+      <footer className="border-t border-gray-200 dark:border-gray-800 px-6 py-1.5 text-[10px] text-gray-400 flex justify-between flex-shrink-0 bg-gray-50/50 dark:bg-gray-900/50">
+        <div className="flex items-center gap-3">
+          <span><kbd className="px-1 py-0.5 bg-gray-100 dark:bg-gray-800 rounded text-[9px] font-mono border border-gray-200 dark:border-gray-700">⌘S</kbd> save</span>
+          <span><kbd className="px-1 py-0.5 bg-gray-100 dark:bg-gray-800 rounded text-[9px] font-mono border border-gray-200 dark:border-gray-700">?</kbd> shortcuts</span>
+          <span><kbd className="px-1 py-0.5 bg-gray-100 dark:bg-gray-800 rounded text-[9px] font-mono border border-gray-200 dark:border-gray-700">D</kbd> dark mode</span>
         </div>
-        <span>{unresolvedFeedback > 0 ? `${unresolvedFeedback} open feedback` : "No open feedback"}</span>
+        <span>{state.unresolvedFeedback > 0 ? `${state.unresolvedFeedback} open feedback` : "No open feedback"}</span>
       </footer>
     </div>
   );

@@ -1,15 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { Question } from "@/types";
-
-export interface FeedbackItem {
-  ref: string;
-  field: string;
-  comment: string;
-  timestamp: number;
-  resolved: boolean;
-}
+import type { Question, FeedbackItem } from "@/types";
 
 interface FeedbackPanelProps {
   question: Question;
@@ -37,7 +29,6 @@ export default function FeedbackPanel({ question, feedbackItems, onAddFeedback, 
         Feedback {unresolvedCount > 0 && <span className="text-orange-500 text-xs ml-1">({unresolvedCount} open)</span>}
       </h3>
 
-      {/* Existing feedback */}
       {myFeedback.length > 0 && (
         <div className="space-y-2 mb-4">
           {myFeedback.map((f) => (
@@ -58,7 +49,6 @@ export default function FeedbackPanel({ question, feedbackItems, onAddFeedback, 
         </div>
       )}
 
-      {/* Add feedback */}
       <div className="space-y-2">
         <select value={field} onChange={(e) => setField(e.target.value)} className="border rounded px-2 py-1 text-sm w-full">
           <option value="bullet">Response (Bullet)</option>
@@ -67,14 +57,10 @@ export default function FeedbackPanel({ question, feedbackItems, onAddFeedback, 
           <option value="rationale">Rationale</option>
           <option value="general">General</option>
         </select>
-        <textarea
-          value={comment}
-          onChange={(e) => setComment(e.target.value)}
+        <textarea value={comment} onChange={(e) => setComment(e.target.value)}
           placeholder="Add feedback or direction for this response..."
-          rows={3}
-          className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y"
-          onKeyDown={(e) => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) { e.preventDefault(); submit(); } }}
-        />
+          rows={3} className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y"
+          onKeyDown={(e) => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) { e.preventDefault(); submit(); } }} />
         <button onClick={submit} className="bg-orange-500 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-orange-600 w-full">
           Add Feedback
         </button>

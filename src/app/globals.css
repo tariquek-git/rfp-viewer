@@ -36,17 +36,16 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-    --border: #2d2d2d;
-    --surface: #141414;
-    --surface-hover: #1a1a1a;
-    --text-primary: #f3f4f6;
-    --text-secondary: #9ca3af;
-    --text-tertiary: #6b7280;
-  }
+/* Dark mode */
+.dark {
+  --background: #0a0a0a;
+  --foreground: #ededed;
+  --border: #2d2d2d;
+  --surface: #141414;
+  --surface-hover: #1a1a1a;
+  --text-primary: #f3f4f6;
+  --text-secondary: #9ca3af;
+  --text-tertiary: #6b7280;
 }
 
 body {
@@ -67,6 +66,7 @@ body {
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
+.dark ::-webkit-scrollbar-thumb { background: #4b5563; }
 
 /* Panel slide-in animation */
 @keyframes slideIn {
@@ -110,4 +110,65 @@ body {
   background-size: 200% 100%;
   animation: shimmer 1.5s ease-in-out infinite;
   border-radius: var(--radius-sm);
+}
+
+/* Sticky columns for grid */
+.sticky-col-checkbox {
+  position: sticky;
+  left: 0;
+  z-index: 5;
+}
+.sticky-col-number {
+  position: sticky;
+  left: 40px;
+  z-index: 5;
+}
+.sticky-col-ref {
+  position: sticky;
+  left: 80px;
+  z-index: 5;
+}
+thead .sticky-col-checkbox,
+thead .sticky-col-number,
+thead .sticky-col-ref {
+  z-index: 15;
+}
+
+/* Row tooltip */
+.row-tooltip {
+  position: absolute;
+  left: 50%;
+  bottom: 100%;
+  transform: translateX(-50%);
+  max-width: 400px;
+  pointer-events: none;
+  z-index: 40;
+}
+
+/* Table density variants */
+.density-compact td, .density-compact th { padding-top: 0.25rem; padding-bottom: 0.25rem; font-size: 12px; }
+.density-comfortable td, .density-comfortable th { padding-top: 0.625rem; padding-bottom: 0.625rem; }
+.density-spacious td, .density-spacious th { padding-top: 1rem; padding-bottom: 1rem; }
+
+/* Collapsible section animation */
+.collapsible-content {
+  overflow: hidden;
+  transition: max-height 0.3s ease, opacity 0.2s ease;
+}
+
+/* Donut chart */
+.donut-ring { fill: none; }
+.donut-segment { fill: none; stroke-linecap: round; }
+
+/* Print styles for Submission View */
+@media print {
+  body { background: white !important; }
+  .print\:hidden { display: none !important; }
+  .print\:break-before-page { break-before: page; }
+  .print\:px-0 { padding-left: 0 !important; padding-right: 0 !important; }
+  .print\:py-0 { padding-top: 0 !important; padding-bottom: 0 !important; }
+  .print\:max-w-none { max-width: none !important; }
+  .print\:mb-12 { margin-bottom: 3rem !important; }
+  .print\:mb-8 { margin-bottom: 2rem !important; }
+  header, footer, nav { display: none !important; }
 }
