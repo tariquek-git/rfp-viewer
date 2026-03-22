@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo, useCallback, useEffect, lazy, Suspense } from "react";
-import { Save, Download, FileJson, CloudUpload, CloudDownload, Sparkles, BookOpen, Settings, LayoutGrid, BarChart3, SlidersHorizontal, RotateCcw, ChevronDown, Circle, History, Search, ClipboardCheck, FileText, Scan, Moon, Sun, Keyboard, DollarSign, Calendar, Shield, Target, BookText, ClipboardList, GitCompareArrows, FileStack } from "lucide-react";
+import { Save, Download, FileJson, CloudUpload, CloudDownload, Sparkles, BookOpen, Settings, LayoutGrid, BarChart3, SlidersHorizontal, RotateCcw, ChevronDown, Circle, History, Search, ClipboardCheck, FileText, Scan, Moon, Sun, Keyboard, DollarSign, Calendar, Shield, Target, BookText, ClipboardList, GitCompareArrows, FileStack, Bot } from "lucide-react";
 import { useRFPState } from "@/hooks/useRFPState";
 import GridView from "@/components/GridView";
 import type { TableDensity } from "@/components/GridView";
@@ -28,6 +28,7 @@ const KeyboardShortcutsPanel = lazy(() => import("@/components/KeyboardShortcuts
 const Onboarding = lazy(() => import("@/components/Onboarding"));
 const VersionCompare = lazy(() => import("@/components/VersionCompare"));
 const TemplateManager = lazy(() => import("@/components/TemplateManager"));
+const HumanizeView = lazy(() => import("@/components/HumanizeView"));
 import { ToastContainer } from "@/components/Toast";
 import type { ConsistencyIssue, ViewTab } from "@/types";
 
@@ -121,6 +122,7 @@ export default function Home() {
     { key: "timeline" as const, icon: Calendar, label: "Timeline" },
     { key: "sla" as const, icon: Shield, label: "SLA" },
     { key: "compliance" as const, icon: ClipboardCheck, label: "Compliance" },
+    { key: "humanize" as const, icon: Bot, label: "AI Detect" },
     { key: "submission" as const, icon: FileText, label: "Submit" },
   ];
 
@@ -307,6 +309,7 @@ export default function Home() {
         {state.activeTab === "timeline" && <TimelineView milestones={state.milestones} onUpdate={state.updateMilestones} />}
         {state.activeTab === "sla" && <SLAView slas={state.slaCommitments} onUpdate={state.updateSLAs} />}
         {state.activeTab === "compliance" && <ComplianceView questions={state.filteredQuestions} categories={state.data.categories} onUpdateCompliant={handleUpdateCompliant} />}
+        {state.activeTab === "humanize" && <HumanizeView questions={state.data.questions} onUpdateQuestion={state.updateQuestion} addToast={state.addToast} />}
         {state.activeTab === "submission" && <SubmissionView questions={state.data.questions} categories={state.data.categories} data={state.data} />}
 
         {state.showRules && <RulesPanel onClose={() => state.setShowRules(false)} rules={state.globalRules} onUpdateRules={state.setGlobalRules} validationRules={state.validationRules} onUpdateValidationRules={state.updateValidationRules} />}

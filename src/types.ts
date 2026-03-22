@@ -49,7 +49,7 @@ export interface RFPData {
 
 // === View Types ===
 
-export type ViewTab = "grid" | "context" | "knowledgebase" | "compliance" | "submission" | "pricing" | "timeline" | "sla";
+export type ViewTab = "grid" | "context" | "knowledgebase" | "compliance" | "submission" | "pricing" | "timeline" | "sla" | "humanize";
 export type StatusFilter = "All Status" | "draft" | "reviewed" | "approved" | "flagged";
 
 // === Diff / AI Suggestion Types ===
