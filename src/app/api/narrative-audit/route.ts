@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from "next/server";
-import Anthropic from "@anthropic-ai/sdk";
+import { NextRequest, NextResponse } from 'next/server';
+import Anthropic from '@anthropic-ai/sdk';
 
 const client = new Anthropic();
 
@@ -7,26 +7,29 @@ export async function POST(req: NextRequest) {
   try {
     const { questions, winThemes, knowledgeBase } = await req.json();
 
-    const condensed = questions.map((q: { ref: string; category: string; bullet: string; paragraph: string }) => ({
-      ref: q.ref,
-      category: q.category,
-      response: (q.paragraph || q.bullet || "").slice(0, 150),
-    }));
+    const condensed = questions.map(
+      (q: { ref: string; category: string; bullet: string; paragraph: string }) => ({
+        ref: q.ref,
+        category: q.category,
+        response: (q.paragraph || q.bullet || '').slice(0, 150),
+      }),
+    );
 
     const themesText = winThemes?.length
-      ? `WIN THEMES:\n${winThemes.map((t: { title: string; description: string }) => `- ${t.title}: ${t.description}`).join("\n")}`
-      : "No win themes defined.";
+      ? `WIN THEMES:\n${winThemes.map((t: { title: string; description: string }) => `- ${t.title}: ${t.description}`).join('\n')}`
+      : 'No win themes defined.';
 
     const kbText = knowledgeBase?.companyFacts
       ? `COMPANY FACTS:\n${knowledgeBase.companyFacts}\nMETRICS:\n${knowledgeBase.keyMetrics}`
-      : "";
+      : '';
 
     const message = await client.messages.create({
-      model: "claude-sonnet-4-20250514",
+      model: 'claude-sonnet-4-20250514',
       max_tokens: 3000,
-      messages: [{
-        role: "user",
-        content: `You are a proposal quality auditor reviewing an RFP response for narrative consistency and quality. Analyze these condensed responses.
+      messages: [
+        {
+          role: 'user',
+          content: `You are a proposal quality auditor reviewing an RFP response for narrative consistency and quality. Analyze these condensed responses.
 
 ${themesText}
 
@@ -52,24 +55,31 @@ Return ONLY a JSON object:
 }
 
 Return ONLY valid JSON.`,
-      }],
+        },
+      ],
     });
 
-    const content = message.content[0].type === "text" ? message.content[0].text : "{}";
+    const content = message.content[0].type === 'text' ? message.content[0].text : '{}';
     let result;
     try {
       result = JSON.parse(content);
     } catch {
       const match = content.match(/\{[\s\S]*\}/);
-      result = match ? JSON.parse(match[0]) : {
-        overallScore: 5, voiceConsistency: "Unable to assess", themeAlignment: [],
-        genericLanguage: [], storyBreaks: [], recommendation: "Unable to generate",
-      };
+      result = match
+        ? JSON.parse(match[0])
+        : {
+            overallScore: 5,
+            voiceConsistency: 'Unable to assess',
+            themeAlignment: [],
+            genericLanguage: [],
+            storyBreaks: [],
+            recommendation: 'Unable to generate',
+          };
     }
 
     return NextResponse.json(result);
   } catch (error) {
-    console.error("Narrative audit error:", error);
-    return NextResponse.json({ error: "Failed to audit" }, { status: 500 });
+    console.error('Narrative audit error:', error);
+    return NextResponse.json({ error: 'Failed to audit' }, { status: 500 });
   }
 }

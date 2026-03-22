@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 interface ProgressBarProps {
   draft: number;
@@ -21,7 +21,9 @@ export default function ProgressBar({ draft, reviewed, approved, flagged }: Prog
         {draft > 0 && <div className="bg-gray-300" style={{ width: pct(draft) }} />}
         {flagged > 0 && <div className="bg-red-500" style={{ width: pct(flagged) }} />}
       </div>
-      <span className="text-[10px] text-gray-500 font-medium">{approved}/{total}</span>
+      <span className="text-[10px] text-gray-500 font-medium">
+        {approved}/{total}
+      </span>
     </div>
   );
 }

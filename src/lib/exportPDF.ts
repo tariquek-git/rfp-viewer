@@ -1,8 +1,8 @@
-import jsPDF from "jspdf";
-import autoTable from "jspdf-autotable";
-import type { RFPData } from "@/types";
-import type { ExportOptions } from "@/lib/exportWord";
-import { detectAIWriting, aiDetectLabel } from "@/lib/aiDetect";
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
+import type { RFPData } from '@/types';
+import type { ExportOptions } from '@/lib/exportWord';
+import { detectAIWriting, aiDetectLabel } from '@/lib/aiDetect';
 
 const COLORS = {
   green: [16, 185, 129] as [number, number, number],
@@ -21,16 +21,16 @@ const COLORS = {
 };
 
 function confColor(c: string): [number, number, number] {
-  if (c === "GREEN") return COLORS.green;
-  if (c === "YELLOW") return COLORS.yellow;
-  if (c === "RED") return COLORS.red;
+  if (c === 'GREEN') return COLORS.green;
+  if (c === 'YELLOW') return COLORS.yellow;
+  if (c === 'RED') return COLORS.red;
   return COLORS.gray;
 }
 
 function confBg(c: string): [number, number, number] {
-  if (c === "GREEN") return COLORS.greenBg;
-  if (c === "YELLOW") return COLORS.yellowBg;
-  if (c === "RED") return COLORS.redBg;
+  if (c === 'GREEN') return COLORS.greenBg;
+  if (c === 'YELLOW') return COLORS.yellowBg;
+  if (c === 'RED') return COLORS.redBg;
   return COLORS.grayBg;
 }
 
@@ -38,7 +38,7 @@ export async function exportToPDF(data: RFPData, options?: ExportOptions) {
   const kb = options?.knowledgeBase;
   const globalRules = options?.globalRules || [];
   const validationRules = options?.validationRules || [];
-  const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
   const pageWidth = doc.internal.pageSize.getWidth();
   const margin = 20;
   const contentWidth = pageWidth - margin * 2;
@@ -46,11 +46,13 @@ export async function exportToPDF(data: RFPData, options?: ExportOptions) {
 
   const questions = data.questions;
   const categories = data.categories;
-  const green = questions.filter(q => q.confidence === "GREEN").length;
-  const yellow = questions.filter(q => q.confidence === "YELLOW").length;
-  const red = questions.filter(q => q.confidence === "RED").length;
-  const avgScore = (questions.reduce((s, q) => s + (q.committee_score || 0), 0) / questions.length).toFixed(1);
-  const compliantY = questions.filter(q => q.compliant === "Y").length;
+  const green = questions.filter((q) => q.confidence === 'GREEN').length;
+  const yellow = questions.filter((q) => q.confidence === 'YELLOW').length;
+  const red = questions.filter((q) => q.confidence === 'RED').length;
+  const avgScore = (
+    questions.reduce((s, q) => s + (q.committee_score || 0), 0) / questions.length
+  ).toFixed(1);
+  const compliantY = questions.filter((q) => q.compliant === 'Y').length;
 
   // Helper: add page if needed
   const checkPage = (needed: number) => {
@@ -60,7 +62,9 @@ export async function exportToPDF(data: RFPData, options?: ExportOptions) {
       // Header on each page
       doc.setFontSize(7);
       doc.setTextColor(...COLORS.gray);
-      doc.text("BSB Credit Card RFP Response — Brim Financial — Confidential", pageWidth / 2, 10, { align: "center" });
+      doc.text('BSB Credit Card RFP Response — Brim Financial — Confidential', pageWidth / 2, 10, {
+        align: 'center',
+      });
       y = 20;
     }
   };
@@ -69,15 +73,15 @@ export async function exportToPDF(data: RFPData, options?: ExportOptions) {
   y = 80;
   doc.setFontSize(8);
   doc.setTextColor(...COLORS.gray);
-  doc.text("CONFIDENTIAL", pageWidth / 2, y, { align: "center" });
+  doc.text('CONFIDENTIAL', pageWidth / 2, y, { align: 'center' });
   y += 20;
   doc.setFontSize(28);
   doc.setTextColor(...COLORS.dark);
-  doc.text("BSB Credit Card Program", pageWidth / 2, y, { align: "center" });
+  doc.text('BSB Credit Card Program', pageWidth / 2, y, { align: 'center' });
   y += 12;
   doc.setFontSize(16);
   doc.setTextColor(...COLORS.gray);
-  doc.text("Request for Proposal Response", pageWidth / 2, y, { align: "center" });
+  doc.text('Request for Proposal Response', pageWidth / 2, y, { align: 'center' });
   y += 20;
   doc.setDrawColor(...COLORS.blue);
   doc.setLineWidth(0.5);
@@ -85,20 +89,27 @@ export async function exportToPDF(data: RFPData, options?: ExportOptions) {
   y += 15;
   doc.setFontSize(12);
   doc.setTextColor(...COLORS.dark);
-  doc.text("Prepared by Brim Financial", pageWidth / 2, y, { align: "center" });
+  doc.text('Prepared by Brim Financial', pageWidth / 2, y, { align: 'center' });
   y += 10;
   doc.setFontSize(10);
   doc.setTextColor(...COLORS.gray);
-  doc.text(new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" }), pageWidth / 2, y, { align: "center" });
+  doc.text(
+    new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
+    pageWidth / 2,
+    y,
+    { align: 'center' },
+  );
   y += 6;
-  doc.text(`${questions.length} Requirements · ${categories.length} Categories`, pageWidth / 2, y, { align: "center" });
+  doc.text(`${questions.length} Requirements · ${categories.length} Categories`, pageWidth / 2, y, {
+    align: 'center',
+  });
 
   // === EXECUTIVE OVERVIEW ===
   doc.addPage();
   y = 20;
   doc.setFontSize(18);
   doc.setTextColor(...COLORS.dark);
-  doc.text("Executive Overview", margin, y);
+  doc.text('Executive Overview', margin, y);
   y += 3;
   doc.setDrawColor(...COLORS.dark);
   doc.setLineWidth(0.3);
@@ -108,54 +119,74 @@ export async function exportToPDF(data: RFPData, options?: ExportOptions) {
   // Stats boxes
   const boxW = contentWidth / 4 - 2;
   const stats = [
-    { label: "GREEN", value: `${green}`, color: COLORS.green, bg: COLORS.greenBg },
-    { label: "YELLOW", value: `${yellow}`, color: COLORS.yellow, bg: COLORS.yellowBg },
-    { label: "RED", value: `${red}`, color: COLORS.red, bg: COLORS.redBg },
-    { label: "Avg Score", value: avgScore, color: COLORS.dark, bg: COLORS.grayBg },
+    { label: 'GREEN', value: `${green}`, color: COLORS.green, bg: COLORS.greenBg },
+    { label: 'YELLOW', value: `${yellow}`, color: COLORS.yellow, bg: COLORS.yellowBg },
+    { label: 'RED', value: `${red}`, color: COLORS.red, bg: COLORS.redBg },
+    { label: 'Avg Score', value: avgScore, color: COLORS.dark, bg: COLORS.grayBg },
   ];
   stats.forEach((s, i) => {
     const x = margin + i * (boxW + 2.5);
     doc.setFillColor(...s.bg);
-    doc.roundedRect(x, y, boxW, 18, 2, 2, "F");
+    doc.roundedRect(x, y, boxW, 18, 2, 2, 'F');
     doc.setFontSize(16);
     doc.setTextColor(...s.color);
-    doc.text(s.value, x + boxW / 2, y + 10, { align: "center" });
+    doc.text(s.value, x + boxW / 2, y + 10, { align: 'center' });
     doc.setFontSize(7);
     doc.setTextColor(...COLORS.gray);
-    doc.text(s.label, x + boxW / 2, y + 15, { align: "center" });
+    doc.text(s.label, x + boxW / 2, y + 15, { align: 'center' });
   });
   y += 25;
 
   doc.setFontSize(9);
   doc.setTextColor(...COLORS.dark);
-  doc.text(`${compliantY} of ${questions.length} requirements (${Math.round((compliantY / questions.length) * 100)}%) fully compliant.`, margin, y);
+  doc.text(
+    `${compliantY} of ${questions.length} requirements (${Math.round((compliantY / questions.length) * 100)}%) fully compliant.`,
+    margin,
+    y,
+  );
   y += 8;
 
   // Category scorecard table
   doc.setFontSize(12);
   doc.setTextColor(...COLORS.dark);
-  doc.text("Category Performance", margin, y);
+  doc.text('Category Performance', margin, y);
   y += 5;
 
   autoTable(doc, {
     startY: y,
     margin: { left: margin, right: margin },
-    head: [["Category", "Qs", "Avg", "G", "Y", "R", "Compliant"]],
-    body: categories.map(cat => {
-      const qs = questions.filter(q => q.category === cat);
+    head: [['Category', 'Qs', 'Avg', 'G', 'Y', 'R', 'Compliant']],
+    body: categories.map((cat) => {
+      const qs = questions.filter((q) => q.category === cat);
       const avg = qs.reduce((s, q) => s + (q.committee_score || 0), 0) / (qs.length || 1);
-      return [cat, `${qs.length}`, avg.toFixed(1), `${qs.filter(q => q.confidence === "GREEN").length}`, `${qs.filter(q => q.confidence === "YELLOW").length}`, `${qs.filter(q => q.confidence === "RED").length}`, `${qs.filter(q => q.compliant === "Y").length}/${qs.length}`];
+      return [
+        cat,
+        `${qs.length}`,
+        avg.toFixed(1),
+        `${qs.filter((q) => q.confidence === 'GREEN').length}`,
+        `${qs.filter((q) => q.confidence === 'YELLOW').length}`,
+        `${qs.filter((q) => q.confidence === 'RED').length}`,
+        `${qs.filter((q) => q.compliant === 'Y').length}/${qs.length}`,
+      ];
     }),
-    headStyles: { fillColor: [243, 244, 246], textColor: COLORS.dark, fontSize: 7, fontStyle: "bold" },
+    headStyles: {
+      fillColor: [243, 244, 246],
+      textColor: COLORS.dark,
+      fontSize: 7,
+      fontStyle: 'bold',
+    },
     bodyStyles: { fontSize: 7, textColor: COLORS.dark },
     columnStyles: {
       0: { cellWidth: 55 },
-      2: { fontStyle: "bold" },
+      2: { fontStyle: 'bold' },
     },
     didParseCell: (hookData) => {
-      if (hookData.section === "body" && hookData.column.index === 3) hookData.cell.styles.textColor = COLORS.green;
-      if (hookData.section === "body" && hookData.column.index === 4) hookData.cell.styles.textColor = COLORS.yellow;
-      if (hookData.section === "body" && hookData.column.index === 5) hookData.cell.styles.textColor = COLORS.red;
+      if (hookData.section === 'body' && hookData.column.index === 3)
+        hookData.cell.styles.textColor = COLORS.green;
+      if (hookData.section === 'body' && hookData.column.index === 4)
+        hookData.cell.styles.textColor = COLORS.yellow;
+      if (hookData.section === 'body' && hookData.column.index === 5)
+        hookData.cell.styles.textColor = COLORS.red;
     },
   });
 
@@ -163,57 +194,74 @@ export async function exportToPDF(data: RFPData, options?: ExportOptions) {
   doc.addPage();
   y = 20;
   doc.setFillColor(237, 233, 254);
-  doc.roundedRect(margin, y - 3, contentWidth, 10, 2, 2, "F");
+  doc.roundedRect(margin, y - 3, contentWidth, 10, 2, 2, 'F');
   doc.setFontSize(12);
   doc.setTextColor(109, 40, 217);
-  doc.text("AI REVIEW NOTES — CLAUDE (CPO ANALYSIS)", margin + 5, y + 3);
+  doc.text('AI REVIEW NOTES — CLAUDE (CPO ANALYSIS)', margin + 5, y + 3);
   y += 15;
 
   doc.setFontSize(7);
   doc.setTextColor(...COLORS.gray);
-  doc.text("Internal use only — do not include in final submission to BSB.", margin, y);
+  doc.text('Internal use only — do not include in final submission to BSB.', margin, y);
   y += 8;
 
   // AI Detection summary
-  const aiHighCount = questions.filter(q => detectAIWriting(q.bullet + " " + q.paragraph).level === "high").length;
-  const aiMedCount = questions.filter(q => detectAIWriting(q.bullet + " " + q.paragraph).level === "medium").length;
+  const aiHighCount = questions.filter(
+    (q) => detectAIWriting(q.bullet + ' ' + q.paragraph).level === 'high',
+  ).length;
+  const aiMedCount = questions.filter(
+    (q) => detectAIWriting(q.bullet + ' ' + q.paragraph).level === 'medium',
+  ).length;
 
   doc.setFontSize(9);
   doc.setTextColor(109, 40, 217);
-  doc.text("AI Writing Detection", margin, y);
+  doc.text('AI Writing Detection', margin, y);
   y += 5;
   doc.setFontSize(7);
   doc.setTextColor(...COLORS.dark);
-  doc.text(`${aiHighCount} High risk, ${aiMedCount} Medium risk responses detected. Main triggers: em-dashes, filler words, long sentences.`, margin, y);
+  doc.text(
+    `${aiHighCount} High risk, ${aiMedCount} Medium risk responses detected. Main triggers: em-dashes, filler words, long sentences.`,
+    margin,
+    y,
+  );
   y += 8;
 
   doc.setFontSize(9);
   doc.setTextColor(4, 120, 87); // green
-  doc.text("Strengths", margin, y);
+  doc.text('Strengths', margin, y);
   y += 5;
   doc.setFontSize(7);
   doc.setTextColor(...COLORS.dark);
-  const strengthText = doc.splitTextToSize(`${Math.round((green/questions.length)*100)}% GREEN confidence. ${compliantY} fully compliant. Strong in Loyalty, Processing, Customer Experience. Named FI references (Affinity, Manulife) add credibility. Modern tech stack well-positioned.`, contentWidth);
+  const strengthText = doc.splitTextToSize(
+    `${Math.round((green / questions.length) * 100)}% GREEN confidence. ${compliantY} fully compliant. Strong in Loyalty, Processing, Customer Experience. Named FI references (Affinity, Manulife) add credibility. Modern tech stack well-positioned.`,
+    contentWidth,
+  );
   doc.text(strengthText, margin, y);
   y += strengthText.length * 3.5 + 3;
 
   doc.setFontSize(9);
   doc.setTextColor(185, 28, 28); // red
-  doc.text("Weaknesses", margin, y);
+  doc.text('Weaknesses', margin, y);
   y += 5;
   doc.setFontSize(7);
   doc.setTextColor(...COLORS.dark);
-  const weakText = doc.splitTextToSize(`${red} critical gaps: Visa/STAR/NYCE network (Tech 6), data architecture (Tech 24, 28), in-branch card printing (A&F 15), multi-network settlement (Proc 26), debit support (ProdOps 45-46). These are capability gaps — rewriting won't fix them. BSB will challenge directly.`, contentWidth);
+  const weakText = doc.splitTextToSize(
+    `${red} critical gaps: Visa/STAR/NYCE network (Tech 6), data architecture (Tech 24, 28), in-branch card printing (A&F 15), multi-network settlement (Proc 26), debit support (ProdOps 45-46). These are capability gaps — rewriting won't fix them. BSB will challenge directly.`,
+    contentWidth,
+  );
   doc.text(weakText, margin, y);
   y += weakText.length * 3.5 + 3;
 
   doc.setFontSize(9);
   doc.setTextColor(37, 99, 235); // blue
-  doc.text("Recommendations", margin, y);
+  doc.text('Recommendations', margin, y);
   y += 5;
   doc.setFontSize(7);
   doc.setTextColor(...COLORS.dark);
-  const recText = doc.splitTextToSize(`1) Position non-compliant items as credit-first strategy, not gaps. 2) For network questions, present concrete partnership timeline. 3) Run Humanize on ${aiHighCount} high-risk AI-flagged responses. 4) Debit questions should state out-of-scope with future transition plan. 5) Fill in Knowledge Base with real metrics before AI rewrite pass.`, contentWidth);
+  const recText = doc.splitTextToSize(
+    `1) Position non-compliant items as credit-first strategy, not gaps. 2) For network questions, present concrete partnership timeline. 3) Run Humanize on ${aiHighCount} high-risk AI-flagged responses. 4) Debit questions should state out-of-scope with future transition plan. 5) Fill in Knowledge Base with real metrics before AI rewrite pass.`,
+    contentWidth,
+  );
   doc.text(recText, margin, y);
   y += recText.length * 3.5 + 3;
 
@@ -223,21 +271,21 @@ export async function exportToPDF(data: RFPData, options?: ExportOptions) {
     y = 20;
     doc.setFontSize(16);
     doc.setTextColor(...COLORS.dark);
-    doc.text("Knowledge Base", margin, y);
+    doc.text('Knowledge Base', margin, y);
     y += 3;
     doc.setDrawColor(...COLORS.dark);
     doc.line(margin, y, pageWidth - margin, y);
     y += 6;
     doc.setFontSize(7);
     doc.setTextColor(...COLORS.gray);
-    doc.text("Company facts and metrics used to guide AI-assisted response generation.", margin, y);
+    doc.text('Company facts and metrics used to guide AI-assisted response generation.', margin, y);
     y += 8;
 
     const kbSections: [string, string][] = [
-      ["Company Facts", kb.companyFacts],
-      ["Key Metrics", kb.keyMetrics],
-      ["Differentiators", kb.differentiators],
-      ["Competitive Positioning", kb.competitivePositioning],
+      ['Company Facts', kb.companyFacts],
+      ['Key Metrics', kb.keyMetrics],
+      ['Differentiators', kb.differentiators],
+      ['Competitive Positioning', kb.competitivePositioning],
     ];
     for (const [label, content] of kbSections) {
       if (content) {
@@ -249,7 +297,7 @@ export async function exportToPDF(data: RFPData, options?: ExportOptions) {
         doc.setFillColor(...COLORS.blueBg);
         const kbLines = doc.splitTextToSize(content, contentWidth - 6);
         const kbH = kbLines.length * 3 + 4;
-        doc.roundedRect(margin, y - 1, contentWidth, kbH, 1, 1, "F");
+        doc.roundedRect(margin, y - 1, contentWidth, kbH, 1, 1, 'F');
         doc.setFontSize(7);
         doc.setTextColor(...COLORS.dark);
         doc.text(kbLines, margin + 3, y + 2);
@@ -264,7 +312,7 @@ export async function exportToPDF(data: RFPData, options?: ExportOptions) {
     y = 20;
     doc.setFontSize(16);
     doc.setTextColor(...COLORS.dark);
-    doc.text("Writing Rules & Validation", margin, y);
+    doc.text('Writing Rules & Validation', margin, y);
     y += 3;
     doc.setDrawColor(...COLORS.dark);
     doc.line(margin, y, pageWidth - margin, y);
@@ -277,7 +325,7 @@ export async function exportToPDF(data: RFPData, options?: ExportOptions) {
       y += 4;
       doc.setFontSize(6);
       doc.setTextColor(...COLORS.gray);
-      doc.text("Applied to every AI rewrite for consistency.", margin, y);
+      doc.text('Applied to every AI rewrite for consistency.', margin, y);
       y += 5;
 
       for (let i = 0; i < globalRules.length; i++) {
@@ -285,7 +333,7 @@ export async function exportToPDF(data: RFPData, options?: ExportOptions) {
         doc.setFillColor(...COLORS.grayBg);
         const ruleLines = doc.splitTextToSize(`${i + 1}. ${globalRules[i]}`, contentWidth - 6);
         const ruleH = ruleLines.length * 3 + 3;
-        doc.roundedRect(margin, y - 1, contentWidth, ruleH, 1, 1, "F");
+        doc.roundedRect(margin, y - 1, contentWidth, ruleH, 1, 1, 'F');
         doc.setFontSize(7);
         doc.setTextColor(...COLORS.dark);
         doc.text(ruleLines, margin + 3, y + 2);
@@ -301,7 +349,7 @@ export async function exportToPDF(data: RFPData, options?: ExportOptions) {
       y += 4;
       doc.setFontSize(6);
       doc.setTextColor(...COLORS.gray);
-      doc.text("Checked after AI generates a response. Failures shown as warnings.", margin, y);
+      doc.text('Checked after AI generates a response. Failures shown as warnings.', margin, y);
       y += 5;
 
       for (const rule of validationRules) {
@@ -309,7 +357,7 @@ export async function exportToPDF(data: RFPData, options?: ExportOptions) {
         doc.setFillColor(...COLORS.yellowBg);
         const ruleLines = doc.splitTextToSize(rule.text, contentWidth - 6);
         const ruleH = ruleLines.length * 3 + 3;
-        doc.roundedRect(margin, y - 1, contentWidth, ruleH, 1, 1, "F");
+        doc.roundedRect(margin, y - 1, contentWidth, ruleH, 1, 1, 'F');
         doc.setFontSize(7);
         doc.setTextColor(...COLORS.dark);
         doc.text(ruleLines, margin + 3, y + 2);
@@ -320,7 +368,7 @@ export async function exportToPDF(data: RFPData, options?: ExportOptions) {
 
   // === RESPONSES ===
   for (const cat of categories) {
-    const catQs = questions.filter(q => q.category === cat);
+    const catQs = questions.filter((q) => q.category === cat);
     if (catQs.length === 0) continue;
 
     doc.addPage();
@@ -350,27 +398,48 @@ export async function exportToPDF(data: RFPData, options?: ExportOptions) {
       // Status line with color coding
       const cc = confColor(q.confidence);
       doc.setFillColor(...confBg(q.confidence));
-      doc.roundedRect(margin, y - 3, 22, 5, 1, 1, "F");
+      doc.roundedRect(margin, y - 3, 22, 5, 1, 1, 'F');
       doc.setFontSize(6);
       doc.setTextColor(...cc);
-      doc.text(q.confidence, margin + 11, y, { align: "center" });
+      doc.text(q.confidence, margin + 11, y, { align: 'center' });
 
       const compX = margin + 25;
-      const compColor = q.compliant === "Y" ? COLORS.green : q.compliant === "N" ? COLORS.red : COLORS.yellow;
+      const compColor =
+        q.compliant === 'Y' ? COLORS.green : q.compliant === 'N' ? COLORS.red : COLORS.yellow;
       doc.setTextColor(...compColor);
-      doc.text(q.compliant === "Y" ? "Compliant" : q.compliant === "N" ? "Non-Compliant" : "Partial", compX, y);
+      doc.text(
+        q.compliant === 'Y' ? 'Compliant' : q.compliant === 'N' ? 'Non-Compliant' : 'Partial',
+        compX,
+        y,
+      );
 
-      doc.setTextColor(...(q.committee_score >= 7 ? COLORS.green : q.committee_score >= 5 ? COLORS.yellow : COLORS.red));
+      doc.setTextColor(
+        ...(q.committee_score >= 7
+          ? COLORS.green
+          : q.committee_score >= 5
+            ? COLORS.yellow
+            : COLORS.red),
+      );
       doc.text(`Score: ${q.committee_score}/10`, compX + 30, y);
 
       // AI detection badge
-      const aiDetect = detectAIWriting(q.bullet + " " + q.paragraph);
-      const aiCol = aiDetect.level === "high" ? COLORS.red : aiDetect.level === "medium" ? COLORS.yellow : COLORS.green;
-      const aiBg = aiDetect.level === "high" ? COLORS.redBg : aiDetect.level === "medium" ? COLORS.yellowBg : COLORS.greenBg;
+      const aiDetect = detectAIWriting(q.bullet + ' ' + q.paragraph);
+      const aiCol =
+        aiDetect.level === 'high'
+          ? COLORS.red
+          : aiDetect.level === 'medium'
+            ? COLORS.yellow
+            : COLORS.green;
+      const aiBg =
+        aiDetect.level === 'high'
+          ? COLORS.redBg
+          : aiDetect.level === 'medium'
+            ? COLORS.yellowBg
+            : COLORS.greenBg;
       doc.setFillColor(...aiBg);
-      doc.roundedRect(compX + 55, y - 3, 20, 5, 1, 1, "F");
+      doc.roundedRect(compX + 55, y - 3, 20, 5, 1, 1, 'F');
       doc.setTextColor(...aiCol);
-      doc.text(`AI: ${aiDetectLabel(aiDetect.level)}`, compX + 65, y, { align: "center" });
+      doc.text(`AI: ${aiDetectLabel(aiDetect.level)}`, compX + 65, y, { align: 'center' });
       y += 6;
 
       // Requirement box
@@ -378,10 +447,10 @@ export async function exportToPDF(data: RFPData, options?: ExportOptions) {
       const reqLines = doc.splitTextToSize(q.requirement, contentWidth - 6);
       const reqHeight = reqLines.length * 3.5 + 6;
       checkPage(reqHeight + 30);
-      doc.roundedRect(margin, y - 2, contentWidth, reqHeight, 1, 1, "F");
+      doc.roundedRect(margin, y - 2, contentWidth, reqHeight, 1, 1, 'F');
       doc.setFontSize(5);
       doc.setTextColor(...COLORS.gray);
-      doc.text("BSB REQUIREMENT", margin + 3, y + 2);
+      doc.text('BSB REQUIREMENT', margin + 3, y + 2);
       doc.setFontSize(7);
       doc.setTextColor(55, 65, 81);
       doc.text(reqLines, margin + 3, y + 6);
@@ -390,9 +459,9 @@ export async function exportToPDF(data: RFPData, options?: ExportOptions) {
       // Response
       doc.setFontSize(5);
       doc.setTextColor(...COLORS.blue);
-      doc.text("BRIM FINANCIAL RESPONSE", margin, y);
+      doc.text('BRIM FINANCIAL RESPONSE', margin, y);
       y += 4;
-      const response = q.paragraph || q.bullet || "No response provided.";
+      const response = q.paragraph || q.bullet || 'No response provided.';
       const respLines = doc.splitTextToSize(response, contentWidth);
       checkPage(respLines.length * 3.5 + 10);
       doc.setFontSize(8);
@@ -406,10 +475,10 @@ export async function exportToPDF(data: RFPData, options?: ExportOptions) {
         doc.setFillColor(...confBg(q.confidence));
         const reviewLines = doc.splitTextToSize(q.committee_review.slice(0, 200), contentWidth - 6);
         const reviewH = reviewLines.length * 3 + 6;
-        doc.roundedRect(margin, y - 1, contentWidth, reviewH, 1, 1, "F");
+        doc.roundedRect(margin, y - 1, contentWidth, reviewH, 1, 1, 'F');
         doc.setFontSize(5);
         doc.setTextColor(...cc);
-        doc.text("SCORE REASONING", margin + 3, y + 2);
+        doc.text('SCORE REASONING', margin + 3, y + 2);
         doc.setFontSize(6.5);
         doc.text(reviewLines, margin + 3, y + 5.5);
         y += reviewH + 2;
@@ -426,13 +495,13 @@ export async function exportToPDF(data: RFPData, options?: ExportOptions) {
       }
 
       // Claude analysis note (purple box) for flagged items
-      if (aiDetect.level !== "low" && aiDetect.triggers.length > 0) {
+      if (aiDetect.level !== 'low' && aiDetect.triggers.length > 0) {
         checkPage(12);
         doc.setFillColor(237, 233, 254); // purple-50
-        const noteText = `CLAUDE: AI score ${aiDetect.score} (${aiDetectLabel(aiDetect.level)}). ${aiDetect.triggers.slice(0, 3).join(", ")}. ${aiDetect.suggestion.slice(0, 120)}`;
+        const noteText = `CLAUDE: AI score ${aiDetect.score} (${aiDetectLabel(aiDetect.level)}). ${aiDetect.triggers.slice(0, 3).join(', ')}. ${aiDetect.suggestion.slice(0, 120)}`;
         const noteLines = doc.splitTextToSize(noteText, contentWidth - 6);
         const noteH = noteLines.length * 2.8 + 4;
-        doc.roundedRect(margin, y - 1, contentWidth, noteH, 1, 1, "F");
+        doc.roundedRect(margin, y - 1, contentWidth, noteH, 1, 1, 'F');
         doc.setFontSize(5.5);
         doc.setTextColor(109, 40, 217); // purple-700
         doc.text(noteLines, margin + 3, y + 2);
@@ -440,15 +509,16 @@ export async function exportToPDF(data: RFPData, options?: ExportOptions) {
       }
 
       // Claude recommendation for RED items
-      if (q.confidence === "RED") {
+      if (q.confidence === 'RED') {
         checkPage(10);
         doc.setFillColor(237, 233, 254);
-        const recText = q.compliant === "N"
-          ? "CLAUDE: Capability gap — position as deliberate credit-first focus. Present partnership/roadmap timeline to BSB."
-          : "CLAUDE: Partial compliance — clearly separate what IS covered vs what needs config/partnership. Prepare for Q&A probing.";
+        const recText =
+          q.compliant === 'N'
+            ? 'CLAUDE: Capability gap — position as deliberate credit-first focus. Present partnership/roadmap timeline to BSB.'
+            : 'CLAUDE: Partial compliance — clearly separate what IS covered vs what needs config/partnership. Prepare for Q&A probing.';
         const recLines = doc.splitTextToSize(recText, contentWidth - 6);
         const recH = recLines.length * 2.8 + 4;
-        doc.roundedRect(margin, y - 1, contentWidth, recH, 1, 1, "F");
+        doc.roundedRect(margin, y - 1, contentWidth, recH, 1, 1, 'F');
         doc.setFontSize(5.5);
         doc.setTextColor(109, 40, 217);
         doc.text(recLines, margin + 3, y + 2);
@@ -469,9 +539,14 @@ export async function exportToPDF(data: RFPData, options?: ExportOptions) {
   y = doc.internal.pageSize.getHeight() / 2 - 10;
   doc.setFontSize(10);
   doc.setTextColor(...COLORS.gray);
-  doc.text("This document is confidential and prepared solely for Bangor Savings Bank.", pageWidth / 2, y, { align: "center" });
+  doc.text(
+    'This document is confidential and prepared solely for Bangor Savings Bank.',
+    pageWidth / 2,
+    y,
+    { align: 'center' },
+  );
   y += 6;
-  doc.text(`Brim Financial · ${new Date().getFullYear()}`, pageWidth / 2, y, { align: "center" });
+  doc.text(`Brim Financial · ${new Date().getFullYear()}`, pageWidth / 2, y, { align: 'center' });
 
-  doc.save("BSB_RFP_Response_Brim_Financial.pdf");
+  doc.save('BSB_RFP_Response_Brim_Financial.pdf');
 }

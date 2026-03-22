@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { X, ChevronDown } from "lucide-react";
-import { useState } from "react";
-import type { WorkflowStatus } from "@/types";
+import { X, ChevronDown } from 'lucide-react';
+import { useState } from 'react';
+import type { WorkflowStatus } from '@/types';
 
 interface BulkActionsProps {
   selectedCount: number;
@@ -10,16 +10,20 @@ interface BulkActionsProps {
   onClearSelection: () => void;
 }
 
-export default function BulkActions({ selectedCount, onChangeStatus, onClearSelection }: BulkActionsProps) {
+export default function BulkActions({
+  selectedCount,
+  onChangeStatus,
+  onClearSelection,
+}: BulkActionsProps) {
   const [showStatusMenu, setShowStatusMenu] = useState(false);
 
   if (selectedCount === 0) return null;
 
   const statuses: { value: WorkflowStatus; label: string; cls: string }[] = [
-    { value: "draft", label: "Draft", cls: "text-gray-600" },
-    { value: "reviewed", label: "Reviewed", cls: "text-blue-600" },
-    { value: "approved", label: "Approved", cls: "text-emerald-600" },
-    { value: "flagged", label: "Flagged", cls: "text-red-600" },
+    { value: 'draft', label: 'Draft', cls: 'text-gray-600' },
+    { value: 'reviewed', label: 'Reviewed', cls: 'text-blue-600' },
+    { value: 'approved', label: 'Approved', cls: 'text-emerald-600' },
+    { value: 'flagged', label: 'Flagged', cls: 'text-red-600' },
   ];
 
   return (
@@ -29,7 +33,10 @@ export default function BulkActions({ selectedCount, onChangeStatus, onClearSele
 
       {/* Status dropdown */}
       <div className="relative">
-        <button onClick={() => setShowStatusMenu(!showStatusMenu)} className="flex items-center gap-1 bg-blue-500 hover:bg-blue-400 px-2.5 py-1 rounded">
+        <button
+          onClick={() => setShowStatusMenu(!showStatusMenu)}
+          className="flex items-center gap-1 bg-blue-500 hover:bg-blue-400 px-2.5 py-1 rounded"
+        >
           Set Status <ChevronDown size={12} />
         </button>
         {showStatusMenu && (
@@ -37,8 +44,14 @@ export default function BulkActions({ selectedCount, onChangeStatus, onClearSele
             <div className="fixed inset-0 z-40" onClick={() => setShowStatusMenu(false)} />
             <div className="absolute left-0 top-full mt-1 bg-white border rounded-lg shadow-xl z-50 w-36 py-1">
               {statuses.map((s) => (
-                <button key={s.value} onClick={() => { onChangeStatus(s.value); setShowStatusMenu(false); }}
-                  className={`w-full text-left px-3 py-1.5 text-xs hover:bg-gray-50 ${s.cls}`}>
+                <button
+                  key={s.value}
+                  onClick={() => {
+                    onChangeStatus(s.value);
+                    setShowStatusMenu(false);
+                  }}
+                  className={`w-full text-left px-3 py-1.5 text-xs hover:bg-gray-50 ${s.cls}`}
+                >
                   {s.label}
                 </button>
               ))}
@@ -47,7 +60,10 @@ export default function BulkActions({ selectedCount, onChangeStatus, onClearSele
         )}
       </div>
 
-      <button onClick={onClearSelection} className="flex items-center gap-1 hover:bg-blue-500 px-2 py-1 rounded">
+      <button
+        onClick={onClearSelection}
+        className="flex items-center gap-1 hover:bg-blue-500 px-2 py-1 rounded"
+      >
         <X size={12} /> Clear
       </button>
     </div>

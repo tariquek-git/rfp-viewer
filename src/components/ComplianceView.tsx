@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { useMemo } from "react";
-import type { Question } from "@/types";
+import { useMemo } from 'react';
+import type { Question } from '@/types';
 
 interface ComplianceViewProps {
   questions: Question[];
@@ -10,17 +10,24 @@ interface ComplianceViewProps {
 }
 
 function ComplianceToggle({ value, onChange }: { value: string; onChange: (v: string) => void }) {
-  const options = ["Y", "Partial", "N"];
+  const options = ['Y', 'Partial', 'N'];
   return (
     <div className="flex gap-0.5">
       {options.map((opt) => {
         const active = value === opt;
         const cls = active
-          ? opt === "Y" ? "bg-emerald-600 text-white" : opt === "N" ? "bg-red-600 text-white" : "bg-amber-500 text-white"
-          : "bg-gray-100 text-gray-500 hover:bg-gray-200";
+          ? opt === 'Y'
+            ? 'bg-emerald-600 text-white'
+            : opt === 'N'
+              ? 'bg-red-600 text-white'
+              : 'bg-amber-500 text-white'
+          : 'bg-gray-100 text-gray-500 hover:bg-gray-200';
         return (
-          <button key={opt} onClick={() => onChange(opt)}
-            className={`text-[10px] font-semibold px-2 py-1 rounded ${cls} transition-colors`}>
+          <button
+            key={opt}
+            onClick={() => onChange(opt)}
+            className={`text-[10px] font-semibold px-2 py-1 rounded ${cls} transition-colors`}
+          >
             {opt}
           </button>
         );
@@ -29,7 +36,11 @@ function ComplianceToggle({ value, onChange }: { value: string; onChange: (v: st
   );
 }
 
-export default function ComplianceView({ questions, categories, onUpdateCompliant }: ComplianceViewProps) {
+export default function ComplianceView({
+  questions,
+  categories,
+  onUpdateCompliant,
+}: ComplianceViewProps) {
   const grouped = useMemo(() => {
     const map: Record<string, Question[]> = {};
     for (const q of questions) {
@@ -40,10 +51,12 @@ export default function ComplianceView({ questions, categories, onUpdateComplian
   }, [questions]);
 
   const totals = useMemo(() => {
-    let y = 0, n = 0, partial = 0;
+    let y = 0,
+      n = 0,
+      partial = 0;
     for (const q of questions) {
-      if (q.compliant === "Y") y++;
-      else if (q.compliant === "N") n++;
+      if (q.compliant === 'Y') y++;
+      else if (q.compliant === 'N') n++;
       else partial++;
     }
     return { y, n, partial };
@@ -67,19 +80,28 @@ export default function ComplianceView({ questions, categories, onUpdateComplian
         {categories.map((cat) => {
           const catQs = grouped[cat];
           if (!catQs || catQs.length === 0) return null;
-          const catY = catQs.filter(q => q.compliant === "Y").length;
+          const catY = catQs.filter((q) => q.compliant === 'Y').length;
           return (
             <div key={cat} className="mb-6">
               <div className="flex items-center justify-between px-4 py-2 bg-white border border-gray-200 rounded-t-xl">
                 <h3 className="text-sm font-semibold text-gray-900">{cat}</h3>
-                <span className="text-xs text-gray-400">{catY}/{catQs.length} compliant</span>
+                <span className="text-xs text-gray-400">
+                  {catY}/{catQs.length} compliant
+                </span>
               </div>
               <div className="bg-white border border-t-0 border-gray-200 rounded-b-xl divide-y divide-gray-100">
                 {catQs.map((q) => (
                   <div key={q.ref} className="flex items-center gap-4 px-4 py-2.5 hover:bg-gray-50">
-                    <span className="text-xs font-medium text-blue-600 w-40 flex-shrink-0">{q.ref}</span>
-                    <span className="text-xs text-gray-600 flex-1 truncate">{q.requirement.slice(0, 100)}</span>
-                    <ComplianceToggle value={q.compliant} onChange={(v) => onUpdateCompliant(q.ref, v)} />
+                    <span className="text-xs font-medium text-blue-600 w-40 flex-shrink-0">
+                      {q.ref}
+                    </span>
+                    <span className="text-xs text-gray-600 flex-1 truncate">
+                      {q.requirement.slice(0, 100)}
+                    </span>
+                    <ComplianceToggle
+                      value={q.compliant}
+                      onChange={(v) => onUpdateCompliant(q.ref, v)}
+                    />
                   </div>
                 ))}
               </div>

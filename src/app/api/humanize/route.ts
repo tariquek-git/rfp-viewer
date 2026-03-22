@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from "next/server";
-import Anthropic from "@anthropic-ai/sdk";
-import { sanitizeString } from "@/lib/sanitize";
+import { NextRequest, NextResponse } from 'next/server';
+import Anthropic from '@anthropic-ai/sdk';
+import { sanitizeString } from '@/lib/sanitize';
 
 const client = new Anthropic();
 
@@ -9,22 +9,23 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const text = sanitizeString(body.text, 20000);
     const triggers = Array.isArray(body.triggers) ? body.triggers.slice(0, 20) : [];
-    const context = sanitizeString(body.context || "", 500);
+    const context = sanitizeString(body.context || '', 500);
 
-    if (!text) return NextResponse.json({ error: "No text provided" }, { status: 400 });
+    if (!text) return NextResponse.json({ error: 'No text provided' }, { status: 400 });
 
     const message = await client.messages.create({
-      model: "claude-sonnet-4-20250514",
+      model: 'claude-sonnet-4-20250514',
       max_tokens: 2000,
-      messages: [{
-        role: "user",
-        content: `You are a writing editor. Your job is to make this RFP response sound more human and natural WITHOUT changing the facts or meaning.
+      messages: [
+        {
+          role: 'user',
+          content: `You are a writing editor. Your job is to make this RFP response sound more human and natural WITHOUT changing the facts or meaning.
 
 CURRENT TEXT:
 ${text}
 
 AI DETECTION TRIGGERS FOUND:
-${triggers.join(", ")}
+${triggers.join(', ')}
 
 CONTEXT: ${context}
 
@@ -41,13 +42,14 @@ RULES FOR HUMANIZING:
 10. Use concrete language over abstract: "processes 10M transactions/month" not "handles significant transaction volumes"
 
 Output ONLY the humanized text. No preamble, no explanation.`,
-      }],
+        },
+      ],
     });
 
-    const result = message.content[0].type === "text" ? message.content[0].text : "";
+    const result = message.content[0].type === 'text' ? message.content[0].text : '';
     return NextResponse.json({ text: result });
   } catch (error) {
-    console.error("Humanize error:", error);
-    return NextResponse.json({ error: "Failed to humanize" }, { status: 500 });
+    console.error('Humanize error:', error);
+    return NextResponse.json({ error: 'Failed to humanize' }, { status: 500 });
   }
 }

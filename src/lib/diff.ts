@@ -1,4 +1,4 @@
-import type { DiffResult, DiffSegment } from "@/types";
+import type { DiffResult, DiffSegment } from '@/types';
 
 /**
  * Word-level diff using LCS (Longest Common Subsequence).
@@ -41,20 +41,21 @@ function diffWords(a: string[], b: string[]): DiffSegment[] {
 
   // Backtrack to find diff
   const segments: DiffSegment[] = [];
-  let i = m, j = n;
+  let i = m,
+    j = n;
 
   const pending: DiffSegment[] = [];
 
   while (i > 0 || j > 0) {
     if (i > 0 && j > 0 && a[i - 1] === b[j - 1]) {
-      pending.push({ type: "equal", text: a[i - 1] });
+      pending.push({ type: 'equal', text: a[i - 1] });
       i--;
       j--;
     } else if (j > 0 && (i === 0 || dp[i][j - 1] >= dp[i - 1][j])) {
-      pending.push({ type: "add", text: b[j - 1] });
+      pending.push({ type: 'add', text: b[j - 1] });
       j--;
     } else {
-      pending.push({ type: "remove", text: a[i - 1] });
+      pending.push({ type: 'remove', text: a[i - 1] });
       i--;
     }
   }
@@ -74,11 +75,11 @@ function diffWords(a: string[], b: string[]): DiffSegment[] {
 }
 
 function computeLineDiff(original: string, suggested: string): DiffResult {
-  const origLines = original.split("\n");
-  const sugLines = suggested.split("\n");
-  const segments = diffWords(origLines, sugLines).map(seg => ({
+  const origLines = original.split('\n');
+  const sugLines = suggested.split('\n');
+  const segments = diffWords(origLines, sugLines).map((seg) => ({
     ...seg,
-    text: seg.text + (seg.text.endsWith("\n") ? "" : "\n"),
+    text: seg.text + (seg.text.endsWith('\n') ? '' : '\n'),
   }));
   return { original, suggested, segments };
 }

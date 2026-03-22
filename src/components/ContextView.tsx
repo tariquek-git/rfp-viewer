@@ -1,17 +1,40 @@
-"use client";
+'use client';
 
-import type { RFPData } from "@/types";
-import { useMemo } from "react";
-import { FileText, Shield, AlertTriangle, CheckCircle, Crosshair, Scale, TrendingUp } from "lucide-react";
+import type { RFPData } from '@/types';
+import { useMemo } from 'react';
+import {
+  FileText,
+  Shield,
+  AlertTriangle,
+  CheckCircle,
+  Crosshair,
+  Scale,
+  TrendingUp,
+} from 'lucide-react';
 
 interface ContextViewProps {
   data: RFPData;
   onNavigate?: (tab: string, filter?: { confidence?: string; category?: string }) => void;
 }
 
-function StatCard({ value, label, icon: Icon, accent, onClick }: { value: number | string; label: string; icon: React.ElementType; accent: string; onClick?: () => void }) {
+function StatCard({
+  value,
+  label,
+  icon: Icon,
+  accent,
+  onClick,
+}: {
+  value: number | string;
+  label: string;
+  icon: React.ElementType;
+  accent: string;
+  onClick?: () => void;
+}) {
   return (
-    <div onClick={onClick} className={`bg-white border border-gray-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow ${onClick ? "cursor-pointer hover:border-blue-300" : ""}`}>
+    <div
+      onClick={onClick}
+      className={`bg-white border border-gray-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow ${onClick ? 'cursor-pointer hover:border-blue-300' : ''}`}
+    >
       <div className="flex items-start justify-between">
         <div>
           <div className={`text-3xl font-bold ${accent}`}>{value}</div>
@@ -25,7 +48,19 @@ function StatCard({ value, label, icon: Icon, accent, onClick }: { value: number
   );
 }
 
-function RiskCard({ value, label, sublabel, accent, border }: { value: number; label: string; sublabel: string; accent: string; border: string }) {
+function RiskCard({
+  value,
+  label,
+  sublabel,
+  accent,
+  border,
+}: {
+  value: number;
+  label: string;
+  sublabel: string;
+  accent: string;
+  border: string;
+}) {
   return (
     <div className={`border-2 ${border} rounded-xl p-5 text-center`}>
       <div className={`text-4xl font-bold ${accent}`}>{value}</div>
@@ -35,22 +70,47 @@ function RiskCard({ value, label, sublabel, accent, border }: { value: number; l
   );
 }
 
-function SectionScoreCard({ name, score, count, high, med, low, onClick }: { name: string; score: number; count: number; high: number; med: number; low: number; onClick?: () => void }) {
-  const grade = score >= 7.5 ? "A" : score >= 6.5 ? "B" : score >= 5.5 ? "C" : "D";
+function SectionScoreCard({
+  name,
+  score,
+  count,
+  high,
+  med,
+  low,
+  onClick,
+}: {
+  name: string;
+  score: number;
+  count: number;
+  high: number;
+  med: number;
+  low: number;
+  onClick?: () => void;
+}) {
+  const grade = score >= 7.5 ? 'A' : score >= 6.5 ? 'B' : score >= 5.5 ? 'C' : 'D';
   const gradeColors: Record<string, string> = {
-    A: "bg-emerald-100 text-emerald-700 border-emerald-200",
-    B: "bg-blue-100 text-blue-700 border-blue-200",
-    C: "bg-amber-100 text-amber-700 border-amber-200",
-    D: "bg-red-100 text-red-700 border-red-200",
+    A: 'bg-emerald-100 text-emerald-700 border-emerald-200',
+    B: 'bg-blue-100 text-blue-700 border-blue-200',
+    C: 'bg-amber-100 text-amber-700 border-amber-200',
+    D: 'bg-red-100 text-red-700 border-red-200',
   };
   const total = high + med + low;
   const lowPct = total > 0 ? Math.round((low / total) * 100) : 0;
 
   return (
-    <div onClick={onClick} className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm hover:shadow-md transition-all hover:border-blue-300 cursor-pointer group">
+    <div
+      onClick={onClick}
+      className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm hover:shadow-md transition-all hover:border-blue-300 cursor-pointer group"
+    >
       <div className="flex items-center justify-between mb-3">
-        <h4 className="font-semibold text-sm text-gray-900 group-hover:text-blue-600 transition-colors">{name}</h4>
-        <span className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold border ${gradeColors[grade]}`}>{grade}</span>
+        <h4 className="font-semibold text-sm text-gray-900 group-hover:text-blue-600 transition-colors">
+          {name}
+        </h4>
+        <span
+          className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold border ${gradeColors[grade]}`}
+        >
+          {grade}
+        </span>
       </div>
       <div className="text-sm text-gray-500 mb-3">
         <span className="font-bold text-gray-900 text-lg">{score.toFixed(1)}</span>
@@ -59,9 +119,13 @@ function SectionScoreCard({ name, score, count, high, med, low, onClick }: { nam
         <span>{count} questions</span>
       </div>
       <div className="flex h-1.5 rounded-full overflow-hidden mb-2 bg-gray-100">
-        {high > 0 && <div className="bg-red-400 rounded-l" style={{ width: `${(high / total) * 100}%` }} />}
+        {high > 0 && (
+          <div className="bg-red-400 rounded-l" style={{ width: `${(high / total) * 100}%` }} />
+        )}
         {med > 0 && <div className="bg-amber-400" style={{ width: `${(med / total) * 100}%` }} />}
-        {low > 0 && <div className="bg-emerald-400 rounded-r" style={{ width: `${(low / total) * 100}%` }} />}
+        {low > 0 && (
+          <div className="bg-emerald-400 rounded-r" style={{ width: `${(low / total) * 100}%` }} />
+        )}
       </div>
       <div className="flex justify-between text-[10px] text-gray-400 font-medium">
         <span>{high} high</span>
@@ -75,9 +139,13 @@ function SectionScoreCard({ name, score, count, high, med, low, onClick }: { nam
 
 export default function ContextView({ data, onNavigate }: ContextViewProps) {
   const sectionStats = useMemo(() => {
-    const sections: Record<string, { count: number; totalScore: number; high: number; med: number; low: number }> = {};
+    const sections: Record<
+      string,
+      { count: number; totalScore: number; high: number; med: number; low: number }
+    > = {};
     for (const q of data.questions) {
-      if (!sections[q.category]) sections[q.category] = { count: 0, totalScore: 0, high: 0, med: 0, low: 0 };
+      if (!sections[q.category])
+        sections[q.category] = { count: 0, totalScore: 0, high: 0, med: 0, low: 0 };
       const s = sections[q.category];
       s.count++;
       s.totalScore += q.committee_score || 0;
@@ -94,7 +162,9 @@ export default function ContextView({ data, onNavigate }: ContextViewProps) {
   }, [data]);
 
   const riskCounts = useMemo(() => {
-    let high = 0, med = 0, low = 0;
+    let high = 0,
+      med = 0,
+      low = 0;
     for (const q of data.questions) {
       if (q.committee_score <= 4) high++;
       else if (q.committee_score <= 6) med++;
@@ -109,16 +179,50 @@ export default function ContextView({ data, onNavigate }: ContextViewProps) {
     <div className="overflow-auto h-full p-6 space-y-6 bg-gray-50/30">
       {/* Top Stats */}
       <div className="grid grid-cols-4 gap-4">
-        <StatCard value={data.stats.total} label="Total Questions" icon={FileText} accent="text-gray-900" onClick={() => onNavigate?.("grid")} />
-        <StatCard value={data.stats.green} label={`GREEN (${greenPct}%) — click to filter`} icon={CheckCircle} accent="text-emerald-600" onClick={() => onNavigate?.("grid", { confidence: "GREEN" })} />
-        <StatCard value={data.stats.yellow} label="YELLOW — click to filter" icon={AlertTriangle} accent="text-amber-600" onClick={() => onNavigate?.("grid", { confidence: "YELLOW" })} />
-        <StatCard value={data.stats.red} label="RED — click to filter" icon={Shield} accent="text-red-600" onClick={() => onNavigate?.("grid", { confidence: "RED" })} />
+        <StatCard
+          value={data.stats.total}
+          label="Total Questions"
+          icon={FileText}
+          accent="text-gray-900"
+          onClick={() => onNavigate?.('grid')}
+        />
+        <StatCard
+          value={data.stats.green}
+          label={`GREEN (${greenPct}%) — click to filter`}
+          icon={CheckCircle}
+          accent="text-emerald-600"
+          onClick={() => onNavigate?.('grid', { confidence: 'GREEN' })}
+        />
+        <StatCard
+          value={data.stats.yellow}
+          label="YELLOW — click to filter"
+          icon={AlertTriangle}
+          accent="text-amber-600"
+          onClick={() => onNavigate?.('grid', { confidence: 'YELLOW' })}
+        />
+        <StatCard
+          value={data.stats.red}
+          label="RED — click to filter"
+          icon={Shield}
+          accent="text-red-600"
+          onClick={() => onNavigate?.('grid', { confidence: 'RED' })}
+        />
       </div>
 
       {/* Strategic & Regulatory */}
       <div className="grid grid-cols-2 gap-4">
-        <StatCard value={data.stats.with_strategic} label="Questions with Strategic Positioning" icon={Crosshair} accent="text-violet-600" />
-        <StatCard value={data.stats.with_reg_enable} label="Questions with Regulatory Enablement" icon={Scale} accent="text-blue-600" />
+        <StatCard
+          value={data.stats.with_strategic}
+          label="Questions with Strategic Positioning"
+          icon={Crosshair}
+          accent="text-violet-600"
+        />
+        <StatCard
+          value={data.stats.with_reg_enable}
+          label="Questions with Regulatory Enablement"
+          icon={Scale}
+          accent="text-blue-600"
+        />
       </div>
 
       {/* Procurement Committee Risk Assessment */}
@@ -129,19 +233,46 @@ export default function ContextView({ data, onNavigate }: ContextViewProps) {
               <TrendingUp size={20} className="text-gray-600" />
             </div>
             <div>
-              <h3 className="text-base font-semibold text-gray-900">Procurement Committee Risk Assessment</h3>
-              <p className="text-xs text-gray-400">How a senior bank procurement committee would evaluate each response</p>
+              <h3 className="text-base font-semibold text-gray-900">
+                Procurement Committee Risk Assessment
+              </h3>
+              <p className="text-xs text-gray-400">
+                How a senior bank procurement committee would evaluate each response
+              </p>
             </div>
           </div>
           <div className="text-right">
-            <div className="text-4xl font-bold text-gray-900">{overallScore.toFixed(1)}<span className="text-lg text-gray-300 ml-0.5">/10</span></div>
-            <div className="text-[11px] text-gray-400 font-medium uppercase tracking-wide">Overall Score</div>
+            <div className="text-4xl font-bold text-gray-900">
+              {overallScore.toFixed(1)}
+              <span className="text-lg text-gray-300 ml-0.5">/10</span>
+            </div>
+            <div className="text-[11px] text-gray-400 font-medium uppercase tracking-wide">
+              Overall Score
+            </div>
           </div>
         </div>
         <div className="grid grid-cols-3 gap-4">
-          <RiskCard value={riskCounts.high} label="HIGH RISK" sublabel="Score 1-4 · Will be challenged" accent="text-red-600" border="border-red-200 bg-red-50/50" />
-          <RiskCard value={riskCounts.med} label="MEDIUM" sublabel="Score 5-6 · Should strengthen" accent="text-amber-600" border="border-amber-200 bg-amber-50/50" />
-          <RiskCard value={riskCounts.low} label="LOW RISK" sublabel="Score 7-10 · No concerns" accent="text-emerald-600" border="border-emerald-200 bg-emerald-50/50" />
+          <RiskCard
+            value={riskCounts.high}
+            label="HIGH RISK"
+            sublabel="Score 1-4 · Will be challenged"
+            accent="text-red-600"
+            border="border-red-200 bg-red-50/50"
+          />
+          <RiskCard
+            value={riskCounts.med}
+            label="MEDIUM"
+            sublabel="Score 5-6 · Should strengthen"
+            accent="text-amber-600"
+            border="border-amber-200 bg-amber-50/50"
+          />
+          <RiskCard
+            value={riskCounts.low}
+            label="LOW RISK"
+            sublabel="Score 7-10 · No concerns"
+            accent="text-emerald-600"
+            border="border-emerald-200 bg-emerald-50/50"
+          />
         </div>
       </div>
 
@@ -154,7 +285,18 @@ export default function ContextView({ data, onNavigate }: ContextViewProps) {
             const s = sectionStats[cat];
             if (!s) return null;
             const avg = s.count > 0 ? s.totalScore / s.count : 0;
-            return <SectionScoreCard key={cat} name={cat} score={avg} count={s.count} high={s.high} med={s.med} low={s.low} onClick={() => onNavigate?.("grid", { category: cat })} />;
+            return (
+              <SectionScoreCard
+                key={cat}
+                name={cat}
+                score={avg}
+                count={s.count}
+                high={s.high}
+                med={s.med}
+                low={s.low}
+                onClick={() => onNavigate?.('grid', { category: cat })}
+              />
+            );
           })}
         </div>
       </div>

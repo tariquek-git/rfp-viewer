@@ -1,6 +1,6 @@
 // === Core Data Model ===
 
-export type WorkflowStatus = "draft" | "reviewed" | "approved" | "flagged";
+export type WorkflowStatus = 'draft' | 'reviewed' | 'approved' | 'flagged';
 
 export interface Question {
   ref: string;
@@ -49,13 +49,22 @@ export interface RFPData {
 
 // === View Types ===
 
-export type ViewTab = "grid" | "context" | "knowledgebase" | "compliance" | "submission" | "pricing" | "timeline" | "sla" | "humanize";
-export type StatusFilter = "All Status" | "draft" | "reviewed" | "approved" | "flagged";
+export type ViewTab =
+  | 'grid'
+  | 'context'
+  | 'knowledgebase'
+  | 'compliance'
+  | 'submission'
+  | 'pricing'
+  | 'timeline'
+  | 'sla'
+  | 'humanize';
+export type StatusFilter = 'All Status' | 'draft' | 'reviewed' | 'approved' | 'flagged';
 
 // === Diff / AI Suggestion Types ===
 
 export interface DiffSegment {
-  type: "equal" | "add" | "remove";
+  type: 'equal' | 'add' | 'remove';
   text: string;
 }
 
@@ -67,7 +76,7 @@ export interface DiffResult {
 
 export interface PendingDiff {
   ref: string;
-  field: "bullet" | "paragraph";
+  field: 'bullet' | 'paragraph';
   original: string;
   suggested: string;
   diff: DiffResult;
@@ -90,14 +99,14 @@ export interface KnowledgeBase {
 export interface ValidationRule {
   id: string;
   text: string;
-  type: "guidance" | "validation";
+  type: 'guidance' | 'validation';
 }
 
 export interface ValidationResult {
   rule: string;
   passed: boolean;
   message: string;
-  severity: "error" | "warning";
+  severity: 'error' | 'warning';
 }
 
 // === AI Analysis ===
@@ -110,17 +119,17 @@ export interface CritiqueResult {
 }
 
 export interface ConsistencyIssue {
-  type: "contradiction" | "inconsistent_metric" | "repeated_phrase" | "missing_crossref";
+  type: 'contradiction' | 'inconsistent_metric' | 'repeated_phrase' | 'missing_crossref';
   description: string;
   questionRefs: string[];
-  severity: "high" | "medium" | "low";
+  severity: 'high' | 'medium' | 'low';
 }
 
 // === Grid State ===
 
 export interface SortConfig {
   key: string;
-  direction: "asc" | "desc";
+  direction: 'asc' | 'desc';
 }
 
 // === Cell History ===
@@ -128,7 +137,7 @@ export interface SortConfig {
 export interface CellHistoryEntry {
   value: string;
   timestamp: number;
-  source: "human" | "ai" | "ai-edited";
+  source: 'human' | 'ai' | 'ai-edited';
   accepted?: boolean;
   rejected?: boolean;
 }
@@ -159,7 +168,7 @@ export interface PricingLineItem {
   id: string;
   category: string;
   description: string;
-  type: "one-time" | "recurring" | "per-transaction" | "volume-tiered";
+  type: 'one-time' | 'recurring' | 'per-transaction' | 'volume-tiered';
   amount: number;
   unit: string;
   notes: string;
@@ -192,7 +201,7 @@ export interface TimelineMilestone {
   durationWeeks: number;
   owner: string;
   dependencies: string;
-  status: "not-started" | "in-progress" | "complete";
+  status: 'not-started' | 'in-progress' | 'complete';
 }
 
 // === SLA Framework ===
@@ -215,7 +224,7 @@ export interface QAEntry {
   answer: string;
   submittedDate: string;
   respondedDate: string;
-  status: "pending" | "answered" | "clarification-needed";
+  status: 'pending' | 'answered' | 'clarification-needed';
   affectedRefs: string[];
 }
 
