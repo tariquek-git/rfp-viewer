@@ -46,9 +46,14 @@ export function detectAIWriting(text: string): AIDetectResult {
     triggers.push(`em-dashes (${emDashCount})`);
   }
 
-  // Very long sentences (>40 words)
+  // Very long sentences (>40 words) - exclude bullet point lists
   const sentences = text.split(/[.!?]+/).filter(s => s.trim());
-  const longSentences = sentences.filter(s => s.trim().split(/\s+/).length > 40).length;
+  const longSentences = sentences.filter(s => {
+    const trimmed = s.trim();
+    // Skip bullet-point blocks (contain multiple - or • lines)
+    if ((trimmed.match(/\n\s*[-•]/g) || []).length >= 2) return false;
+    return trimmed.split(/\s+/).length > 40;
+  }).length;
   if (longSentences > 1) {
     score += longSentences * 2;
     triggers.push(`long sentences (${longSentences})`);
