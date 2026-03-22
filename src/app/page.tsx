@@ -6,6 +6,7 @@ import GridView from "@/components/GridView";
 import ContextView from "@/components/ContextView";
 import RulesPanel from "@/components/RulesPanel";
 import DetailPanel from "@/components/DetailPanel";
+import type { FeedbackItem } from "@/components/FeedbackPanel";
 
 type CellHistory = Record<string, { value: string; timestamp: number; source: "human" | "ai" }[]>;
 
@@ -22,7 +23,7 @@ export default function Home() {
   const [showRules, setShowRules] = useState(false);
   const [selectedQuestion, setSelectedQuestion] = useState<Question | null>(null);
   const [cellHistory, setCellHistory] = useState<CellHistory>({});
-  const [feedbackCount, setFeedbackCount] = useState(0);
+  const [feedbackItems, setFeedbackItems] = useState<FeedbackItem[]>([]);
   const [versions, setVersions] = useState<{ label: string; timestamp: number; data: RFPData }[]>([]);
   const [hasUnsaved, setHasUnsaved] = useState(false);
   const [globalRules, setGlobalRules] = useState<string[]>([]);
@@ -45,6 +46,8 @@ export default function Home() {
         if (savedHistory) try { setCellHistory(JSON.parse(savedHistory)); } catch {}
         const savedRules = localStorage.getItem("rfp-global-rules");
         if (savedRules) try { setGlobalRules(JSON.parse(savedRules)); } catch {}
+        const savedFeedback = localStorage.getItem("rfp-feedback");
+        if (savedFeedback) try { setFeedbackItems(JSON.parse(savedFeedback)); } catch {}
         const savedVersions = localStorage.getItem("rfp-versions");
         if (savedVersions) try { setVersions(JSON.parse(savedVersions)); } catch {}
       })
@@ -68,8 +71,9 @@ export default function Home() {
     localStorage.setItem("rfp-edits", JSON.stringify(data));
     localStorage.setItem("rfp-cell-history", JSON.stringify(cellHistory));
     localStorage.setItem("rfp-global-rules", JSON.stringify(globalRules));
+    localStorage.setItem("rfp-feedback", JSON.stringify(feedbackItems));
     setHasUnsaved(false);
-  }, [data, cellHistory, globalRules]);
+  }, [data, cellHistory, globalRules, feedbackItems]);
 
   const addCellHistory = useCallback((ref: string, field: string, value: string, source: "human" | "ai") => {
     setCellHistory((prev) => {
@@ -99,18 +103,29 @@ export default function Home() {
     updateQuestion({ ...q, [field]: value });
   }, [data, addCellHistory, updateQuestion]);
 
-  // AI rewrite
-  const handleAiRewrite = useCallback(async (question: Question, field: "bullet" | "paragraph"): Promise<string> => {
+  // AI rewrite - rules-driven: global rules + row rules + feedback all guide the AI
+  const handleAiRewrite = useCallback(async (question: Question, field: "bullet" | "paragraph", rowRules: string, feedback: FeedbackItem[]): Promise<string> => {
     const res = await fetch("/api/rewrite", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ question, field, globalRules }),
+      body: JSON.stringify({ question, field, globalRules, rowRules, feedback }),
     });
     const { text, error } = await res.json();
     if (error) throw new Error(error);
     addCellHistory(question.ref, field, text, "ai");
     return text;
   }, [globalRules, addCellHistory]);
+
+  // Feedback handlers
+  const handleAddFeedback = useCallback((ref: string, field: string, comment: string) => {
+    setFeedbackItems(prev => [...prev, { ref, field, comment, timestamp: Date.now(), resolved: false }]);
+    setHasUnsaved(true);
+  }, []);
+
+  const handleResolveFeedback = useCallback((ref: string, timestamp: number) => {
+    setFeedbackItems(prev => prev.map(f => f.ref === ref && f.timestamp === timestamp ? { ...f, resolved: true } : f));
+    setHasUnsaved(true);
+  }, []);
 
   // Save version snapshot
   const saveVersion = useCallback((label?: string) => {
@@ -258,6 +273,9 @@ export default function Home() {
             onSave={(updated) => { updateQuestion(updated); addCellHistory(updated.ref, "detail-save", "", "human"); }}
             onAiRewrite={handleAiRewrite}
             cellHistory={cellHistory}
+            feedbackItems={feedbackItems}
+            onAddFeedback={handleAddFeedback}
+            onResolveFeedback={handleResolveFeedback}
           />
         )}
       </div>
@@ -265,7 +283,7 @@ export default function Home() {
       {/* Footer */}
       <footer className="border-t px-6 py-2 text-xs text-gray-400 flex justify-between flex-shrink-0">
         <span>Cmd+S to save · Click any cell to edit · Click reference to open detail panel</span>
-        <span>{feedbackCount} items with feedback</span>
+        <span>{feedbackItems.filter(f => !f.resolved).length} items with feedback</span>
       </footer>
     </div>
   );

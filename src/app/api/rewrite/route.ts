@@ -5,14 +5,22 @@ const client = new Anthropic();
 
 export async function POST(req: NextRequest) {
   try {
-    const { question, field, globalRules } = await req.json();
+    const { question, field, globalRules, rowRules, feedback } = await req.json();
 
     const formatInstruction = field === "bullet"
       ? "Respond in bullet-point format. Use clear, scannable bullet points that a procurement committee can quickly evaluate."
       : "Respond in polished paragraph format. Write fluent, professional prose suitable for a formal RFP submission.";
 
-    const rulesSection = globalRules?.length
-      ? `\n\nWriting Rules to follow:\n${globalRules.map((r: string, i: number) => `${i + 1}. ${r}`).join("\n")}`
+    const globalRulesSection = globalRules?.length
+      ? `\n\nGLOBAL WRITING RULES (apply to all questions):\n${globalRules.map((r: string, i: number) => `${i + 1}. ${r}`).join("\n")}`
+      : "";
+
+    const rowRulesSection = rowRules?.trim()
+      ? `\n\nROW-SPECIFIC RULES (apply to this question only):\n${rowRules}`
+      : "";
+
+    const feedbackSection = feedback?.length
+      ? `\n\nHUMAN FEEDBACK (address these in your rewrite):\n${feedback.map((f: { field: string; comment: string }) => `- [${f.field}] ${f.comment}`).join("\n")}`
       : "";
 
     const message = await client.messages.create({
@@ -32,15 +40,16 @@ ${question[field]}
 Confidence Level: ${question.confidence}
 Committee Score: ${question.committee_score}/10
 Committee Risk Assessment: ${question.committee_risk || "N/A"}
+Rationale: ${question.rationale || "N/A"}
 
 ${formatInstruction}
 
-Strengthen this response to:
-- Be more specific with data points and metrics where possible
+Core objectives:
+- Be specific with data points and metrics
 - Directly address BSB's requirement
 - Highlight Brim's competitive advantages
 - Address any gaps or risks identified
-- Sound confident and authoritative without being vague${rulesSection}
+- Sound confident and authoritative without being vague${globalRulesSection}${rowRulesSection}${feedbackSection}
 
 Rewrite the response. Output ONLY the rewritten response text, no preamble or explanation.`,
       }],
