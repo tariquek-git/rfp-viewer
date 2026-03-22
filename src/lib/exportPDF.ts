@@ -1,6 +1,7 @@
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import type { Question, RFPData } from "@/types";
+import type { ExportOptions } from "@/lib/exportWord";
 import { detectAIWriting, aiDetectLabel } from "@/lib/aiDetect";
 
 const COLORS = {
@@ -33,7 +34,10 @@ function confBg(c: string): [number, number, number] {
   return COLORS.grayBg;
 }
 
-export async function exportToPDF(data: RFPData) {
+export async function exportToPDF(data: RFPData, options?: ExportOptions) {
+  const kb = options?.knowledgeBase;
+  const globalRules = options?.globalRules || [];
+  const validationRules = options?.validationRules || [];
   const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
   const pageWidth = doc.internal.pageSize.getWidth();
   const margin = 20;
@@ -212,6 +216,107 @@ export async function exportToPDF(data: RFPData) {
   const recText = doc.splitTextToSize(`1) Position non-compliant items as credit-first strategy, not gaps. 2) For network questions, present concrete partnership timeline. 3) Run Humanize on ${aiHighCount} high-risk AI-flagged responses. 4) Debit questions should state out-of-scope with future transition plan. 5) Fill in Knowledge Base with real metrics before AI rewrite pass.`, contentWidth);
   doc.text(recText, margin, y);
   y += recText.length * 3.5 + 3;
+
+  // === KNOWLEDGE BASE ===
+  if (kb && (kb.companyFacts || kb.keyMetrics || kb.differentiators || kb.competitivePositioning)) {
+    doc.addPage();
+    y = 20;
+    doc.setFontSize(16);
+    doc.setTextColor(...COLORS.dark);
+    doc.text("Knowledge Base", margin, y);
+    y += 3;
+    doc.setDrawColor(...COLORS.dark);
+    doc.line(margin, y, pageWidth - margin, y);
+    y += 6;
+    doc.setFontSize(7);
+    doc.setTextColor(...COLORS.gray);
+    doc.text("Company facts and metrics used to guide AI-assisted response generation.", margin, y);
+    y += 8;
+
+    const kbSections: [string, string][] = [
+      ["Company Facts", kb.companyFacts],
+      ["Key Metrics", kb.keyMetrics],
+      ["Differentiators", kb.differentiators],
+      ["Competitive Positioning", kb.competitivePositioning],
+    ];
+    for (const [label, content] of kbSections) {
+      if (content) {
+        checkPage(20);
+        doc.setFontSize(9);
+        doc.setTextColor(...COLORS.blue);
+        doc.text(label, margin, y);
+        y += 4;
+        doc.setFillColor(...COLORS.blueBg);
+        const kbLines = doc.splitTextToSize(content, contentWidth - 6);
+        const kbH = kbLines.length * 3 + 4;
+        doc.roundedRect(margin, y - 1, contentWidth, kbH, 1, 1, "F");
+        doc.setFontSize(7);
+        doc.setTextColor(...COLORS.dark);
+        doc.text(kbLines, margin + 3, y + 2);
+        y += kbH + 4;
+      }
+    }
+  }
+
+  // === WRITING RULES ===
+  if (globalRules.length > 0 || validationRules.length > 0) {
+    doc.addPage();
+    y = 20;
+    doc.setFontSize(16);
+    doc.setTextColor(...COLORS.dark);
+    doc.text("Writing Rules & Validation", margin, y);
+    y += 3;
+    doc.setDrawColor(...COLORS.dark);
+    doc.line(margin, y, pageWidth - margin, y);
+    y += 8;
+
+    if (globalRules.length > 0) {
+      doc.setFontSize(10);
+      doc.setTextColor(...COLORS.blue);
+      doc.text(`Global Writing Rules (${globalRules.length})`, margin, y);
+      y += 4;
+      doc.setFontSize(6);
+      doc.setTextColor(...COLORS.gray);
+      doc.text("Applied to every AI rewrite for consistency.", margin, y);
+      y += 5;
+
+      for (let i = 0; i < globalRules.length; i++) {
+        checkPage(8);
+        doc.setFillColor(...COLORS.grayBg);
+        const ruleLines = doc.splitTextToSize(`${i + 1}. ${globalRules[i]}`, contentWidth - 6);
+        const ruleH = ruleLines.length * 3 + 3;
+        doc.roundedRect(margin, y - 1, contentWidth, ruleH, 1, 1, "F");
+        doc.setFontSize(7);
+        doc.setTextColor(...COLORS.dark);
+        doc.text(ruleLines, margin + 3, y + 2);
+        y += ruleH + 2;
+      }
+      y += 4;
+    }
+
+    if (validationRules.length > 0) {
+      doc.setFontSize(10);
+      doc.setTextColor(...COLORS.yellow);
+      doc.text(`Validation Rules (${validationRules.length})`, margin, y);
+      y += 4;
+      doc.setFontSize(6);
+      doc.setTextColor(...COLORS.gray);
+      doc.text("Checked after AI generates a response. Failures shown as warnings.", margin, y);
+      y += 5;
+
+      for (const rule of validationRules) {
+        checkPage(8);
+        doc.setFillColor(...COLORS.yellowBg);
+        const ruleLines = doc.splitTextToSize(rule.text, contentWidth - 6);
+        const ruleH = ruleLines.length * 3 + 3;
+        doc.roundedRect(margin, y - 1, contentWidth, ruleH, 1, 1, "F");
+        doc.setFontSize(7);
+        doc.setTextColor(...COLORS.dark);
+        doc.text(ruleLines, margin + 3, y + 2);
+        y += ruleH + 2;
+      }
+    }
+  }
 
   // === RESPONSES ===
   for (const cat of categories) {

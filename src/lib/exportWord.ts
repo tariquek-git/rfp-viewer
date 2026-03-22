@@ -4,8 +4,14 @@ import {
   PageBreak, Header, Footer, TabStopPosition, TabStopType,
 } from "docx";
 import { saveAs } from "file-saver";
-import type { Question, RFPData } from "@/types";
+import type { Question, RFPData, KnowledgeBase, ValidationRule } from "@/types";
 import { detectAIWriting, aiDetectLabel } from "@/lib/aiDetect";
+
+export interface ExportOptions {
+  knowledgeBase?: KnowledgeBase;
+  globalRules?: string[];
+  validationRules?: ValidationRule[];
+}
 
 const COLORS = {
   green: "10B981", greenBg: "ECFDF5", greenText: "047857",
@@ -40,7 +46,10 @@ function makeCell(text: string, options?: { bold?: boolean; color?: string; bg?:
   });
 }
 
-export async function exportToWord(data: RFPData) {
+export async function exportToWord(data: RFPData, options?: ExportOptions) {
+  const kb = options?.knowledgeBase;
+  const globalRules = options?.globalRules || [];
+  const validationRules = options?.validationRules || [];
   const questions = data.questions;
   const categories = data.categories;
 
@@ -153,6 +162,72 @@ export async function exportToWord(data: RFPData) {
       new TextRun({ text: `1) Position the 5 non-compliant items as deliberate scope focus (credit-first strategy) rather than gaps. 2) For Visa/NYCE/STAR network questions, present a concrete partnership or roadmap timeline. 3) Run AI Humanize on the ${aiHighCount} high-risk responses before submission. 4) The debit questions (Product Ops 45-46) should explicitly state this is out of scope with a transition plan if BSB needs debit in future.`, size: 18, font: "Calibri" }),
     ]}),
   );
+
+  // === KNOWLEDGE BASE ===
+  if (kb && (kb.companyFacts || kb.keyMetrics || kb.differentiators || kb.competitivePositioning)) {
+    sections.push(new Paragraph({ children: [new PageBreak()] }));
+    sections.push(
+      new Paragraph({ heading: HeadingLevel.HEADING_1, children: [new TextRun({ text: "Knowledge Base", bold: true, size: 28, font: "Calibri" })] }),
+      new Paragraph({ spacing: { before: 100 }, children: [new TextRun({ text: "Company facts and metrics used to guide AI-assisted response generation.", size: 18, color: COLORS.gray, italics: true, font: "Calibri" })] }),
+    );
+    const kbSections: [string, string][] = [
+      ["Company Facts", kb.companyFacts],
+      ["Key Metrics", kb.keyMetrics],
+      ["Differentiators", kb.differentiators],
+      ["Competitive Positioning", kb.competitivePositioning],
+    ];
+    for (const [label, content] of kbSections) {
+      if (content) {
+        sections.push(
+          new Paragraph({ spacing: { before: 200 }, children: [new TextRun({ text: label, bold: true, size: 20, color: COLORS.blue, font: "Calibri" })] }),
+          new Paragraph({ shading: { type: ShadingType.SOLID, color: COLORS.blueBg }, children: [new TextRun({ text: content, size: 18, font: "Calibri" })] }),
+        );
+      }
+    }
+  }
+
+  // === WRITING RULES ===
+  if (globalRules.length > 0 || validationRules.length > 0) {
+    sections.push(new Paragraph({ children: [new PageBreak()] }));
+    sections.push(
+      new Paragraph({ heading: HeadingLevel.HEADING_1, children: [new TextRun({ text: "Writing Rules & Validation", bold: true, size: 28, font: "Calibri" })] }),
+    );
+
+    if (globalRules.length > 0) {
+      sections.push(
+        new Paragraph({ spacing: { before: 200 }, children: [new TextRun({ text: `Global Writing Rules (${globalRules.length})`, bold: true, size: 20, color: COLORS.blue, font: "Calibri" })] }),
+        new Paragraph({ children: [new TextRun({ text: "These rules are applied to every AI rewrite to maintain consistency.", size: 17, color: COLORS.gray, italics: true, font: "Calibri" })] }),
+      );
+      for (let i = 0; i < globalRules.length; i++) {
+        sections.push(
+          new Paragraph({
+            spacing: { before: 60 },
+            shading: { type: ShadingType.SOLID, color: COLORS.grayBg },
+            children: [
+              new TextRun({ text: `${i + 1}. `, bold: true, size: 18, font: "Calibri" }),
+              new TextRun({ text: globalRules[i], size: 18, font: "Calibri" }),
+            ],
+          }),
+        );
+      }
+    }
+
+    if (validationRules.length > 0) {
+      sections.push(
+        new Paragraph({ spacing: { before: 200 }, children: [new TextRun({ text: `Validation Rules (${validationRules.length})`, bold: true, size: 20, color: COLORS.yellowText, font: "Calibri" })] }),
+        new Paragraph({ children: [new TextRun({ text: "These rules are checked after AI generates a response. Failures shown as warnings in the diff view.", size: 17, color: COLORS.gray, italics: true, font: "Calibri" })] }),
+      );
+      for (const rule of validationRules) {
+        sections.push(
+          new Paragraph({
+            spacing: { before: 60 },
+            shading: { type: ShadingType.SOLID, color: COLORS.yellowBg },
+            children: [new TextRun({ text: rule.text, size: 18, font: "Calibri" })],
+          }),
+        );
+      }
+    }
+  }
 
   // Category scorecard
   sections.push(

@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { Printer, Download, ChevronDown, AlertTriangle, CheckCircle, XCircle, Minus, FileText, FileSpreadsheet } from "lucide-react";
-import type { Question, RFPData } from "@/types";
+import type { Question, RFPData, KnowledgeBase, ValidationRule } from "@/types";
 import { exportToWord } from "@/lib/exportWord";
 import { exportToPDF } from "@/lib/exportPDF";
 
@@ -10,6 +10,9 @@ interface SubmissionViewProps {
   questions: Question[];
   categories: string[];
   data?: RFPData;
+  knowledgeBase?: KnowledgeBase;
+  globalRules?: string[];
+  validationRules?: ValidationRule[];
 }
 
 type ExportMode = "full" | "responses-only" | "executive";
@@ -37,7 +40,8 @@ function DeliveryLabel({ q }: { q: Question }) {
   return <span className="text-[9px] text-gray-500">Delivery: {parts.join(", ")}</span>;
 }
 
-export default function SubmissionView({ questions, categories, data }: SubmissionViewProps) {
+export default function SubmissionView({ questions, categories, data, knowledgeBase, globalRules, validationRules }: SubmissionViewProps) {
+  const exportOpts = { knowledgeBase, globalRules, validationRules };
   const [mode, setMode] = useState<ExportMode>("full");
   const [showAdvisory, setShowAdvisory] = useState(true);
   const [exporting, setExporting] = useState<string | null>(null);
@@ -45,14 +49,14 @@ export default function SubmissionView({ questions, categories, data }: Submissi
   const handleWordExport = async () => {
     if (!data) return;
     setExporting("word");
-    try { await exportToWord(data); } catch (e) { console.error(e); }
+    try { await exportToWord(data, exportOpts); } catch (e) { console.error(e); }
     setExporting(null);
   };
 
   const handlePDFExport = async () => {
     if (!data) return;
     setExporting("pdf");
-    try { await exportToPDF(data); } catch (e) { console.error(e); }
+    try { await exportToPDF(data, exportOpts); } catch (e) { console.error(e); }
     setExporting(null);
   };
 

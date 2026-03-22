@@ -310,7 +310,7 @@ export default function Home() {
         {state.activeTab === "sla" && <SLAView slas={state.slaCommitments} onUpdate={state.updateSLAs} />}
         {state.activeTab === "compliance" && <ComplianceView questions={state.filteredQuestions} categories={state.data.categories} onUpdateCompliant={handleUpdateCompliant} />}
         {state.activeTab === "humanize" && <HumanizeView questions={state.data.questions} onUpdateQuestion={state.updateQuestion} addToast={state.addToast} />}
-        {state.activeTab === "submission" && <SubmissionView questions={state.data.questions} categories={state.data.categories} data={state.data} />}
+        {state.activeTab === "submission" && <SubmissionView questions={state.data.questions} categories={state.data.categories} data={state.data} knowledgeBase={state.knowledgeBase} globalRules={state.globalRules} validationRules={state.validationRules} />}
 
         {state.showRules && <RulesPanel onClose={() => state.setShowRules(false)} rules={state.globalRules} onUpdateRules={state.setGlobalRules} validationRules={state.validationRules} onUpdateValidationRules={state.updateValidationRules} />}
         {state.showWinThemes && <WinThemesPanel themes={state.winThemes} onUpdate={state.updateWinThemes} questions={state.data.questions} onClose={() => state.setShowWinThemes(false)} />}
