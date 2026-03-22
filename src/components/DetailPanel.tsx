@@ -88,7 +88,7 @@ export default function DetailPanel({ question, onClose, onSave, onAiRewrite, ce
   const historyFor = (field: string) => cellHistory[`${q.ref}:${field}`] || [];
 
   return (
-    <div className="absolute right-0 top-0 bottom-0 w-[600px] bg-white border-l shadow-xl z-30 flex flex-col">
+    <div className="absolute right-0 top-0 bottom-0 w-[600px] bg-white border-l shadow-xl z-30 flex flex-col panel-slide-in">
       <div className="flex items-center justify-between px-6 py-4 border-b flex-shrink-0">
         <div>
           <h2 className="text-lg font-semibold text-gray-900">{q.ref}</h2>

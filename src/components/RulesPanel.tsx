@@ -24,7 +24,7 @@ export default function RulesPanel({ onClose, rules, onUpdateRules }: RulesPanel
   };
 
   return (
-    <div className="absolute right-0 top-0 bottom-0 w-[450px] bg-white border-l shadow-lg z-20 flex flex-col">
+    <div className="absolute right-0 top-0 bottom-0 w-[450px] bg-white border-l shadow-xl z-20 flex flex-col panel-slide-in">
       <div className="flex items-center justify-between px-6 py-4 border-b">
         <div>
           <h2 className="text-lg font-semibold text-gray-900">Writing Rules &amp; Guidelines</h2>

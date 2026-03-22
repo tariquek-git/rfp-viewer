@@ -1,17 +1,20 @@
 "use client";
 
 import { useEffect, useState, useMemo, useCallback } from "react";
+import { Save, Download, FileJson, CloudUpload, Sparkles, BookOpen, Settings, LayoutGrid, BarChart3, SlidersHorizontal, RotateCcw, ChevronDown, Circle, History } from "lucide-react";
 import type { RFPData, Question, ViewTab } from "@/types";
 import GridView from "@/components/GridView";
 import ContextView from "@/components/ContextView";
 import RulesPanel from "@/components/RulesPanel";
 import DetailPanel from "@/components/DetailPanel";
+import { ToastContainer, useToast } from "@/components/Toast";
 import type { FeedbackItem } from "@/components/FeedbackPanel";
 
 type CellHistory = Record<string, { value: string; timestamp: number; source: "human" | "ai" }[]>;
 
 export default function Home() {
   const [data, setData] = useState<RFPData | null>(null);
+  const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<ViewTab>("grid");
   const [activeCategory, setActiveCategory] = useState<string>("All");
   const [search, setSearch] = useState("");
@@ -21,27 +24,22 @@ export default function Home() {
   const [statusFilter, setStatusFilter] = useState("All Status");
   const [coverageFilter, setCoverageFilter] = useState("All Coverage");
   const [showRules, setShowRules] = useState(false);
+  const [showFilters, setShowFilters] = useState(true);
   const [selectedQuestion, setSelectedQuestion] = useState<Question | null>(null);
   const [cellHistory, setCellHistory] = useState<CellHistory>({});
   const [feedbackItems, setFeedbackItems] = useState<FeedbackItem[]>([]);
   const [versions, setVersions] = useState<{ label: string; timestamp: number; data: RFPData }[]>([]);
   const [hasUnsaved, setHasUnsaved] = useState(false);
   const [globalRules, setGlobalRules] = useState<string[]>([]);
+  const { toasts, addToast, removeToast } = useToast();
 
-  // Load data
   useEffect(() => {
     fetch("/rfp_data.json")
       .then((r) => r.json())
       .then((d) => {
         setData(d);
-        // Load saved edits from localStorage
         const saved = localStorage.getItem("rfp-edits");
-        if (saved) {
-          try {
-            const edits = JSON.parse(saved);
-            if (edits.questions) setData(edits);
-          } catch {}
-        }
+        if (saved) try { const edits = JSON.parse(saved); if (edits.questions) setData(edits); } catch {}
         const savedHistory = localStorage.getItem("rfp-cell-history");
         if (savedHistory) try { setCellHistory(JSON.parse(savedHistory)); } catch {}
         const savedRules = localStorage.getItem("rfp-global-rules");
@@ -50,17 +48,14 @@ export default function Home() {
         if (savedFeedback) try { setFeedbackItems(JSON.parse(savedFeedback)); } catch {}
         const savedVersions = localStorage.getItem("rfp-versions");
         if (savedVersions) try { setVersions(JSON.parse(savedVersions)); } catch {}
+        setLoading(false);
       })
-      .catch(console.error);
+      .catch((e) => { console.error(e); setLoading(false); });
   }, []);
 
-  // Cmd+S to save
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === "s") {
-        e.preventDefault();
-        saveToLocal();
-      }
+      if ((e.metaKey || e.ctrlKey) && e.key === "s") { e.preventDefault(); saveToLocal(); }
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
@@ -73,28 +68,23 @@ export default function Home() {
     localStorage.setItem("rfp-global-rules", JSON.stringify(globalRules));
     localStorage.setItem("rfp-feedback", JSON.stringify(feedbackItems));
     setHasUnsaved(false);
-  }, [data, cellHistory, globalRules, feedbackItems]);
+    addToast("success", "Changes saved locally");
+  }, [data, cellHistory, globalRules, feedbackItems, addToast]);
 
   const addCellHistory = useCallback((ref: string, field: string, value: string, source: "human" | "ai") => {
     setCellHistory((prev) => {
       const key = `${ref}:${field}`;
-      const existing = prev[key] || [];
-      return { ...prev, [key]: [...existing, { value, timestamp: Date.now(), source }] };
+      return { ...prev, [key]: [...(prev[key] || []), { value, timestamp: Date.now(), source }] };
     });
   }, []);
 
-  // Update a question in the data
   const updateQuestion = useCallback((updated: Question) => {
     if (!data) return;
-    setData({
-      ...data,
-      questions: data.questions.map((q) => (q.ref === updated.ref ? updated : q)),
-    });
+    setData({ ...data, questions: data.questions.map((q) => (q.ref === updated.ref ? updated : q)) });
     setHasUnsaved(true);
     if (selectedQuestion?.ref === updated.ref) setSelectedQuestion(updated);
   }, [data, selectedQuestion]);
 
-  // Inline cell edit from grid
   const handleCellEdit = useCallback((ref: string, field: keyof Question, value: string) => {
     if (!data) return;
     const q = data.questions.find((q) => q.ref === ref);
@@ -103,7 +93,6 @@ export default function Home() {
     updateQuestion({ ...q, [field]: value });
   }, [data, addCellHistory, updateQuestion]);
 
-  // AI rewrite - rules-driven: global rules + row rules + feedback all guide the AI
   const handleAiRewrite = useCallback(async (question: Question, field: "bullet" | "paragraph", rowRules: string, feedback: FeedbackItem[]): Promise<string> => {
     const res = await fetch("/api/rewrite", {
       method: "POST",
@@ -111,23 +100,23 @@ export default function Home() {
       body: JSON.stringify({ question, field, globalRules, rowRules, feedback }),
     });
     const { text, error } = await res.json();
-    if (error) throw new Error(error);
+    if (error) { addToast("error", "AI rewrite failed"); throw new Error(error); }
     addCellHistory(question.ref, field, text, "ai");
+    addToast("success", `AI rewrote ${field} response`);
     return text;
-  }, [globalRules, addCellHistory]);
+  }, [globalRules, addCellHistory, addToast]);
 
-  // Feedback handlers
   const handleAddFeedback = useCallback((ref: string, field: string, comment: string) => {
     setFeedbackItems(prev => [...prev, { ref, field, comment, timestamp: Date.now(), resolved: false }]);
     setHasUnsaved(true);
-  }, []);
+    addToast("info", "Feedback added");
+  }, [addToast]);
 
   const handleResolveFeedback = useCallback((ref: string, timestamp: number) => {
     setFeedbackItems(prev => prev.map(f => f.ref === ref && f.timestamp === timestamp ? { ...f, resolved: true } : f));
     setHasUnsaved(true);
   }, []);
 
-  // Save version snapshot
   const saveVersion = useCallback((label?: string) => {
     if (!data) return;
     const v = { label: label || `v${versions.length + 1}`, timestamp: Date.now(), data: JSON.parse(JSON.stringify(data)) };
@@ -135,6 +124,8 @@ export default function Home() {
     setVersions(newVersions);
     localStorage.setItem("rfp-versions", JSON.stringify(newVersions));
   }, [data, versions]);
+
+  const handleSave = useCallback(() => { saveToLocal(); saveVersion("Auto-save"); }, [saveToLocal, saveVersion]);
 
   const filteredQuestions = useMemo(() => {
     if (!data) return [];
@@ -146,12 +137,6 @@ export default function Home() {
     return qs;
   }, [data, activeCategory, search, confidenceFilter, compliantFilter]);
 
-  // Export helpers
-  const handleSave = useCallback(() => {
-    saveToLocal();
-    saveVersion("Auto-save");
-  }, [saveToLocal, saveVersion]);
-
   const handleExportCSV = useCallback(() => {
     if (!data) return;
     const headers = ["#", "Reference", "Topic", "BSB Requirement", "Response (Bullet)", "Response (Paragraph)", "Confidence", "Compliant"];
@@ -161,7 +146,8 @@ export default function Home() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a"); a.href = url; a.download = "rfp_export.csv"; a.click();
     URL.revokeObjectURL(url);
-  }, [data, filteredQuestions]);
+    addToast("success", "Exported as CSV");
+  }, [data, filteredQuestions, addToast]);
 
   const handleExportJSON = useCallback(() => {
     if (!data) return;
@@ -169,7 +155,8 @@ export default function Home() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a"); a.href = url; a.download = "rfp_export.json"; a.click();
     URL.revokeObjectURL(url);
-  }, [data, filteredQuestions]);
+    addToast("success", "Exported as JSON");
+  }, [data, filteredQuestions, addToast]);
 
   const resetFilters = useCallback(() => {
     setSearch(""); setConfidenceFilter("All Confidence"); setCompliantFilter("All Compliant");
@@ -191,99 +178,179 @@ export default function Home() {
     return "bg-gray-300";
   }, []);
 
-  if (!data) return <div className="flex items-center justify-center h-screen bg-gray-50"><div className="text-gray-500 text-lg">Loading RFP data...</div></div>;
+  const unresolvedFeedback = feedbackItems.filter(f => !f.resolved).length;
+
+  // Loading skeleton
+  if (loading) {
+    return (
+      <div className="flex flex-col h-screen bg-white">
+        <div className="border-b px-6 py-4"><div className="skeleton h-6 w-48 mb-2" /><div className="skeleton h-4 w-72" /></div>
+        <div className="border-b px-6 py-3 flex gap-2">{Array.from({ length: 8 }).map((_, i) => <div key={i} className="skeleton h-7 w-24 rounded" />)}</div>
+        <div className="flex-1 p-6 space-y-3">{Array.from({ length: 10 }).map((_, i) => <div key={i} className="skeleton h-16 w-full rounded" />)}</div>
+      </div>
+    );
+  }
+
+  if (!data) return <div className="flex items-center justify-center h-screen"><p className="text-gray-500">Failed to load data.</p></div>;
 
   return (
     <div className="flex flex-col h-screen bg-white">
+      <ToastContainer toasts={toasts} onRemove={removeToast} />
+
       {/* Header */}
-      <header className="border-b px-6 py-3 flex items-center justify-between flex-shrink-0">
-        <div>
-          <h1 className="text-xl font-bold text-gray-900">
-            BSB Credit Card RFP
-            {hasUnsaved && <span className="text-xs text-orange-500 ml-2 font-normal">unsaved changes</span>}
-          </h1>
-          <p className="text-sm text-gray-500">Brim Financial — {data.stats.total} Questions · {data.categories.length} Categories</p>
+      <header className="border-b border-gray-200 px-6 py-3 flex items-center justify-between flex-shrink-0 bg-white">
+        <div className="flex items-center gap-4">
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center">
+            <BookOpen size={16} className="text-white" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <h1 className="text-lg font-bold text-gray-900">BSB Credit Card RFP</h1>
+              {hasUnsaved && <span className="text-[10px] bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded font-medium">Unsaved</span>}
+            </div>
+            <p className="text-xs text-gray-400">Brim Financial · {data.stats.total} Questions · {data.categories.length} Categories</p>
+          </div>
         </div>
-        <div className="flex items-center gap-2">
-          <button onClick={() => { setActiveTab("grid"); setSelectedQuestion(null); }} className={`px-4 py-1.5 rounded text-sm font-medium ${activeTab === "grid" ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-700 hover:bg-gray-200"}`}>Grid</button>
-          <button onClick={() => { setActiveTab("context"); setSelectedQuestion(null); }} className={`px-4 py-1.5 rounded text-sm font-medium ${activeTab === "context" ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-700 hover:bg-gray-200"}`}>Context &amp; Assumptions</button>
-          <button onClick={() => setShowRules(!showRules)} className={`px-4 py-1.5 rounded text-sm font-medium border ${showRules ? "border-blue-500 text-blue-600 bg-blue-50" : "border-gray-300 text-gray-700 hover:bg-gray-50"}`}>Rules</button>
+
+        {/* Nav Tabs */}
+        <div className="flex items-center bg-gray-100 rounded-lg p-0.5">
+          <button onClick={() => { setActiveTab("grid"); setSelectedQuestion(null); }}
+            className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-md text-sm font-medium transition-all ${activeTab === "grid" ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700"}`}>
+            <LayoutGrid size={14} /> Grid
+          </button>
+          <button onClick={() => { setActiveTab("context"); setSelectedQuestion(null); }}
+            className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-md text-sm font-medium transition-all ${activeTab === "context" ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700"}`}>
+            <BarChart3 size={14} /> Dashboard
+          </button>
         </div>
-        <div className="flex items-center gap-3 text-sm">
-          <span>{data.stats.total} questions</span>
-          <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-green-500 inline-block" />{data.stats.green}</span>
-          <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-yellow-400 inline-block" />{data.stats.yellow}</span>
-          <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-red-500 inline-block" />{data.stats.red}</span>
+
+        {/* Right side: stats + actions */}
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3 text-xs font-medium">
+            <span className="flex items-center gap-1"><Circle size={7} fill="#10b981" className="text-emerald-500" />{data.stats.green}</span>
+            <span className="flex items-center gap-1"><Circle size={7} fill="#f59e0b" className="text-amber-500" />{data.stats.yellow}</span>
+            <span className="flex items-center gap-1"><Circle size={7} fill="#ef4444" className="text-red-500" />{data.stats.red}</span>
+          </div>
+          <div className="w-px h-6 bg-gray-200" />
+          <button onClick={() => setShowRules(!showRules)}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium border transition-all ${showRules ? "border-blue-300 text-blue-600 bg-blue-50" : "border-gray-200 text-gray-500 hover:bg-gray-50"}`}>
+            <BookOpen size={14} /> Rules
+          </button>
+          <button className="p-2 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100">
+            <Settings size={16} />
+          </button>
         </div>
       </header>
 
       {/* Category Tabs */}
-      <div className="border-b px-6 py-2 flex gap-1 overflow-x-auto flex-shrink-0">
-        {["All", ...data.categories].map((cat) => (
-          <button key={cat} onClick={() => setActiveCategory(cat)} className={`px-3 py-1 rounded text-sm whitespace-nowrap ${activeCategory === cat ? "bg-blue-100 text-blue-700 font-medium" : "text-gray-600 hover:bg-gray-100"}`}>
-            {cat} <span className="text-xs text-gray-400">{categoryStats[cat] || 0}</span>
-          </button>
-        ))}
+      <div className="border-b border-gray-200 px-6 py-2 flex gap-1 overflow-x-auto flex-shrink-0 bg-gray-50/50">
+        {["All", ...data.categories].map((cat) => {
+          const isActive = activeCategory === cat;
+          return (
+            <button key={cat} onClick={() => setActiveCategory(cat)}
+              className={`px-3 py-1.5 rounded-md text-xs font-medium whitespace-nowrap transition-all ${isActive ? "bg-blue-600 text-white shadow-sm" : "text-gray-500 hover:bg-gray-100 hover:text-gray-700"}`}>
+              {cat} <span className={`ml-0.5 ${isActive ? "text-blue-200" : "text-gray-400"}`}>{categoryStats[cat] || 0}</span>
+            </button>
+          );
+        })}
       </div>
 
-      {/* Filters & Actions */}
+      {/* Filter & Action Bar (Grid view) */}
       {activeTab === "grid" && (
-        <div className="px-6 py-3 border-b flex items-center gap-3 flex-shrink-0 flex-wrap">
-          <input type="text" placeholder="Search questions, topics, responses..." value={search} onChange={(e) => setSearch(e.target.value)} className="border rounded px-3 py-1.5 text-sm w-80 focus:outline-none focus:ring-2 focus:ring-blue-500" />
-          <select value={confidenceFilter} onChange={(e) => setConfidenceFilter(e.target.value)} className="border rounded px-3 py-1.5 text-sm text-gray-600"><option>All Confidence</option><option>GREEN</option><option>YELLOW</option><option>RED</option></select>
-          <select value={compliantFilter} onChange={(e) => setCompliantFilter(e.target.value)} className="border rounded px-3 py-1.5 text-sm text-gray-600"><option>All Compliant</option><option>Y</option><option>N</option><option>Partial</option></select>
-          <select value={deliveryFilter} onChange={(e) => setDeliveryFilter(e.target.value)} className="border rounded px-3 py-1.5 text-sm text-gray-600"><option>All Delivery</option><option>OOB</option><option>Config</option><option>Custom</option></select>
-          <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="border rounded px-3 py-1.5 text-sm text-gray-600"><option>All Status</option><option>Draft</option><option>Reviewed</option><option>Final</option><option>QA</option></select>
-          <select value={coverageFilter} onChange={(e) => setCoverageFilter(e.target.value)} className="border rounded px-3 py-1.5 text-sm text-gray-600"><option>All Coverage</option><option>Complete</option><option>Partial</option><option>Missing</option></select>
+        <div className="border-b border-gray-200 px-6 py-2.5 flex-shrink-0 bg-white">
+          <div className="flex items-center gap-2">
+            {/* Search */}
+            <div className="relative flex-shrink-0">
+              <input type="text" placeholder="Search..." value={search} onChange={(e) => setSearch(e.target.value)}
+                className="border border-gray-200 rounded-md pl-3 pr-8 py-1.5 text-sm w-64 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 bg-gray-50/50" />
+            </div>
 
-          <div className="flex gap-2 ml-auto">
-            <button onClick={handleSave} className="bg-blue-500 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-blue-600">Save</button>
-            <button onClick={handleExportCSV} className="bg-orange-500 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-orange-600">Export Excel</button>
-            <button onClick={handleExportJSON} className="bg-orange-400 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-orange-500">Export JSON</button>
-            <button className="bg-purple-500 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-purple-600">☁ Push to Cloud</button>
-            {["Draft", "Reviewed", "Final", "QA"].map((s) => (
-              <button key={s} className="border border-gray-300 px-3 py-1.5 rounded text-sm font-medium text-gray-700 hover:bg-gray-50">{s}</button>
-            ))}
-            <button onClick={() => saveVersion()} className="border border-gray-300 px-3 py-1.5 rounded text-sm font-medium text-gray-700 hover:bg-gray-50">
-              Versions{versions.length > 0 && ` (${versions.length})`}
+            {/* Filter toggle */}
+            <button onClick={() => setShowFilters(!showFilters)}
+              className={`flex items-center gap-1 px-2.5 py-1.5 rounded-md text-xs font-medium border transition-all ${showFilters ? "border-blue-300 text-blue-600 bg-blue-50" : "border-gray-200 text-gray-500 hover:bg-gray-50"}`}>
+              <SlidersHorizontal size={13} /> Filters
+              <ChevronDown size={12} className={`transition-transform ${showFilters ? "rotate-180" : ""}`} />
             </button>
-            <button className="bg-red-500 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-red-600">AI Rewrite ({data.stats.yellow + data.stats.red})</button>
+
+            {/* Filters (collapsible) */}
+            {showFilters && (
+              <>
+                <select value={confidenceFilter} onChange={(e) => setConfidenceFilter(e.target.value)} className="border border-gray-200 rounded-md px-2 py-1.5 text-xs text-gray-600 bg-white">
+                  <option>All Confidence</option><option>GREEN</option><option>YELLOW</option><option>RED</option>
+                </select>
+                <select value={compliantFilter} onChange={(e) => setCompliantFilter(e.target.value)} className="border border-gray-200 rounded-md px-2 py-1.5 text-xs text-gray-600 bg-white">
+                  <option>All Compliant</option><option>Y</option><option>N</option><option>Partial</option>
+                </select>
+                <select value={deliveryFilter} onChange={(e) => setDeliveryFilter(e.target.value)} className="border border-gray-200 rounded-md px-2 py-1.5 text-xs text-gray-600 bg-white">
+                  <option>All Delivery</option><option>OOB</option><option>Config</option><option>Custom</option>
+                </select>
+                <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="border border-gray-200 rounded-md px-2 py-1.5 text-xs text-gray-600 bg-white">
+                  <option>All Status</option><option>Draft</option><option>Reviewed</option><option>Final</option><option>QA</option>
+                </select>
+                <button onClick={resetFilters} className="flex items-center gap-1 text-xs text-gray-400 hover:text-blue-500 font-medium">
+                  <RotateCcw size={11} /> Reset
+                </button>
+              </>
+            )}
+
+            {/* Spacer */}
+            <div className="flex-1" />
+
+            {/* Action buttons */}
+            <div className="flex items-center gap-1.5">
+              <button onClick={handleSave} className="flex items-center gap-1.5 bg-blue-600 text-white px-3 py-1.5 rounded-md text-xs font-medium hover:bg-blue-700 shadow-sm">
+                <Save size={13} /> Save
+              </button>
+              <button onClick={handleExportCSV} className="flex items-center gap-1.5 border border-gray-200 text-gray-600 px-2.5 py-1.5 rounded-md text-xs font-medium hover:bg-gray-50">
+                <Download size={13} /> CSV
+              </button>
+              <button onClick={handleExportJSON} className="flex items-center gap-1.5 border border-gray-200 text-gray-600 px-2.5 py-1.5 rounded-md text-xs font-medium hover:bg-gray-50">
+                <FileJson size={13} /> JSON
+              </button>
+              <div className="w-px h-5 bg-gray-200" />
+              <button className="flex items-center gap-1.5 border border-gray-200 text-gray-600 px-2.5 py-1.5 rounded-md text-xs font-medium hover:bg-gray-50">
+                <CloudUpload size={13} /> Push
+              </button>
+              <button onClick={() => saveVersion()} className="flex items-center gap-1.5 border border-gray-200 text-gray-600 px-2.5 py-1.5 rounded-md text-xs font-medium hover:bg-gray-50">
+                <History size={13} /> v{versions.length + 1}
+              </button>
+              <div className="w-px h-5 bg-gray-200" />
+              <button className="flex items-center gap-1.5 bg-gradient-to-r from-violet-600 to-purple-600 text-white px-3 py-1.5 rounded-md text-xs font-medium hover:from-violet-700 hover:to-purple-700 shadow-sm">
+                <Sparkles size={13} /> AI Rewrite
+                <span className="bg-white/20 px-1.5 py-0.5 rounded text-[10px]">{data.stats.yellow + data.stats.red}</span>
+              </button>
+            </div>
+
+            {/* Count */}
+            <span className="text-xs text-gray-400 ml-1">{filteredQuestions.length}/{data.stats.total}</span>
           </div>
-          <span className="text-sm text-gray-500 ml-2">{filteredQuestions.length} of {data.stats.total} shown</span>
-          <button onClick={resetFilters} className="text-sm text-blue-500 hover:underline">Reset</button>
         </div>
       )}
 
       {/* Main Content */}
       <div className="flex-1 overflow-hidden relative">
         {activeTab === "grid" && (
-          <GridView
-            questions={filteredQuestions}
-            getConfidenceColor={getConfidenceColor}
-            onSelectQuestion={setSelectedQuestion}
-            onCellEdit={handleCellEdit}
-          />
+          <GridView questions={filteredQuestions} getConfidenceColor={getConfidenceColor} onSelectQuestion={setSelectedQuestion} onCellEdit={handleCellEdit} />
         )}
         {activeTab === "context" && <ContextView data={data} />}
         {showRules && <RulesPanel onClose={() => setShowRules(false)} rules={globalRules} onUpdateRules={(r) => { setGlobalRules(r); setHasUnsaved(true); }} />}
         {selectedQuestion && (
-          <DetailPanel
-            question={selectedQuestion}
-            onClose={() => setSelectedQuestion(null)}
+          <DetailPanel question={selectedQuestion} onClose={() => setSelectedQuestion(null)}
             onSave={(updated) => { updateQuestion(updated); addCellHistory(updated.ref, "detail-save", "", "human"); }}
-            onAiRewrite={handleAiRewrite}
-            cellHistory={cellHistory}
-            feedbackItems={feedbackItems}
-            onAddFeedback={handleAddFeedback}
-            onResolveFeedback={handleResolveFeedback}
+            onAiRewrite={handleAiRewrite} cellHistory={cellHistory}
+            feedbackItems={feedbackItems} onAddFeedback={handleAddFeedback} onResolveFeedback={handleResolveFeedback}
           />
         )}
       </div>
 
       {/* Footer */}
-      <footer className="border-t px-6 py-2 text-xs text-gray-400 flex justify-between flex-shrink-0">
-        <span>Cmd+S to save · Click any cell to edit · Click reference to open detail panel</span>
-        <span>{feedbackItems.filter(f => !f.resolved).length} items with feedback</span>
+      <footer className="border-t border-gray-200 px-6 py-2 text-[11px] text-gray-400 flex justify-between flex-shrink-0 bg-gray-50/50">
+        <div className="flex items-center gap-4">
+          <span className="flex items-center gap-1"><kbd className="px-1 py-0.5 bg-gray-100 rounded text-[10px] font-mono border border-gray-200">⌘S</kbd> save</span>
+          <span>Click cell to edit</span>
+          <span>Click ref to open detail</span>
+        </div>
+        <span>{unresolvedFeedback > 0 ? `${unresolvedFeedback} open feedback` : "No open feedback"}</span>
       </footer>
     </div>
   );
