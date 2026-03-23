@@ -13,7 +13,7 @@ import {
   GitCompareArrows,
   AlignVerticalSpaceAround,
 } from 'lucide-react';
-import type { Question, SortConfig, WorkflowStatus } from '@/types';
+import type { Question, SortConfig, WorkflowStatus, FeedbackItem } from '@/types';
 import { countWords, getWordCountColor, getWordCountClasses } from '@/lib/wordCount';
 import { detectAIWriting, aiDetectClasses, aiDetectLabel } from '@/lib/aiDetect';
 
@@ -33,6 +33,7 @@ interface GridViewProps {
   pendingDiffKeys: Set<string>;
   density?: TableDensity;
   onChangeDensity?: (d: TableDensity) => void;
+  feedbackItems?: FeedbackItem[];
 }
 
 type ColumnKey =
@@ -55,7 +56,10 @@ type ColumnKey =
   | 'strategic'
   | 'reg_enable'
   | 'committee_score'
-  | 'committee_risk';
+  | 'committee_risk'
+  | 'feedback_count'
+  | 'feedback_bullet'
+  | 'feedback_paragraph';
 
 interface ColumnDef {
   key: ColumnKey;
@@ -68,7 +72,7 @@ interface ColumnDef {
   sortable?: boolean;
 }
 
-type ColumnSource = 'bsb' | 'brim' | 'analysis';
+type ColumnSource = 'bsb' | 'brim' | 'analysis' | 'feedback';
 
 const ALL_COLUMNS: (ColumnDef & { source: ColumnSource })[] = [
   {
@@ -251,18 +255,45 @@ const ALL_COLUMNS: (ColumnDef & { source: ColumnSource })[] = [
     width: 'min-w-[200px]',
     source: 'analysis',
   },
+  {
+    key: 'feedback_count',
+    label: 'Feedback',
+    shortLabel: 'FB',
+    defaultVisible: true,
+    width: 'w-16',
+    type: 'score',
+    source: 'feedback',
+  },
+  {
+    key: 'feedback_bullet',
+    label: 'Feedback (Bullet)',
+    shortLabel: 'FB Bullet',
+    defaultVisible: false,
+    width: 'min-w-[200px]',
+    source: 'feedback',
+  },
+  {
+    key: 'feedback_paragraph',
+    label: 'Feedback (Paragraph)',
+    shortLabel: 'FB Para',
+    defaultVisible: false,
+    width: 'min-w-[200px]',
+    source: 'feedback',
+  },
 ];
 
 const SOURCE_HEADER_COLORS: Record<ColumnSource, string> = {
   bsb: 'border-t-2 border-t-orange-400',
   brim: 'border-t-2 border-t-blue-500',
   analysis: 'border-t-2 border-t-violet-500',
+  feedback: 'border-t-2 border-t-amber-500',
 };
 
 const SOURCE_LABELS: Record<ColumnSource, { label: string; color: string }> = {
   bsb: { label: 'BSB', color: 'bg-orange-100 text-orange-700' },
   brim: { label: 'BRIM', color: 'bg-blue-100 text-blue-700' },
   analysis: { label: 'AI', color: 'bg-violet-100 text-violet-700' },
+  feedback: { label: 'FEEDBACK', color: 'bg-amber-100 text-amber-700' },
 };
 
 const STATUS_COLORS: Record<WorkflowStatus, string> = {
@@ -561,6 +592,7 @@ export default function GridView({
   pendingDiffKeys,
   density = 'comfortable',
   onChangeDensity,
+  feedbackItems = [],
 }: GridViewProps) {
   const [visibleCols, setVisibleCols] = useState<Set<ColumnKey>>(
     () => new Set(ALL_COLUMNS.filter((c) => c.defaultVisible).map((c) => c.key)),
@@ -666,6 +698,41 @@ export default function GridView({
         return <BoolCell value={q.reg_enable} />;
       case 'committee_score':
         return <ScoreCell value={q.committee_score} />;
+      case 'feedback_count': {
+        const fbItems = feedbackItems.filter(f => f.ref === q.ref && !f.resolved);
+        if (fbItems.length === 0) return <span className="text-gray-300">0</span>;
+        return (
+          <span className="text-xs font-bold px-2 py-0.5 rounded bg-amber-50 text-amber-700 border border-amber-200">
+            {fbItems.length}
+          </span>
+        );
+      }
+      case 'feedback_bullet': {
+        const fbBullet = feedbackItems.filter(f => f.ref === q.ref && f.field === 'bullet' && !f.resolved);
+        if (fbBullet.length === 0) return <span className="text-gray-300">—</span>;
+        return (
+          <div className="space-y-1">
+            {fbBullet.slice(0, 3).map(f => (
+              <div key={f.timestamp} className="text-xs bg-amber-50 border border-amber-200 rounded px-2 py-1 text-amber-800">
+                {f.comment.length > 120 ? f.comment.slice(0, 120) + '...' : f.comment}
+              </div>
+            ))}
+          </div>
+        );
+      }
+      case 'feedback_paragraph': {
+        const fbPara = feedbackItems.filter(f => f.ref === q.ref && f.field === 'paragraph' && !f.resolved);
+        if (fbPara.length === 0) return <span className="text-gray-300">—</span>;
+        return (
+          <div className="space-y-1">
+            {fbPara.slice(0, 3).map(f => (
+              <div key={f.timestamp} className="text-xs bg-amber-50 border border-amber-200 rounded px-2 py-1 text-amber-800">
+                {f.comment.length > 120 ? f.comment.slice(0, 120) + '...' : f.comment}
+              </div>
+            ))}
+          </div>
+        );
+      }
       default: {
         const val = String(q[col.key as keyof Question] ?? '');
         if (col.editable) {
@@ -706,6 +773,10 @@ export default function GridView({
             <span className="flex items-center gap-1">
               <span className="w-2.5 h-1 rounded-full bg-violet-500" />
               <span className="text-[10px] text-gray-500 font-medium">AI Analysis</span>
+            </span>
+            <span className="flex items-center gap-1">
+              <span className="w-2.5 h-1 rounded-full bg-amber-500" />
+              <span className="text-[10px] text-gray-500 font-medium">Feedback</span>
             </span>
           </div>
         </div>

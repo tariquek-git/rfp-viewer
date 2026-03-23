@@ -573,6 +573,7 @@ export default function Home() {
               pendingDiffKeys={pendingDiffKeys}
               density={density}
               onChangeDensity={setDensity}
+              feedbackItems={state.feedbackItems}
             />
           )}
           {state.activeTab === 'context' && (

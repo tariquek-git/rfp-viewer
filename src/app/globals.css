@@ -36,17 +36,7 @@
   --font-mono: var(--font-geist-mono);
 }
 
-/* Dark mode */
-.dark {
-  --background: #0a0a0a;
-  --foreground: #ededed;
-  --border: #2d2d2d;
-  --surface: #141414;
-  --surface-hover: #1a1a1a;
-  --text-primary: #f3f4f6;
-  --text-secondary: #9ca3af;
-  --text-tertiary: #6b7280;
-}
+
 
 body {
   background: var(--background);
@@ -66,7 +56,7 @@ body {
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
-.dark ::-webkit-scrollbar-thumb { background: #4b5563; }
+
 
 /* Panel slide-in animation */
 @keyframes slideIn {
@@ -160,41 +150,7 @@ thead .sticky-col-ref {
 .donut-ring { fill: none; }
 .donut-segment { fill: none; stroke-linecap: round; }
 
-/* Dark mode: force higher contrast for readability */
-.dark {
-  color-scheme: dark;
-}
-.dark body {
-  background: #0a0a0a;
-  color: #e5e7eb;
-}
-.dark input, .dark select, .dark textarea {
-  color: #e5e7eb;
-}
-.dark table th {
-  background: #1f2937;
-  color: #d1d5db;
-}
-.dark table td {
-  color: #d1d5db;
-}
-/* Fix dark mode text that's too faint */
-.dark .text-gray-700 { color: #d1d5db; }
-.dark .text-gray-600 { color: #c0c4cc; }
-.dark .text-gray-500 { color: #9ca3af; }
-.dark .text-gray-900 { color: #f3f4f6; }
-.dark .text-gray-800 { color: #e5e7eb; }
-.dark .bg-white { background: #111827; }
-.dark .bg-gray-50 { background: #1a1f2e; }
-.dark .bg-gray-50\/50 { background: rgba(26,31,46,0.5); }
-.dark .bg-gray-50\/30 { background: rgba(26,31,46,0.3); }
-.dark .border-gray-200 { border-color: #374151; }
-.dark .border-gray-100 { border-color: #1f2937; }
-.dark .divide-gray-100 > :not(:last-child) { border-color: #1f2937; }
-.dark .hover\:bg-gray-50:hover { background: #1f2937; }
-.dark .hover\:bg-blue-50\/60:hover { background: rgba(30,58,138,0.3); }
-.dark .bg-red-50\/50 { background: rgba(127,29,29,0.15); }
-.dark .bg-amber-50\/30 { background: rgba(120,53,15,0.1); }
+
 
 /* Print styles for Submission View */
 @media print {
