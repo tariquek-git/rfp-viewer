@@ -29,27 +29,36 @@ if (typeof setInterval !== 'undefined') {
   }, 60_000);
 }
 
+const SITE_PASSWORD = process.env.SITE_PASSWORD || 'brim2026';
+
 export function middleware(request: NextRequest) {
+  // === Password Protection ===
+  const { pathname } = request.nextUrl;
+
+  // Skip password check for the login page itself, API routes, and static assets
+  if (
+    pathname === '/login' ||
+    pathname.startsWith('/api/') ||
+    pathname.startsWith('/_next/') ||
+    pathname === '/favicon.ico'
+  ) {
+    const response = NextResponse.next();
+    addSecurityHeaders(response);
+    return response;
+  }
+
+  // Check for auth cookie
+  const authCookie = request.cookies.get('rfp-auth');
+  if (!authCookie || authCookie.value !== 'authenticated') {
+    // Redirect to login page
+    const loginUrl = new URL('/login', request.url);
+    loginUrl.searchParams.set('redirect', pathname);
+    return NextResponse.redirect(loginUrl);
+  }
+
   const response = NextResponse.next();
 
-  // === Security Headers ===
-  response.headers.set('X-Content-Type-Options', 'nosniff');
-  response.headers.set('X-Frame-Options', 'DENY');
-  response.headers.set('X-XSS-Protection', '1; mode=block');
-  response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
-  response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
-
-  // CSP - allow self, inline styles (Tailwind), and Anthropic API
-  const csp = [
-    "default-src 'self'",
-    "script-src 'self' 'unsafe-eval' 'unsafe-inline'",
-    "style-src 'self' 'unsafe-inline'",
-    "img-src 'self' data: blob:",
-    "font-src 'self'",
-    "connect-src 'self' https://api.anthropic.com https://*.supabase.co",
-    "frame-ancestors 'none'",
-  ].join('; ');
-  response.headers.set('Content-Security-Policy', csp);
+  addSecurityHeaders(response);
 
   // === Rate limiting on API routes ===
   if (request.nextUrl.pathname.startsWith('/api/')) {
@@ -67,6 +76,24 @@ export function middleware(request: NextRequest) {
   }
 
   return response;
+}
+
+function addSecurityHeaders(response: NextResponse) {
+  response.headers.set('X-Content-Type-Options', 'nosniff');
+  response.headers.set('X-Frame-Options', 'DENY');
+  response.headers.set('X-XSS-Protection', '1; mode=block');
+  response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+  response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+  const csp = [
+    "default-src 'self'",
+    "script-src 'self' 'unsafe-eval' 'unsafe-inline'",
+    "style-src 'self' 'unsafe-inline'",
+    "img-src 'self' data: blob:",
+    "font-src 'self'",
+    "connect-src 'self' https://api.anthropic.com https://*.supabase.co",
+    "frame-ancestors 'none'",
+  ].join('; ');
+  response.headers.set('Content-Security-Policy', csp);
 }
 
 export const config = {
