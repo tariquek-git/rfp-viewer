@@ -19,7 +19,8 @@ import type {
   SLACommitment,
 } from '@/types';
 import { computeWordDiff } from '@/lib/diff';
-import { pushToCloud, pullFromCloud } from '@/lib/supabaseSync';
+import { pushToCloud, pullFromCloud, pushVersion } from '@/lib/supabaseSync';
+import { isSupabaseConfigured } from '@/lib/supabase';
 import { useToast } from '@/components/Toast';
 
 const EMPTY_KB: KnowledgeBase = {
@@ -242,10 +243,47 @@ export function useRFPState() {
     [data, versions],
   );
 
-  const handleSave = useCallback(() => {
+  const [cloudSyncStatus, setCloudSyncStatus] = useState<'idle' | 'syncing' | 'synced' | 'error'>('idle');
+
+  const handleSave = useCallback(async () => {
     saveToLocal();
     saveVersion('Auto-save');
-  }, [saveToLocal, saveVersion]);
+
+    // Auto-sync to Supabase if configured
+    if (isSupabaseConfigured() && data) {
+      setCloudSyncStatus('syncing');
+      try {
+        const result = await pushToCloud({
+          questions: data.questions,
+          globalRules,
+          validationRules,
+          feedbackItems,
+          knowledgeBase,
+          pricingModel,
+          winThemes,
+          milestones,
+          slaCommitments,
+          versions,
+        });
+        if (result.success) {
+          // Also save a version snapshot to cloud
+          await pushVersion(
+            `Auto-save ${new Date().toLocaleTimeString()}`,
+            data,
+            'auto',
+          );
+          setCloudSyncStatus('synced');
+          addToast('success', 'Saved locally + synced to cloud');
+        } else {
+          setCloudSyncStatus('error');
+          addToast('warning', `Local saved, cloud sync failed: ${result.message}`);
+        }
+      } catch {
+        setCloudSyncStatus('error');
+        addToast('warning', 'Local saved, cloud sync failed');
+      }
+    }
+  }, [saveToLocal, saveVersion, data, globalRules, validationRules, feedbackItems, knowledgeBase, pricingModel, winThemes, milestones, slaCommitments, versions, addToast]);
 
   // === Cell History ===
   const addCellHistory = useCallback(
@@ -827,6 +865,7 @@ export function useRFPState() {
     showTemplates,
     setShowTemplates,
     // Cloud sync
+    cloudSyncStatus,
     handlePushToCloud,
     handlePullFromCloud,
     loadTemplateData,

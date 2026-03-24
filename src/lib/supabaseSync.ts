@@ -368,3 +368,51 @@ export async function loadTemplate(id: string): Promise<RFPData | null> {
   const { data } = await supabase.from('rfp_templates').select('data').eq('id', id).single();
   return data?.data as RFPData | null;
 }
+
+// === VERSIONS (cloud-backed version history) ===
+
+export interface CloudVersion {
+  id: string;
+  label: string;
+  created_by: string;
+  created_at: string;
+}
+
+export async function pushVersion(
+  label: string,
+  snapshot: RFPData,
+  createdBy: string = 'user',
+): Promise<SyncResult> {
+  if (!isSupabaseConfigured() || !supabase) {
+    return { success: false, message: 'Supabase not configured' };
+  }
+  const { error } = await supabase.from('versions').insert({
+    id: `v-${Date.now()}`,
+    label,
+    snapshot,
+    created_by: createdBy,
+    created_at: new Date().toISOString(),
+  });
+  if (error) return { success: false, message: error.message };
+  return { success: true, message: `Version "${label}" saved to cloud` };
+}
+
+export async function pullVersions(): Promise<CloudVersion[]> {
+  if (!isSupabaseConfigured() || !supabase) return [];
+  const { data } = await supabase
+    .from('versions')
+    .select('id, label, created_by, created_at')
+    .order('created_at', { ascending: false })
+    .limit(50);
+  return (data || []) as CloudVersion[];
+}
+
+export async function loadCloudVersion(id: string): Promise<RFPData | null> {
+  if (!isSupabaseConfigured() || !supabase) return null;
+  const { data } = await supabase
+    .from('versions')
+    .select('snapshot')
+    .eq('id', id)
+    .single();
+  return data?.snapshot as RFPData | null;
+}

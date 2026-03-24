@@ -32,54 +32,30 @@ function LoginForm() {
   }
 
   return (
-    <div
-      style={{
-        minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        background: '#0f172a',
-        fontFamily: 'Arial, sans-serif',
-      }}
-    >
-      <div
-        style={{
-          background: '#1e293b',
-          borderRadius: '12px',
-          padding: '48px',
-          width: '400px',
-          boxShadow: '0 25px 50px rgba(0,0,0,0.5)',
-        }}
-      >
-        <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-          <h1
-            style={{
-              color: '#f8fafc',
-              fontSize: '24px',
-              fontWeight: 700,
-              margin: '0 0 8px 0',
-            }}
-          >
+    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="bg-white rounded-xl p-12 w-[400px] shadow-lg border border-gray-200">
+        <div className="text-center mb-8">
+          <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 mx-auto mb-4 flex items-center justify-center">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+              <polyline points="14 2 14 8 20 8" />
+              <line x1="16" y1="13" x2="8" y2="13" />
+              <line x1="16" y1="17" x2="8" y2="17" />
+            </svg>
+          </div>
+          <h1 className="text-gray-900 text-xl font-bold mb-1">
             BSB RFP Workbook
           </h1>
-          <p style={{ color: '#94a3b8', fontSize: '14px', margin: 0 }}>
+          <p className="text-gray-500 text-sm">
             Brim Financial — Confidential
           </p>
         </div>
 
         <form onSubmit={handleSubmit}>
-          <div style={{ marginBottom: '16px' }}>
+          <div className="mb-4">
             <label
               htmlFor="password"
-              style={{
-                display: 'block',
-                color: '#94a3b8',
-                fontSize: '12px',
-                fontWeight: 600,
-                textTransform: 'uppercase',
-                letterSpacing: '0.05em',
-                marginBottom: '8px',
-              }}
+              className="block text-gray-500 text-xs font-semibold uppercase tracking-wide mb-2"
             >
               Password
             </label>
@@ -90,28 +66,14 @@ function LoginForm() {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter password"
               autoFocus
-              style={{
-                width: '100%',
-                padding: '12px 16px',
-                background: '#0f172a',
-                border: error ? '1px solid #ef4444' : '1px solid #334155',
-                borderRadius: '8px',
-                color: '#f8fafc',
-                fontSize: '16px',
-                outline: 'none',
-                boxSizing: 'border-box',
-              }}
+              className={`w-full px-4 py-3 bg-gray-50 border rounded-lg text-gray-900 text-base outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                error ? 'border-red-400' : 'border-gray-300'
+              }`}
             />
           </div>
 
           {error && (
-            <p
-              style={{
-                color: '#ef4444',
-                fontSize: '13px',
-                margin: '0 0 16px 0',
-              }}
-            >
+            <p className="text-red-500 text-sm mb-4">
               {error}
             </p>
           )}
@@ -119,17 +81,11 @@ function LoginForm() {
           <button
             type="submit"
             disabled={loading || !password}
-            style={{
-              width: '100%',
-              padding: '12px',
-              background: loading ? '#334155' : '#3b82f6',
-              color: '#fff',
-              border: 'none',
-              borderRadius: '8px',
-              fontSize: '15px',
-              fontWeight: 600,
-              cursor: loading ? 'not-allowed' : 'pointer',
-            }}
+            className={`w-full py-3 text-white border-none rounded-lg text-sm font-semibold ${
+              loading || !password
+                ? 'bg-gray-300 cursor-not-allowed'
+                : 'bg-blue-600 hover:bg-blue-700 cursor-pointer'
+            }`}
           >
             {loading ? 'Verifying...' : 'Enter'}
           </button>
