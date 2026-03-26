@@ -290,6 +290,8 @@ export default function DetailPanel({
  </div>
  <div className="flex items-center gap-2">
  {dirty && (
+ <>
+ <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" title="Unsaved changes" />
  <button
  onClick={() => {
  onSave(q);
@@ -299,9 +301,10 @@ export default function DetailPanel({
  >
  Save
  </button>
+ </>
  )}
  <button
- onClick={onClose}
+ onClick={() => { if (dirty && !window.confirm('You have unsaved changes. Close anyway?')) return; onClose(); }}
  className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 text-lg font-bold"
  >
  ×

@@ -71,7 +71,7 @@ export default function SLAView({ slas, onUpdate }: SLAViewProps) {
  </div>
  <button
  onClick={() => setAdding(true)}
- className="flex items-center gap-1.5 bg-violet-600 text-white px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-violet-700"
+ className="flex items-center gap-1.5 bg-blue-600 text-white px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-blue-700"
  >
  <Plus size={13} /> Add SLA
  </button>
@@ -240,7 +240,7 @@ export default function SLAView({ slas, onUpdate }: SLAViewProps) {
  <button
  onClick={addSLA}
  disabled={!draft.metric}
- className="flex-1 bg-violet-600 text-white rounded-lg py-2 text-sm font-medium hover:bg-violet-700 disabled:opacity-40"
+ className="flex-1 bg-blue-600 text-white rounded-lg py-2 text-sm font-medium hover:bg-blue-700 disabled:opacity-40"
  >
  Add
  </button>

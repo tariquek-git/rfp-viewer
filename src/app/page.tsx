@@ -277,7 +277,7 @@ export default function Home() {
                       state.setActiveTab(tab.key);
                       state.setSelectedQuestion(null);
                     }}
-                    className={`flex items-center gap-1 px-2 py-1 rounded-md text-[11px] font-medium whitespace-nowrap transition-all ${state.activeTab === tab.key ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+                    className={`flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium whitespace-nowrap transition-all ${state.activeTab === tab.key ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
                   >
                     <tab.icon size={11} /> {tab.label}
                   </button>
@@ -306,14 +306,14 @@ export default function Home() {
           </div>
           <div className="w-px h-5 bg-gray-200" />
           <button
-            onClick={() => state.setShowWinThemes(!state.showWinThemes)}
+            onClick={() => { state.setSelectedQuestion(null); state.setShowWinThemes(!state.showWinThemes); }}
             className={`p-1.5 rounded-md ${state.showWinThemes ? 'text-violet-600 bg-violet-50' : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100'}`}
             title="Win Themes"
           >
             <Target size={14} />
           </button>
           <button
-            onClick={() => state.setShowRules(!state.showRules)}
+            onClick={() => { state.setSelectedQuestion(null); state.setShowRules(!state.showRules); }}
             className={`p-1.5 rounded-md ${state.showRules ? 'text-blue-600 bg-blue-50' : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100'}`}
             title="Rules"
           >
@@ -353,7 +353,7 @@ export default function Home() {
               <button
                 key={cat}
                 onClick={() => state.setActiveCategory(cat)}
-                className={`px-2.5 py-1 rounded-md text-[11px] font-medium whitespace-nowrap ${isActive ? 'bg-blue-600 text-white shadow-sm' : 'text-gray-500 hover:bg-gray-100'}`}
+                className={`px-2.5 py-1 rounded-md text-xs font-medium whitespace-nowrap ${isActive ? 'bg-blue-600 text-white shadow-sm' : 'text-gray-500 hover:bg-gray-100'}`}
               >
                 {cat}{' '}
                 <span className={isActive ? 'text-blue-200' : 'text-gray-400'}>
@@ -391,12 +391,12 @@ export default function Home() {
             </div>
             <button
               onClick={() => state.setShowFilters(!state.showFilters)}
-              className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-medium border ${state.showFilters ? 'border-blue-300 text-blue-600 bg-blue-50' : 'border-gray-200 text-gray-500'}`}
+              className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium border ${state.showFilters ? 'border-blue-300 text-blue-600 bg-blue-50' : 'border-gray-200 text-gray-500'}`}
             >
               <SlidersHorizontal size={12} /> Filters{' '}
               <ChevronDown size={10} className={state.showFilters ? 'rotate-180' : ''} />
             </button>
-            <span className="text-[10px] text-gray-400">
+            <span className="text-[10px] text-gray-500 bg-gray-100 px-2 py-0.5 rounded font-medium">
               {state.filteredQuestions.length}/{state.data.stats.total}
             </span>
 
@@ -414,78 +414,78 @@ export default function Home() {
             <div className="flex items-center gap-1">
               <button
                 onClick={state.handleSave}
-                className="flex items-center gap-1 bg-blue-600 text-white px-2.5 py-1.5 rounded-lg text-[11px] font-medium hover:bg-blue-700 shadow-sm"
+                className="flex items-center gap-1 bg-blue-600 text-white px-2.5 py-1.5 rounded-lg text-xs font-medium hover:bg-blue-700 shadow-sm"
               >
                 <Save size={12} /> Save
               </button>
 
-              <div className="w-px h-4 bg-gray-200 mx-0.5" />
+              <div className="w-px h-6 bg-gray-300 mx-1" />
               <button
                 onClick={state.handleExportCSV}
-                className="flex items-center gap-1 border border-gray-200 text-gray-600 px-2 py-1.5 rounded-lg text-[11px] font-medium hover:bg-gray-50"
+                className="flex items-center gap-1 border border-gray-200 text-gray-600 px-2 py-1.5 rounded-lg text-xs font-medium hover:bg-gray-50"
               >
                 <Download size={11} /> CSV
               </button>
               <button
                 onClick={state.handleExportJSON}
-                className="flex items-center gap-1 border border-gray-200 text-gray-600 px-2 py-1.5 rounded-lg text-[11px] font-medium hover:bg-gray-50"
+                className="flex items-center gap-1 border border-gray-200 text-gray-600 px-2 py-1.5 rounded-lg text-xs font-medium hover:bg-gray-50"
               >
                 <FileJson size={11} /> JSON
               </button>
 
-              <div className="w-px h-4 bg-gray-200 mx-0.5" />
+              <div className="w-px h-6 bg-gray-300 mx-1" />
               <button
                 onClick={state.handlePushToCloud}
-                className="flex items-center gap-1 border border-gray-200 text-gray-600 px-2 py-1.5 rounded-lg text-[11px] font-medium hover:bg-gray-50"
+                className="flex items-center gap-1 border border-gray-200 text-gray-600 px-2 py-1.5 rounded-lg text-xs font-medium hover:bg-gray-50"
                 title="Push to Supabase"
               >
                 <CloudUpload size={11} /> Push
               </button>
               <button
                 onClick={state.handlePullFromCloud}
-                className="flex items-center gap-1 border border-gray-200 text-gray-600 px-2 py-1.5 rounded-lg text-[11px] font-medium hover:bg-gray-50"
+                className="flex items-center gap-1 border border-gray-200 text-gray-600 px-2 py-1.5 rounded-lg text-xs font-medium hover:bg-gray-50"
                 title="Pull from Supabase"
               >
                 <CloudDownload size={11} /> Pull
               </button>
               <button
                 onClick={() => state.saveVersion()}
-                className="flex items-center gap-1 border border-gray-200 text-gray-600 px-2 py-1.5 rounded-lg text-[11px] font-medium hover:bg-gray-50"
+                className="flex items-center gap-1 border border-gray-200 text-gray-600 px-2 py-1.5 rounded-lg text-xs font-medium hover:bg-gray-50"
               >
                 <History size={11} /> v{state.versions.length + 1}
               </button>
               {state.versions.length > 0 && (
                 <button
                   onClick={() => state.setShowVersionCompare(true)}
-                  className="flex items-center border border-gray-200 text-gray-600 p-1.5 rounded-lg text-[11px] hover:bg-gray-50"
+                  className="flex items-center border border-gray-200 text-gray-600 p-1.5 rounded-lg text-xs hover:bg-gray-50"
                   title="Compare versions"
                 >
                   <GitCompareArrows size={11} />
                 </button>
               )}
 
-              <div className="w-px h-4 bg-gray-200 mx-0.5" />
+              <div className="w-px h-6 bg-gray-300 mx-1" />
               <button
                 onClick={handleConsistencyCheck}
-                className="flex items-center gap-1 border border-gray-200 text-gray-600 px-2 py-1.5 rounded-lg text-[11px] font-medium hover:bg-gray-50"
+                className="flex items-center gap-1 border border-gray-200 text-gray-600 px-2 py-1.5 rounded-lg text-xs font-medium hover:bg-gray-50"
                 title="Consistency Check"
               >
                 <Scan size={11} /> Check
               </button>
               <button
                 onClick={() => state.setShowNarrativeAudit(true)}
-                className="flex items-center gap-1 border border-gray-200 text-gray-600 px-2 py-1.5 rounded-lg text-[11px] font-medium hover:bg-gray-50"
+                className="flex items-center gap-1 border border-gray-200 text-gray-600 px-2 py-1.5 rounded-lg text-xs font-medium hover:bg-gray-50"
                 title="Narrative Audit"
               >
                 <BookText size={11} /> Audit
               </button>
               <button
                 onClick={() => state.setShowSummary(true)}
-                className="flex items-center gap-1 border border-gray-200 text-gray-600 px-2 py-1.5 rounded-lg text-[11px] font-medium hover:bg-gray-50"
+                className="flex items-center gap-1 border border-gray-200 text-gray-600 px-2 py-1.5 rounded-lg text-xs font-medium hover:bg-gray-50"
               >
                 <FileText size={11} /> Summary
               </button>
-              <button className="flex items-center gap-1 bg-gradient-to-r from-violet-600 to-purple-600 text-white px-2.5 py-1.5 rounded-lg text-[11px] font-medium hover:from-violet-700 hover:to-purple-700 shadow-sm">
+              <button className="flex items-center gap-1 bg-gradient-to-r from-violet-600 to-purple-600 text-white px-2.5 py-1.5 rounded-lg text-xs font-medium hover:from-violet-700 hover:to-purple-700 shadow-sm">
                 <Sparkles size={11} /> AI Rewrite{' '}
                 <span className="bg-white/20 px-1 rounded text-[9px]">
                   {state.data.stats.yellow + state.data.stats.red}
@@ -520,7 +520,7 @@ export default function Home() {
                   key={i}
                   value={f.value}
                   onChange={(e) => f.onChange(e.target.value)}
-                  className="border border-gray-200 rounded-lg px-2 py-1 text-[11px] text-gray-600 bg-white focus:outline-none"
+                  className="border border-gray-200 rounded-lg px-2 py-1 text-xs text-gray-600 bg-white focus:outline-none"
                 >
                   {f.options.map((o) => (
                     <option key={o}>{o}</option>
@@ -530,7 +530,7 @@ export default function Home() {
               <select
                 value={state.statusFilter}
                 onChange={(e) => state.setStatusFilter(e.target.value)}
-                className="border border-gray-200 rounded-lg px-2 py-1 text-[11px] text-gray-600 bg-white focus:outline-none"
+                className="border border-gray-200 rounded-lg px-2 py-1 text-xs text-gray-600 bg-white focus:outline-none"
               >
                 <option>All Status</option>
                 <option value="draft">Draft</option>
@@ -540,7 +540,7 @@ export default function Home() {
               </select>
               <button
                 onClick={state.resetFilters}
-                className="flex items-center gap-0.5 text-[11px] text-gray-400 hover:text-blue-500 font-medium ml-1"
+                className="flex items-center gap-0.5 text-xs text-gray-400 hover:text-blue-500 font-medium ml-1"
               >
                 <RotateCcw size={10} /> Reset
               </button>
@@ -557,12 +557,27 @@ export default function Home() {
           </div>
         }
       >
-        <div className="flex-1 overflow-hidden relative">
+        <div className="flex-1 overflow-hidden relative flex flex-col">
+          <div className="px-6 py-1 text-xs text-gray-400 border-b border-gray-100 bg-white flex items-center gap-1.5 flex-shrink-0">
+            <span className="font-medium text-gray-500">
+              {{ grid: 'Grid', context: 'Dashboard', humanize: 'AI Detect', knowledgebase: 'Knowledge Base', pricing: 'Pricing', timeline: 'Timeline', sla: 'SLA', compliance: 'Compliance', submission: 'Submission' }[state.activeTab] || state.activeTab}
+            </span>
+            {state.activeTab === 'grid' && state.activeCategory !== 'All' && (
+              <>
+                <span className="text-gray-300">/</span>
+                <span>{state.activeCategory}</span>
+              </>
+            )}
+            <span className="ml-auto text-gray-300">
+              {state.activeTab === 'grid' && `${state.filteredQuestions.length} of ${state.data.stats.total}`}
+            </span>
+          </div>
+          <div className="flex-1 overflow-hidden relative">
           {state.activeTab === 'grid' && (
             <GridView
               questions={state.filteredQuestions}
               getConfidenceColor={state.getConfidenceColor}
-              onSelectQuestion={state.setSelectedQuestion}
+              onSelectQuestion={(q) => { state.setShowRules(false); state.setShowWinThemes(false); state.setSelectedQuestion(q); }}
               onCellEdit={state.handleCellEdit}
               selectedRows={state.selectedRows}
               onToggleRow={state.toggleRow}
@@ -657,6 +672,7 @@ export default function Home() {
             />
           )}
         </div>
+        </div>
 
         {/* Modals */}
         {state.showConsistency && (
@@ -717,27 +733,24 @@ export default function Home() {
       </Suspense>
 
       {/* Footer */}
-      <footer className="border-t border-gray-200 px-6 py-1.5 text-[10px] text-gray-400 flex justify-between flex-shrink-0 bg-gray-50/50">
-        <div className="flex items-center gap-3">
-          <span>
-            <kbd className="px-1 py-0.5 bg-gray-100 rounded text-[9px] font-mono border border-gray-200">
-              ⌘S
-            </kbd>{' '}
-            save
-          </span>
-          <span>
-            <kbd className="px-1 py-0.5 bg-gray-100 rounded text-[9px] font-mono border border-gray-200">
-              ?
-            </kbd>{' '}
-            shortcuts
+      <footer className="border-t border-gray-200 px-6 py-2 text-xs text-gray-400 flex items-center justify-between flex-shrink-0 bg-gray-50/50">
+        <div className="flex items-center gap-4">
+          <span className="flex items-center gap-1">
+            <kbd className="px-1 py-0.5 bg-gray-100 rounded text-[10px] font-mono border border-gray-200">⌘S</kbd> save
           </span>
           <span>Click ref to open detail</span>
         </div>
-        <span>
-          {state.unresolvedFeedback > 0
-            ? `${state.unresolvedFeedback} open feedback`
-            : 'No open feedback'}
-        </span>
+        <div className="flex items-center gap-3">
+          {state.hasUnsaved && (
+            <span className="flex items-center gap-1 text-amber-600 font-medium">
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-500" /> Unsaved
+            </span>
+          )}
+          {state.unresolvedFeedback > 0 && (
+            <span className="text-orange-500">{state.unresolvedFeedback} open feedback</span>
+          )}
+          <span className="text-gray-300">v{state.versions.length}</span>
+        </div>
       </footer>
     </div>
   );

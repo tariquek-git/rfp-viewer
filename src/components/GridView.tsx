@@ -666,7 +666,7 @@ export default function GridView({
           <div className="flex items-center gap-1.5">
             <button
               onClick={() => onSelectQuestion(q)}
-              className="text-blue-600 hover:text-blue-800 hover:underline font-semibold text-left text-[13px]"
+              className="text-blue-600 hover:text-blue-800 hover:underline font-semibold text-left text-sm"
             >
               {q.ref}
             </button>
@@ -856,7 +856,7 @@ export default function GridView({
                     />
                   </td>
                   {activeCols.map((col) => (
-                    <td key={col.key} className="px-3 py-2.5 text-gray-700 align-top text-[13px]">
+                    <td key={col.key} className="px-3 py-2.5 text-gray-700 align-top text-sm">
                       {getCellValue(q, col)}
                     </td>
                   ))}
