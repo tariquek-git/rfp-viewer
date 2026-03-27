@@ -123,7 +123,7 @@ const ALL_COLUMNS: (ColumnDef & { source: ColumnSource })[] = [
     key: 'paragraph',
     label: 'Brim Response (Paragraph)',
     shortLabel: 'Paragraph',
-    defaultVisible: false,
+    defaultVisible: true,
     width: 'min-w-[280px]',
     editable: true,
     source: 'brim',
@@ -749,6 +749,42 @@ export default function GridView({
       }
       default: {
         const val = String(q[col.key as keyof Question] ?? '');
+
+        // Bullet and paragraph: click opens DetailPanel for full editing + AI tools
+        if (col.key === 'bullet' || col.key === 'paragraph') {
+          if (!val) return (
+            <span
+              className="text-gray-300 italic cursor-pointer hover:text-blue-400"
+              onClick={() => onSelectQuestion(q)}
+              title="Click to open and edit"
+            >
+              — click to add
+            </span>
+          );
+          const wc = countWords(val);
+          const wcColor = getWordCountColor(wc);
+          const truncated = val.length > 180;
+          return (
+            <div
+              className="cursor-pointer group relative"
+              onClick={() => onSelectQuestion(q)}
+              title="Click to open detail panel"
+            >
+              <span className="group-hover:bg-blue-50 group-hover:outline group-hover:outline-1 group-hover:outline-blue-200 rounded px-0.5 -mx-0.5 leading-relaxed">
+                {truncated ? val.slice(0, 180) + ' ...' : val}
+              </span>
+              <span className="absolute top-0 right-0 opacity-0 group-hover:opacity-100 text-blue-400 transition-opacity" title="Open detail">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+              </span>
+              <div className="flex items-center gap-2 mt-0.5">
+                <span className={`text-[9px] px-1 py-0 rounded ${getWordCountClasses(wcColor)}`}>
+                  {wc}w
+                </span>
+              </div>
+            </div>
+          );
+        }
+
         if (col.editable) {
           return (
             <EditableCell
