@@ -205,27 +205,27 @@ export default function Home() {
   // Nav organized into groups
   const NAV_GROUPS = [
     {
-      label: 'Work',
+      label: 'RFP Work',
       tabs: [
-        { key: 'grid' as const, icon: LayoutGrid, label: 'Grid' },
+        { key: 'grid' as const, icon: LayoutGrid, label: 'Response Grid' },
         { key: 'context' as const, icon: BarChart3, label: 'Dashboard' },
-        { key: 'humanize' as const, icon: Bot, label: 'AI Detect' },
+        { key: 'humanize' as const, icon: Bot, label: 'AI QA' },
       ],
     },
     {
-      label: 'Proposal',
+      label: 'Strategy',
       tabs: [
-        { key: 'knowledgebase' as const, icon: BookOpen, label: 'KB' },
+        { key: 'knowledgebase' as const, icon: BookOpen, label: 'Knowledge Base' },
         { key: 'pricing' as const, icon: DollarSign, label: 'Pricing' },
         { key: 'timeline' as const, icon: Calendar, label: 'Timeline' },
-        { key: 'sla' as const, icon: Shield, label: 'SLA' },
+        { key: 'sla' as const, icon: Shield, label: 'SLAs' },
       ],
     },
     {
-      label: 'Review',
+      label: 'Review & Submit',
       tabs: [
         { key: 'compliance' as const, icon: ClipboardCheck, label: 'Compliance' },
-        { key: 'submission' as const, icon: FileText, label: 'Submit' },
+        { key: 'submission' as const, icon: FileText, label: 'Export' },
       ],
     },
   ];
@@ -308,14 +308,14 @@ export default function Home() {
           <button
             onClick={() => { state.setSelectedQuestion(null); state.setShowWinThemes(!state.showWinThemes); }}
             className={`p-1.5 rounded-md ${state.showWinThemes ? 'text-violet-600 bg-violet-50' : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100'}`}
-            title="Win Themes"
+            title="Strategic Win Themes"
           >
             <Target size={14} />
           </button>
           <button
             onClick={() => { state.setSelectedQuestion(null); state.setShowRules(!state.showRules); }}
             className={`p-1.5 rounded-md ${state.showRules ? 'text-blue-600 bg-blue-50' : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100'}`}
-            title="Rules"
+            title="AI Writing Rules & Direction"
           >
             <BookOpen size={14} />
           </button>
@@ -560,7 +560,7 @@ export default function Home() {
         <div className="flex-1 overflow-hidden relative flex flex-col">
           <div className="px-6 py-1 text-xs text-gray-400 border-b border-gray-100 bg-white flex items-center gap-1.5 flex-shrink-0">
             <span className="font-medium text-gray-500">
-              {{ grid: 'Grid', context: 'Dashboard', humanize: 'AI Detect', knowledgebase: 'Knowledge Base', pricing: 'Pricing', timeline: 'Timeline', sla: 'SLA', compliance: 'Compliance', submission: 'Submission' }[state.activeTab] || state.activeTab}
+              {{ grid: 'Response Grid', context: 'Dashboard', humanize: 'AI QA', knowledgebase: 'Knowledge Base', pricing: 'Pricing', timeline: 'Timeline', sla: 'SLAs', compliance: 'Compliance', submission: 'Export' }[state.activeTab] || state.activeTab}
             </span>
             {state.activeTab === 'grid' && state.activeCategory !== 'All' && (
               <>

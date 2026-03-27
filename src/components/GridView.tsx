@@ -103,7 +103,7 @@ const ALL_COLUMNS: (ColumnDef & { source: ColumnSource })[] = [
   },
   {
     key: 'requirement',
-    label: 'BSB Requirement',
+    label: 'BSB Question / Requirement',
     shortLabel: 'Requirement',
     defaultVisible: true,
     width: 'min-w-[280px]',
@@ -112,7 +112,7 @@ const ALL_COLUMNS: (ColumnDef & { source: ColumnSource })[] = [
   },
   {
     key: 'bullet',
-    label: 'Response (Bullet)',
+    label: 'Brim Response (Bullet)',
     shortLabel: 'Bullet',
     defaultVisible: true,
     width: 'min-w-[280px]',
@@ -121,7 +121,7 @@ const ALL_COLUMNS: (ColumnDef & { source: ColumnSource })[] = [
   },
   {
     key: 'paragraph',
-    label: 'Response (Paragraph)',
+    label: 'Brim Response (Paragraph)',
     shortLabel: 'Paragraph',
     defaultVisible: false,
     width: 'min-w-[280px]',
@@ -130,7 +130,7 @@ const ALL_COLUMNS: (ColumnDef & { source: ColumnSource })[] = [
   },
   {
     key: 'confidence',
-    label: 'Confidence',
+    label: 'AI Confidence Rating',
     shortLabel: 'Conf.',
     defaultVisible: true,
     width: 'w-24',
@@ -169,8 +169,8 @@ const ALL_COLUMNS: (ColumnDef & { source: ColumnSource })[] = [
   },
   {
     key: 'ai_detect',
-    label: 'AI Detect',
-    shortLabel: 'AI',
+    label: 'AI Language Detection',
+    shortLabel: 'AI Lang',
     defaultVisible: true,
     width: 'w-20',
     type: 'badge',
@@ -221,7 +221,7 @@ const ALL_COLUMNS: (ColumnDef & { source: ColumnSource })[] = [
   },
   {
     key: 'strategic',
-    label: 'Strategic',
+    label: 'Strategic Positioning',
     shortLabel: 'Strat.',
     defaultVisible: false,
     width: 'w-20',
@@ -239,7 +239,7 @@ const ALL_COLUMNS: (ColumnDef & { source: ColumnSource })[] = [
   },
   {
     key: 'committee_score',
-    label: 'Committee Score',
+    label: 'AI Quality Score',
     shortLabel: 'Score',
     defaultVisible: true,
     width: 'w-20',
@@ -249,7 +249,7 @@ const ALL_COLUMNS: (ColumnDef & { source: ColumnSource })[] = [
   },
   {
     key: 'committee_risk',
-    label: 'Committee Risk',
+    label: 'AI Risk Assessment',
     shortLabel: 'Risk',
     defaultVisible: false,
     width: 'min-w-[200px]',
@@ -290,9 +290,9 @@ const SOURCE_HEADER_COLORS: Record<ColumnSource, string> = {
 };
 
 const SOURCE_LABELS: Record<ColumnSource, { label: string; color: string }> = {
-  bsb: { label: 'BSB', color: 'bg-orange-100 text-orange-700' },
-  brim: { label: 'BRIM', color: 'bg-blue-100 text-blue-700' },
-  analysis: { label: 'AI', color: 'bg-violet-100 text-violet-700' },
+  bsb: { label: 'BSB ASK', color: 'bg-orange-100 text-orange-700' },
+  brim: { label: 'BRIM RESPONSE', color: 'bg-blue-100 text-blue-700' },
+  analysis: { label: 'AI ANALYSIS', color: 'bg-violet-100 text-violet-700' },
   feedback: { label: 'FEEDBACK', color: 'bg-amber-100 text-amber-700' },
 };
 
@@ -764,19 +764,19 @@ export default function GridView({
           <div className="flex items-center gap-2">
             <span className="flex items-center gap-1">
               <span className="w-2.5 h-1 rounded-full bg-orange-400" />
-              <span className="text-[10px] text-gray-500 font-medium">BSB</span>
+              <span className="text-[10px] text-gray-500 font-medium">BSB Asks</span>
             </span>
             <span className="flex items-center gap-1">
               <span className="w-2.5 h-1 rounded-full bg-blue-500" />
-              <span className="text-[10px] text-gray-500 font-medium">Brim</span>
+              <span className="text-[10px] text-gray-500 font-medium">Brim Responds</span>
             </span>
             <span className="flex items-center gap-1">
               <span className="w-2.5 h-1 rounded-full bg-violet-500" />
-              <span className="text-[10px] text-gray-500 font-medium">AI Analysis</span>
+              <span className="text-[10px] text-gray-500 font-medium">Claude AI Analysis</span>
             </span>
             <span className="flex items-center gap-1">
               <span className="w-2.5 h-1 rounded-full bg-amber-500" />
-              <span className="text-[10px] text-gray-500 font-medium">Feedback</span>
+              <span className="text-[10px] text-gray-500 font-medium">User Feedback</span>
             </span>
           </div>
         </div>

@@ -363,13 +363,13 @@ export default function DetailPanel({
  </div>
 
  <div className="flex-1 overflow-auto px-6 py-4 space-y-1">
- <FieldBlock label="BSB Requirement" value={q.requirement} />
+ <FieldBlock label="BSB Question / Requirement" value={q.requirement} />
 
  {/* Bullet response */}
  <div className="flex items-center justify-between mb-1">
  <div className="flex items-center gap-2">
  <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
- Response (Bullet)
+ Brim Response (Bullet)
  </label>
  {bulletDetect.level !== 'low' && (
  <span
@@ -435,7 +435,7 @@ export default function DetailPanel({
  <div className="flex items-center justify-between mb-1 mt-4">
  <div className="flex items-center gap-2">
  <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
- Response (Paragraph)
+ Brim Response (Paragraph)
  </label>
  {paragraphDetect.level !== 'low' && (
  <span
@@ -498,7 +498,7 @@ export default function DetailPanel({
  )}
 
  {/* Collapsible: Additional Fields */}
- <CollapsibleSection title="Additional Fields" defaultOpen={false}>
+ <CollapsibleSection title="Brim Metadata & Positioning" defaultOpen={false}>
  <FieldBlock
  label="Rationale"
  value={q.rationale}
@@ -530,7 +530,7 @@ export default function DetailPanel({
 
  {/* Collapsible: Committee Review */}
  <CollapsibleSection
- title="Committee Review"
+ title="AI Quality Review"
  defaultOpen={false}
  extra={
  <button
@@ -542,8 +542,8 @@ export default function DetailPanel({
  </button>
  }
  >
- <FieldBlock label="Review" value={q.committee_review} />
- <FieldBlock label="Risk Assessment" value={q.committee_risk} />
+ <FieldBlock label="AI Review Summary" value={q.committee_review} />
+ <FieldBlock label="AI Risk Assessment" value={q.committee_risk} />
  <div className="flex items-center gap-2 mb-4">
  <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
  Score
@@ -561,9 +561,9 @@ export default function DetailPanel({
  </CollapsibleSection>
 
  {/* Row Rules */}
- <CollapsibleSection title="Row Rules" defaultOpen={true}>
- <p className="text-xs text-gray-400 mb-2">
- Give the AI direction for this specific question.
+ <CollapsibleSection title="AI Direction for This Question" defaultOpen={true}>
+ <p className="text-xs text-gray-500 mb-2">
+ Tell Claude how to position this specific response — what to emphasize, avoid, or reference.
  </p>
  <textarea
  value={rowRules}

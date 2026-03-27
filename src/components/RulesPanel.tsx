@@ -52,8 +52,8 @@ export default function RulesPanel({
       <div className="absolute right-0 top-0 bottom-0 w-[420px] bg-white border-l shadow-2xl z-30 flex flex-col panel-slide-in">
         <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
           <div>
-            <h2 className="text-base font-semibold text-gray-900">Writing Rules</h2>
-            <p className="text-xs text-gray-400 mt-0.5">Guide and validate AI rewrites</p>
+            <h2 className="text-base font-semibold text-gray-900">AI Writing Rules & Strategic Direction</h2>
+            <p className="text-xs text-gray-500 mt-0.5">Rules that guide how Claude writes and positions Brim responses</p>
           </div>
           <button
             onClick={onClose}
@@ -65,9 +65,9 @@ export default function RulesPanel({
 
         <div className="flex border-b border-gray-100">
           {[
-            { key: 'global' as const, icon: BookOpen, label: 'Global' },
+            { key: 'global' as const, icon: BookOpen, label: 'Global Rules' },
             { key: 'section' as const, icon: Rows3, label: 'Per-Question' },
-            { key: 'validation' as const, icon: ShieldCheck, label: 'Validation' },
+            { key: 'validation' as const, icon: ShieldCheck, label: 'Quality Checks' },
           ].map((tab) => (
             <button
               key={tab.key}
@@ -83,8 +83,7 @@ export default function RulesPanel({
           {activeRuleTab === 'global' && (
             <div>
               <p className="text-xs text-gray-500 mb-4">
-                These rules apply to <strong>all questions</strong>. The AI follows them during
-                every rewrite.
+                These rules apply to <strong>every response</strong>. Claude follows them when rewriting — tone, positioning, what to emphasize, what to avoid.
               </p>
               {rules.length === 0 ? (
                 <div className="border-2 border-dashed border-gray-200 rounded-lg p-6 text-center mb-4">
@@ -113,7 +112,7 @@ export default function RulesPanel({
                 <textarea
                   value={newRule}
                   onChange={(e) => setNewRule(e.target.value)}
-                  placeholder="e.g. Always lead with Brim-specific data points..."
+                  placeholder="e.g. Lead with Brim-specific data. Reference Manulife and Zolve as live clients. Avoid superlatives..."
                   className="w-full border border-gray-200 rounded-lg px-3.5 py-2.5 text-sm resize-none h-20 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 placeholder:text-gray-300"
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' && !e.shiftKey) {
