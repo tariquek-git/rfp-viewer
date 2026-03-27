@@ -24,6 +24,8 @@ dist/
 # misc
 .DS_Store
 *.pem
+*.xlsx
+~$*
 
 # debug
 npm-debug.log*

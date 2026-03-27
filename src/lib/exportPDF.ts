@@ -1,6 +1,6 @@
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import type { Question, RFPData } from '@/types';
+import type { RFPData } from '@/types';
 import type { ExportOptions } from '@/lib/exportWord';
 import { detectAIWriting, aiDetectLabel } from '@/lib/aiDetect';
 
@@ -32,11 +32,6 @@ function confC(c: string): { text: RGB; bg: RGB } {
   return { text: C.gray, bg: C.headerBg };
 }
 
-function scoreC(s: number): RGB {
-  if (s >= 7) return C.green;
-  if (s >= 5) return C.yellow;
-  return C.red;
-}
 
 export async function exportToPDF(data: RFPData, options?: ExportOptions) {
   const kb = options?.knowledgeBase;

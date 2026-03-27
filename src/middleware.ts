@@ -29,8 +29,6 @@ if (typeof setInterval !== 'undefined') {
   }, 60_000);
 }
 
-const SITE_PASSWORD = process.env.SITE_PASSWORD || 'brim2026';
-
 export function middleware(request: NextRequest) {
   // === Password Protection ===
   const { pathname } = request.nextUrl;
@@ -99,6 +97,6 @@ function addSecurityHeaders(response: NextResponse) {
 export const config = {
   matcher: [
     // Apply to all routes except static files
-    '/((?!_next/static|_next/image|favicon.ico|rfp_data.json).*)',
+    '/((?!_next/static|_next/image|favicon.ico).*)',
   ],
 };

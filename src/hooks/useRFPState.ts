@@ -52,7 +52,6 @@ export function useRFPState() {
   const [compliantFilter, setCompliantFilter] = useState('All Compliant');
   const [deliveryFilter, setDeliveryFilter] = useState('All Delivery');
   const [statusFilter, setStatusFilter] = useState('All Status');
-  const [coverageFilter, setCoverageFilter] = useState('All Coverage');
   const [showRules, setShowRules] = useState(false);
   const [showFilters, setShowFilters] = useState(true);
   const [selectedQuestion, setSelectedQuestion] = useState<Question | null>(null);
@@ -646,7 +645,6 @@ export function useRFPState() {
     setCompliantFilter('All Compliant');
     setDeliveryFilter('All Delivery');
     setStatusFilter('All Status');
-    setCoverageFilter('All Coverage');
     setActiveCategory('All');
   }, []);
 
@@ -794,8 +792,6 @@ export function useRFPState() {
     setDeliveryFilter,
     statusFilter,
     setStatusFilter,
-    coverageFilter,
-    setCoverageFilter,
     showRules,
     setShowRules,
     showFilters,
