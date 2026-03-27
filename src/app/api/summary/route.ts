@@ -33,7 +33,8 @@ Positioning: ${knowledgeBase.competitivePositioning}`
       : '';
 
     const message = await client.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: process.env.CLAUDE_MODEL || 'claude-sonnet-4-20250514',
+      temperature: 0.4,
       max_tokens: 3000,
       messages: [
         {

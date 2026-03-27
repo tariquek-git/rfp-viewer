@@ -46,33 +46,41 @@ Competitive Positioning: ${knowledgeBase.competitivePositioning}`
       : '';
 
     const message = await client.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: process.env.CLAUDE_MODEL || 'claude-sonnet-4-20250514',
+      temperature: 0.4,
       max_tokens: 2000,
       messages: [
         {
           role: 'user',
           content: `You are helping Brim Financial write a winning RFP response for Bangor Savings Bank's credit card program.
 
-Category: ${question.category}
-Topic: ${question.topic}
-BSB Requirement: ${question.requirement}
+<question_context>
+<category>${question.category}</category>
+<topic>${question.topic}</topic>
+<bsb_requirement>${question.requirement}</bsb_requirement>
+</question_context>
 
-Current Response (${field}):
+<current_response format="${field}">
 ${question[field]}
+</current_response>
 
-Confidence Level: ${question.confidence}
-Committee Score: ${question.committee_score}/10
-Committee Risk Assessment: ${question.committee_risk || 'N/A'}
+<scoring>
+Confidence: ${question.confidence}
+Score: ${question.committee_score}/10
+Risk: ${question.committee_risk || 'N/A'}
 Rationale: ${question.rationale || 'N/A'}
+</scoring>
 
 ${formatInstruction}
 
-Core objectives:
-- Be specific with data points and metrics
+RULES:
+- Be specific with data points and metrics from the knowledge base only
 - Directly address BSB's requirement
 - Highlight Brim's competitive advantages
 - Address any gaps or risks identified
-- Sound confident and authoritative without being vague${kbSection}${globalRulesSection}${rowRulesSection}${feedbackSection}
+- Do NOT fabricate statistics, client names, or metrics not in the knowledge base
+- Do NOT use words: comprehensive, robust, seamless, leverage, utilize, cutting-edge, ecosystem
+- Sound confident without being vague${kbSection}${globalRulesSection}${rowRulesSection}${feedbackSection}
 
 Rewrite the response. Output ONLY the rewritten response text, no preamble or explanation.`,
         },
@@ -80,6 +88,15 @@ Rewrite the response. Output ONLY the rewritten response text, no preamble or ex
     });
 
     const text = message.content[0].type === 'text' ? message.content[0].text : '';
+
+    // Output validation
+    if (text.length < 50) {
+      return NextResponse.json({ error: 'AI output too short — may be incomplete. Try again.' }, { status: 422 });
+    }
+    if (text.length > 10000) {
+      return NextResponse.json({ text: text.slice(0, 10000), model: message.model, usage: message.usage, warning: 'Output truncated to 10K chars' });
+    }
+
     return NextResponse.json({ text, model: message.model, usage: message.usage });
   } catch (error) {
     console.error('AI rewrite error:', error);

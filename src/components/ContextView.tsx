@@ -225,8 +225,8 @@ export default function ContextView({ data, onNavigate }: ContextViewProps) {
         />
       </div>
 
-      {/* Procurement Committee Risk Assessment */}
-      <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+      {/* Procurement Committee Risk Assessment — elevated */}
+      <div className="bg-white border-2 border-blue-200 rounded-xl p-6 shadow-md">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-gray-50 rounded-lg">

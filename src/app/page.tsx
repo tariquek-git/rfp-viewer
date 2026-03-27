@@ -539,6 +539,7 @@ export default function Home() {
                 <option value="flagged">Flagged</option>
               </select>
               <button
+                data-reset-filters
                 onClick={state.resetFilters}
                 className="flex items-center gap-0.5 text-xs text-gray-400 hover:text-blue-500 font-medium ml-1"
               >

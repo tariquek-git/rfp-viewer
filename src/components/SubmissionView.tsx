@@ -251,6 +251,9 @@ h3{font-size:14px;margin-top:16px;color:#374151}
  <p className="text-xs text-gray-400 mt-2">
  {questions.length} Requirements Addressed · {categories.length} Categories
  </p>
+ <p className="text-[10px] text-gray-300 mt-4 italic">
+ AI-assisted response preparation · All responses reviewed and approved by Brim Financial team
+ </p>
  </div>
 
  {/* === EXECUTIVE OVERVIEW === */}
@@ -562,6 +565,9 @@ h3{font-size:14px;margin-top:16px;color:#374151}
  This document is confidential and prepared solely for Bangor Savings Bank.
  </p>
  <p className="text-xs text-gray-400 mt-1">Brim Financial · {new Date().getFullYear()}</p>
+ <p className="text-[10px] text-gray-300 mt-3 italic">
+ Responses prepared with AI assistance (Claude by Anthropic) · All content reviewed, verified, and approved by Brim Financial subject matter experts
+ </p>
  </div>
  </div>
  </div>

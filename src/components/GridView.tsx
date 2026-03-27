@@ -357,15 +357,19 @@ function EditableCell({
   const truncated = value.length > maxLen && !expanded;
 
   return (
-    <div className="cursor-pointer group">
+    <div className="cursor-pointer group relative">
       <div
         onClick={() => {
           setDraft(value);
           setEditing(true);
         }}
+        title="Click to edit"
       >
         <span className="group-hover:bg-blue-50 group-hover:outline group-hover:outline-1 group-hover:outline-blue-200 rounded px-0.5 -mx-0.5 leading-relaxed">
           {truncated ? value.slice(0, maxLen) + ' ...' : value}
+        </span>
+        <span className="absolute top-0 right-0 opacity-0 group-hover:opacity-100 text-blue-400 transition-opacity" title="Edit">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
         </span>
       </div>
       <div className="flex items-center gap-2 mt-0.5">
@@ -426,6 +430,7 @@ function StatusBadge({ value, onClick }: { value: WorkflowStatus; onClick: () =>
         onClick();
       }}
       className={`text-[10px] px-2 py-0.5 rounded-full border font-semibold capitalize cursor-pointer hover:opacity-80 ${STATUS_COLORS[value]}`}
+      title="Click to cycle: draft → reviewed → approved → flagged"
     >
       {value}
     </button>
@@ -646,6 +651,15 @@ export default function GridView({
         <FileText size={48} strokeWidth={1} />
         <p className="text-lg font-medium">No questions match your filters</p>
         <p className="text-sm">Try adjusting your search or filter criteria</p>
+        <button
+          onClick={() => {
+            const resetBtn = document.querySelector('[data-reset-filters]') as HTMLButtonElement;
+            if (resetBtn) resetBtn.click();
+          }}
+          className="mt-2 text-sm text-blue-600 hover:text-blue-700 font-medium"
+        >
+          Clear all filters
+        </button>
       </div>
     );
   }
