@@ -94,7 +94,7 @@ export default function FeedbackPanel({
         />
         <button
           onClick={submit}
-          className="bg-orange-500 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-orange-600 w-full"
+          className="bg-blue-600 text-white px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-blue-700 w-full"
         >
           Add Feedback
         </button>

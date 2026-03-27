@@ -24,12 +24,12 @@ function KBSection({
   return (
     <div className="mb-6">
       <label className="block text-sm font-semibold text-gray-900 mb-1">{label}</label>
-      <p className="text-xs text-gray-400 mb-2">{description}</p>
+      <p className="text-xs text-gray-500 mb-2">{description}</p>
       <textarea
         value={value}
         onChange={(e) => onChange(e.target.value)}
         rows={6}
-        className="w-full border border-gray-200 rounded-lg px-3.5 py-2.5 text-sm resize-y focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 placeholder:text-gray-300"
+        className="w-full border border-gray-200 rounded-lg px-3.5 py-2.5 text-sm resize-y focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-400 placeholder:text-gray-300"
         placeholder={`Enter ${label.toLowerCase()}...`}
       />
       <div className="text-right text-[10px] text-gray-400 mt-1">{countWords(value)} words</div>

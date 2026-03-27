@@ -12,7 +12,7 @@ interface ComplianceViewProps {
 function ComplianceToggle({ value, onChange }: { value: string; onChange: (v: string) => void }) {
   const options = ['Y', 'Partial', 'N'];
   return (
-    <div className="flex gap-0.5">
+    <div className="flex gap-1">
       {options.map((opt) => {
         const active = value === opt;
         const cls = active
@@ -26,7 +26,7 @@ function ComplianceToggle({ value, onChange }: { value: string; onChange: (v: st
           <button
             key={opt}
             onClick={() => onChange(opt)}
-            className={`text-[10px] font-semibold px-2 py-1 rounded ${cls} transition-colors`}
+            className={`text-[10px] font-semibold px-2 py-1 rounded-lg ${cls} transition-colors`}
           >
             {opt}
           </button>

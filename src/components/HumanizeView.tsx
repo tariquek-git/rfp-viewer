@@ -227,13 +227,13 @@ export default function HumanizeView({ questions, onUpdateQuestion, addToast }: 
  <div className="flex items-center gap-2">
  <span className="text-xs font-mono font-semibold text-blue-600">{r.ref}</span>
  <span
- className={`text-[9px] px-1.5 py-0.5 rounded border font-semibold ${aiDetectClasses(r.originalDetect.level)}`}
+ className={`text-[10px] px-1.5 py-0.5 rounded border font-semibold ${aiDetectClasses(r.originalDetect.level)}`}
  >
  Before: {aiDetectLabel(r.originalDetect.level)} ({r.originalDetect.score})
  </span>
  <span className="text-gray-400">→</span>
  <span
- className={`text-[9px] px-1.5 py-0.5 rounded border font-semibold ${aiDetectClasses(r.humanizedDetect.level)}`}
+ className={`text-[10px] px-1.5 py-0.5 rounded border font-semibold ${aiDetectClasses(r.humanizedDetect.level)}`}
  >
  After: {aiDetectLabel(r.humanizedDetect.level)} ({r.humanizedDetect.score})
  </span>
@@ -316,7 +316,7 @@ export default function HumanizeView({ questions, onUpdateQuestion, addToast }: 
  <td className="px-4 py-2 text-xs font-bold">{detect.score}</td>
  <td className="px-4 py-2">
  <span
- className={`text-[9px] px-1.5 py-0.5 rounded border font-semibold ${aiDetectClasses(detect.level)}`}
+ className={`text-[10px] px-1.5 py-0.5 rounded border font-semibold ${aiDetectClasses(detect.level)}`}
  >
  {aiDetectLabel(detect.level)}
  </span>

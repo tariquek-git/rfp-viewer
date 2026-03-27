@@ -42,7 +42,7 @@ function ComplianceBadge({ value }: { value: string }) {
  : 'text-amber-700 bg-amber-50 border-amber-200';
  return (
  <span
- className={`text-[9px] px-1.5 py-0.5 rounded border font-semibold print:border-gray-400 ${cls}`}
+ className={`text-[10px] px-1.5 py-0.5 rounded border font-semibold print:border-gray-400 ${cls}`}
  >
  {value === 'Y' ? 'Compliant' : value === 'N' ? 'Non-Compliant' : 'Partial'}
  </span>
@@ -55,7 +55,7 @@ function DeliveryLabel({ q }: { q: Question }) {
  if (q.b_config) parts.push('Configuration');
  if (q.c_custom) parts.push('Custom');
  if (parts.length === 0) return null;
- return <span className="text-[9px] text-gray-500">Delivery: {parts.join(', ')}</span>;
+ return <span className="text-[10px] text-gray-500">Delivery: {parts.join(', ')}</span>;
 }
 
 export default function SubmissionView({
@@ -196,7 +196,7 @@ h3{font-size:14px;margin-top:16px;color:#374151}
  <button
  onClick={handlePDFExport}
  disabled={exporting === 'pdf'}
- className="flex items-center gap-1.5 bg-red-600 text-white px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-red-700 disabled:opacity-50"
+ className="flex items-center gap-1.5 bg-gray-800 text-white px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-gray-900 disabled:opacity-50"
  >
  <FileText size={13} /> {exporting === 'pdf' ? 'Exporting...' : 'PDF'}
  </button>
@@ -273,7 +273,7 @@ h3{font-size:14px;margin-top:16px;color:#374151}
  ].map((s, i) => (
  <div
  key={i}
- className="text-center p-3 border border-gray-200 rounded-lg"
+ className="text-center p-4 border border-gray-200 rounded-lg"
  >
  <div className={`text-2xl font-bold ${s.cls}`}>{s.num}</div>
  <div className="text-[10px] text-gray-500 mt-1">{s.label}</div>

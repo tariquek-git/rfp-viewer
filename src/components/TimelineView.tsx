@@ -139,7 +139,7 @@ export default function TimelineView({ milestones, onUpdate }: TimelineViewProps
  <select
  value={m.status}
  onChange={(e) => updateMilestone(m.id, 'status', e.target.value)}
- className="text-[10px] bg-transparent border-0 text-gray-500 focus:outline-none w-full"
+ className="text-[10px] bg-transparent border-0 text-gray-500 focus:outline-none focus:bg-blue-50/50 rounded w-full"
  >
  {STATUSES.map((s) => (
  <option key={s} value={s}>
@@ -198,7 +198,7 @@ export default function TimelineView({ milestones, onUpdate }: TimelineViewProps
  <select
  value={m.phase}
  onChange={(e) => updateMilestone(m.id, 'phase', e.target.value)}
- className="bg-transparent border-0 text-sm font-medium focus:outline-none"
+ className="bg-transparent border-0 text-sm font-medium focus:outline-none focus:bg-blue-50/50 rounded"
  >
  {PHASES.map((p) => (
  <option key={p}>{p}</option>
@@ -209,7 +209,7 @@ export default function TimelineView({ milestones, onUpdate }: TimelineViewProps
  <input
  value={m.description}
  onChange={(e) => updateMilestone(m.id, 'description', e.target.value)}
- className="w-full bg-transparent border-0 text-sm focus:outline-none"
+ className="w-full bg-transparent border-0 text-sm focus:outline-none focus:bg-blue-50/50 rounded"
  placeholder="Description..."
  />
  </td>
@@ -219,7 +219,7 @@ export default function TimelineView({ milestones, onUpdate }: TimelineViewProps
  value={m.startWeek}
  min={1}
  onChange={(e) => updateMilestone(m.id, 'startWeek', Number(e.target.value))}
- className="w-full bg-transparent border-0 text-sm focus:outline-none font-mono"
+ className="w-full bg-transparent border-0 text-sm focus:outline-none focus:bg-blue-50/50 rounded font-mono"
  />
  </td>
  <td className="px-4 py-2">
@@ -230,14 +230,14 @@ export default function TimelineView({ milestones, onUpdate }: TimelineViewProps
  onChange={(e) =>
  updateMilestone(m.id, 'durationWeeks', Number(e.target.value))
  }
- className="w-full bg-transparent border-0 text-sm focus:outline-none font-mono"
+ className="w-full bg-transparent border-0 text-sm focus:outline-none focus:bg-blue-50/50 rounded font-mono"
  />
  </td>
  <td className="px-4 py-2">
  <input
  value={m.owner}
  onChange={(e) => updateMilestone(m.id, 'owner', e.target.value)}
- className="w-full bg-transparent border-0 text-sm focus:outline-none text-gray-500"
+ className="w-full bg-transparent border-0 text-sm focus:outline-none focus:bg-blue-50/50 rounded text-gray-500"
  placeholder="Team/Person"
  />
  </td>

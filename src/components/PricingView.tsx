@@ -166,7 +166,7 @@ export default function PricingView({ pricing, onUpdate }: PricingViewProps) {
  <input
  value={item.description}
  onChange={(e) => updateItem(item.id, 'description', e.target.value)}
- className="w-full bg-transparent border-0 focus:outline-none focus:ring-0 text-sm"
+ className="w-full bg-transparent border-0 focus:outline-none focus:bg-blue-50/50 rounded text-sm"
  />
  </td>
  <td className="px-4 py-2">
@@ -187,28 +187,28 @@ export default function PricingView({ pricing, onUpdate }: PricingViewProps) {
  type="number"
  value={item.amount}
  onChange={(e) => updateItem(item.id, 'amount', Number(e.target.value))}
- className="w-full bg-transparent border-0 focus:outline-none text-sm text-right font-mono"
+ className="w-full bg-transparent border-0 focus:outline-none focus:bg-blue-50/50 rounded text-sm text-right font-mono"
  />
  </td>
  <td className="px-4 py-2">
  <input
  value={item.unit}
  onChange={(e) => updateItem(item.id, 'unit', e.target.value)}
- className="w-full bg-transparent border-0 focus:outline-none text-xs text-gray-500"
+ className="w-full bg-transparent border-0 focus:outline-none focus:bg-blue-50/50 rounded text-xs text-gray-500"
  />
  </td>
  <td className="px-4 py-2">
  <input
  value={item.notes}
  onChange={(e) => updateItem(item.id, 'notes', e.target.value)}
- className="w-full bg-transparent border-0 focus:outline-none text-xs text-gray-400"
+ className="w-full bg-transparent border-0 focus:outline-none focus:bg-blue-50/50 rounded text-xs text-gray-400"
  placeholder="..."
  />
  </td>
  <td className="px-2">
  <button
  onClick={() => removeItem(item.id)}
- className="text-gray-300 hover:text-red-500 opacity-0 group-hover:opacity-100"
+ className="text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100"
  >
  <Trash2 size={13} />
  </button>

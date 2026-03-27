@@ -463,7 +463,7 @@ function DeliveryTags({ q }: { q: Question }) {
       {tags.map((t) => (
         <span
           key={t.label}
-          className={`text-[9px] px-1.5 py-0.5 rounded border font-semibold ${t.cls}`}
+          className={`text-[10px] px-1.5 py-0.5 rounded border font-semibold ${t.cls}`}
         >
           {t.label}
         </span>
@@ -686,7 +686,7 @@ export default function GridView({
         const detect = detectAIWriting(q.bullet + ' ' + q.paragraph);
         return (
           <span
-            className={`text-[9px] px-1.5 py-0.5 rounded border font-semibold ${aiDetectClasses(detect.level)}`}
+            className={`text-[10px] px-1.5 py-0.5 rounded border font-semibold ${aiDetectClasses(detect.level)}`}
           >
             {aiDetectLabel(detect.level)}
           </span>

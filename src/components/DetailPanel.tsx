@@ -373,7 +373,7 @@ export default function DetailPanel({
  </label>
  {bulletDetect.level !== 'low' && (
  <span
- className={`text-[9px] px-1.5 py-0.5 rounded border font-semibold ${aiDetectClasses(bulletDetect.level)}`}
+ className={`text-[10px] px-1.5 py-0.5 rounded border font-semibold ${aiDetectClasses(bulletDetect.level)}`}
  title={bulletDetect.triggers.join(', ')}
  >
  {aiDetectLabel(bulletDetect.level)}
@@ -439,7 +439,7 @@ export default function DetailPanel({
  </label>
  {paragraphDetect.level !== 'low' && (
  <span
- className={`text-[9px] px-1.5 py-0.5 rounded border font-semibold ${aiDetectClasses(paragraphDetect.level)}`}
+ className={`text-[10px] px-1.5 py-0.5 rounded border font-semibold ${aiDetectClasses(paragraphDetect.level)}`}
  title={paragraphDetect.triggers.join(', ')}
  >
  {aiDetectLabel(paragraphDetect.level)}

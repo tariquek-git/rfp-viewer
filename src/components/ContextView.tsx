@@ -62,10 +62,10 @@ function RiskCard({
   border: string;
 }) {
   return (
-    <div className={`border-2 ${border} rounded-xl p-5 text-center`}>
-      <div className={`text-4xl font-bold ${accent}`}>{value}</div>
+    <div className={`border-2 ${border} rounded-xl p-5 text-center shadow-sm`}>
+      <div className={`text-3xl font-bold ${accent}`}>{value}</div>
       <div className={`text-sm font-semibold ${accent} mt-1`}>{label}</div>
-      <div className="text-[11px] text-gray-400 mt-1">{sublabel}</div>
+      <div className="text-xs text-gray-500 mt-1">{sublabel}</div>
     </div>
   );
 }
@@ -100,7 +100,7 @@ function SectionScoreCard({
   return (
     <div
       onClick={onClick}
-      className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm hover:shadow-md transition-all hover:border-blue-300 cursor-pointer group"
+      className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-all hover:border-blue-300 cursor-pointer group"
     >
       <div className="flex items-center justify-between mb-3">
         <h4 className="font-semibold text-sm text-gray-900 group-hover:text-blue-600 transition-colors">
@@ -113,7 +113,7 @@ function SectionScoreCard({
         </span>
       </div>
       <div className="text-sm text-gray-500 mb-3">
-        <span className="font-bold text-gray-900 text-lg">{score.toFixed(1)}</span>
+        <span className="font-bold text-gray-900 text-xl">{score.toFixed(1)}</span>
         <span className="text-gray-400">/10</span>
         <span className="text-gray-300 mx-1.5">·</span>
         <span>{count} questions</span>
