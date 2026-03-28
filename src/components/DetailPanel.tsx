@@ -313,7 +313,7 @@ export default function DetailPanel({
   role="dialog"
   aria-modal="true"
   aria-label={`Question ${q.ref}`}
-  className="absolute right-0 top-0 bottom-0 w-[560px] bg-white border-l shadow-xl z-30 flex flex-col panel-slide-in"
+  className="absolute right-0 top-0 bottom-0 w-full sm:w-[560px] bg-white border-l shadow-xl z-30 flex flex-col panel-slide-in"
  >
  <div className="flex items-center justify-between px-6 py-4 border-b flex-shrink-0">
  <div>

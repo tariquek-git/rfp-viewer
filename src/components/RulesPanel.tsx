@@ -49,7 +49,7 @@ export default function RulesPanel({
   return (
     <>
       <div className="absolute inset-0 bg-black/20 z-20" onClick={onClose} />
-      <div className="absolute right-0 top-0 bottom-0 w-[420px] bg-white border-l shadow-2xl z-30 flex flex-col panel-slide-in">
+      <div className="absolute right-0 top-0 bottom-0 w-full sm:w-[420px] bg-white border-l shadow-2xl z-30 flex flex-col panel-slide-in">
         <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
           <div>
             <h2 className="text-base font-semibold text-gray-900">AI Writing Rules & Strategic Direction</h2>

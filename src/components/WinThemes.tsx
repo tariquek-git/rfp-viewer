@@ -74,7 +74,7 @@ export default function WinThemesPanel({ themes, onUpdate, questions, onClose }:
  return (
  <>
  <div className="absolute inset-0 bg-black/20 z-20" onClick={onClose} />
- <div className="absolute right-0 top-0 bottom-0 w-[480px] bg-white border-l shadow-2xl z-30 flex flex-col panel-slide-in">
+ <div className="absolute right-0 top-0 bottom-0 w-full sm:w-[480px] bg-white border-l shadow-2xl z-30 flex flex-col panel-slide-in">
  <div className="flex items-center justify-between px-5 py-4 border-b">
  <div className="flex items-center gap-2">
  <Target size={18} className="text-violet-600" />

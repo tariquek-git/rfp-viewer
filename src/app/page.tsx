@@ -112,6 +112,24 @@ export default function Home() {
 
   const { showShortcuts, setShowShortcuts } = useKeyboardShortcuts({
     onSwitchTab: (tab) => state.setActiveTab(tab as ViewTab),
+    onNextFlagged: useCallback(() => {
+      if (!state.data) return;
+      const flagged = state.data.questions.filter((q) => q.status === 'flagged');
+      if (!flagged.length) { state.addToast('info', 'No flagged questions'); return; }
+      const currentIdx = flagged.findIndex((q) => q.ref === state.selectedQuestion?.ref);
+      const next = flagged[(currentIdx + 1) % flagged.length];
+      state.setSelectedQuestion(next);
+      state.setActiveTab('grid');
+    }, [state]),
+    onNextRed: useCallback(() => {
+      if (!state.data) return;
+      const red = state.data.questions.filter((q) => q.confidence === 'RED');
+      if (!red.length) { state.addToast('info', 'No RED confidence questions'); return; }
+      const currentIdx = red.findIndex((q) => q.ref === state.selectedQuestion?.ref);
+      const next = red[(currentIdx + 1) % red.length];
+      state.setSelectedQuestion(next);
+      state.setActiveTab('grid');
+    }, [state]),
   });
 
   const [prevHasUnsaved, setPrevHasUnsaved] = useState(state.hasUnsaved);
@@ -771,6 +789,12 @@ export default function Home() {
               versions={state.versions}
               onSaveVersion={state.saveVersion}
               onDeleteVersion={state.deleteVersion}
+              onRestoreVersion={(v) => {
+                state.loadTemplateData(v.data);
+                state.addToast('success', `Restored "${v.label}" — press ⌘S to save`);
+                setShowSettings(false);
+              }}
+              currentQuestionCount={state.data?.questions.length ?? 0}
             />
           )}
           {state.showWinThemes && (

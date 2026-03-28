@@ -5,10 +5,13 @@ import { X, Keyboard } from 'lucide-react';
 
 const SHORTCUTS = [
  { keys: ['⌘', 'S'], description: 'Save changes' },
+ { keys: ['⌘', 'K'], description: 'Focus search' },
  { keys: ['?'], description: 'Toggle this shortcuts panel' },
  { keys: ['Esc'], description: 'Close panel / modal' },
  { keys: ['↑', '↓'], description: 'Navigate between rows (when grid focused)' },
  { keys: ['Enter'], description: 'Open detail panel for focused row' },
+ { keys: ['F'], description: 'Jump to next flagged question' },
+ { keys: ['R'], description: 'Jump to next RED confidence question' },
  { keys: ['1'], description: 'Switch to Grid view' },
  { keys: ['2'], description: 'Switch to Dashboard view' },
  { keys: ['3'], description: 'Switch to Knowledge Base' },
@@ -19,6 +22,8 @@ const SHORTCUTS = [
 export function useKeyboardShortcuts(handlers: {
  onToggleDarkMode?: () => void;
  onSwitchTab?: (tab: string) => void;
+ onNextFlagged?: () => void;
+ onNextRed?: () => void;
 }) {
  const [showShortcuts, setShowShortcuts] = useState(false);
 
@@ -39,6 +44,14 @@ export function useKeyboardShortcuts(handlers: {
  }
  if (e.key === 'd' && !e.metaKey && !e.ctrlKey) {
  handlers.onToggleDarkMode?.();
+ }
+ if (e.key === 'f' && !e.metaKey && !e.ctrlKey) {
+ e.preventDefault();
+ handlers.onNextFlagged?.();
+ }
+ if (e.key === 'r' && !e.metaKey && !e.ctrlKey) {
+ e.preventDefault();
+ handlers.onNextRed?.();
  }
  if (e.key === 'Escape') setShowShortcuts(false);
 

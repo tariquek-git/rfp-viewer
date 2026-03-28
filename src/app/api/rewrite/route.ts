@@ -7,6 +7,7 @@ import {
   sanitizeString,
 } from '@/lib/sanitize';
 import { handleAnthropicError } from '@/lib/parseAIResponse';
+import { RewriteRequestSchema, parseBody } from '@/lib/schemas';
 
 const client = new Anthropic();
 
@@ -18,14 +19,15 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Request too large' }, { status: 413 });
   }
   try {
-    const body = await req.json();
-    const question = sanitizeQuestionForAI(body.question || {});
-    const field = validateField(body.field);
+    const raw = await req.json();
+    const parsed = parseBody(RewriteRequestSchema, raw);
+    if (parsed.error) return parsed.error;
+    const { field: rawField, globalRules: rawRules, rowRules: rawRowRules, feedback, knowledgeBase } = parsed.data;
+    const question = sanitizeQuestionForAI(parsed.data.question);
+    const field = validateField(rawField);
     if (!field) return NextResponse.json({ error: 'Invalid field' }, { status: 400 });
-    const globalRules = sanitizeRules(body.globalRules);
-    const rowRules = sanitizeString(body.rowRules, 2000);
-    const feedback = Array.isArray(body.feedback) ? body.feedback.slice(0, 20) : [];
-    const knowledgeBase = body.knowledgeBase || {};
+    const globalRules = sanitizeRules(rawRules);
+    const rowRules = sanitizeString(rawRowRules, 2000);
 
     const formatInstruction =
       field === 'bullet'

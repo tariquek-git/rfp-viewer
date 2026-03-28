@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
 import { parseAIJson, handleAnthropicError } from '@/lib/parseAIResponse';
+import { CritiqueRequestSchema, parseBody } from '@/lib/schemas';
 
 const client = new Anthropic();
 
@@ -12,7 +13,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Request too large' }, { status: 413 });
   }
   try {
-    const { question, field, knowledgeBase } = await req.json();
+    const raw = await req.json();
+    const parsed = parseBody(CritiqueRequestSchema, raw);
+    if (parsed.error) return parsed.error;
+    const { question, field, knowledgeBase } = parsed.data;
 
     const kbSection = knowledgeBase?.companyFacts
       ? `\nCOMPANY KNOWLEDGE BASE:\nFacts: ${knowledgeBase.companyFacts}\nMetrics: ${knowledgeBase.keyMetrics}\nDifferentiators: ${knowledgeBase.differentiators}`

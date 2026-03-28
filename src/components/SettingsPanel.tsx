@@ -51,6 +51,8 @@ interface SettingsPanelProps {
   versions: Version[];
   onSaveVersion: (label?: string) => void;
   onDeleteVersion: (timestamp: number) => void;
+  onRestoreVersion: (v: Version) => void;
+  currentQuestionCount: number;
 }
 
 function formatRelative(ts: number) {
@@ -568,10 +570,14 @@ function VersionsTab({
   versions,
   onSave,
   onDelete,
+  onRestore,
+  currentQuestionCount,
 }: {
   versions: Version[];
   onSave: (label?: string) => void;
   onDelete: (ts: number) => void;
+  onRestore: (v: Version) => void;
+  currentQuestionCount: number;
 }) {
   const [label, setLabel] = useState('');
 
@@ -644,9 +650,16 @@ function VersionsTab({
                 </button>
                 <button
                   onClick={() => {
-                    if (window.confirm(`Restore "${v.label}"? This will overwrite the current workbook.`)) {
-                      // Restore is handled externally (no loadVersion prop needed — user re-imports via JSON for now)
-                      alert('To restore: export this version and use the Template Manager to import it.');
+                    const vCount = v.data.questions?.length ?? 0;
+                    const diff = vCount - currentQuestionCount;
+                    const diffStr = diff === 0 ? 'same number of questions' : `${Math.abs(diff)} question${Math.abs(diff) === 1 ? '' : 's'} ${diff > 0 ? 'more' : 'fewer'}`;
+                    const saved = formatRelative(v.timestamp);
+                    if (window.confirm(
+                      `Restore "${v.label}" (saved ${saved})?\n\n` +
+                      `This version has ${vCount} questions (${diffStr} than current).\n\n` +
+                      `Your current unsaved changes will be lost. This cannot be undone.`
+                    )) {
+                      onRestore(v);
                     }
                   }}
                   aria-label={`Restore version ${v.label}`}
@@ -691,7 +704,7 @@ export default function SettingsPanel({
   pricing, onUpdatePricing,
   milestones, onUpdateMilestones,
   slas, onUpdateSLAs,
-  versions, onSaveVersion, onDeleteVersion,
+  versions, onSaveVersion, onDeleteVersion, onRestoreVersion, currentQuestionCount,
 }: SettingsPanelProps) {
   const [activeTab, setActiveTab] = useState<SettingsTab>('workspace');
 
@@ -702,7 +715,7 @@ export default function SettingsPanel({
         role="dialog"
         aria-modal="true"
         aria-label="Settings & Configuration"
-        className="absolute right-0 top-0 bottom-0 w-[720px] bg-white border-l shadow-2xl z-30 flex flex-col panel-slide-in"
+        className="absolute right-0 top-0 bottom-0 w-full sm:w-[680px] lg:w-[720px] bg-white border-l shadow-2xl z-30 flex flex-col panel-slide-in"
       >
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 flex-shrink-0">
@@ -759,7 +772,7 @@ export default function SettingsPanel({
             <SLAsTab slas={slas} onUpdate={onUpdateSLAs} />
           )}
           {activeTab === 'versions' && (
-            <VersionsTab versions={versions} onSave={onSaveVersion} onDelete={onDeleteVersion} />
+            <VersionsTab versions={versions} onSave={onSaveVersion} onDelete={onDeleteVersion} onRestore={onRestoreVersion} currentQuestionCount={currentQuestionCount} />
           )}
         </div>
       </div>

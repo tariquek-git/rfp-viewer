@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
 import { sanitizeString } from '@/lib/sanitize';
 import { handleAnthropicError } from '@/lib/parseAIResponse';
+import { HumanizeRequestSchema, parseBody } from '@/lib/schemas';
 
 const client = new Anthropic();
 
@@ -13,10 +14,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Request too large' }, { status: 413 });
   }
   try {
-    const body = await req.json();
-    const text = sanitizeString(body.text, 20000);
-    const triggers = Array.isArray(body.triggers) ? body.triggers.slice(0, 20) : [];
-    const context = sanitizeString(body.context || '', 500);
+    const raw = await req.json();
+    const parsedBody = parseBody(HumanizeRequestSchema, raw);
+    if (parsedBody.error) return parsedBody.error;
+    const text = sanitizeString(parsedBody.data.text, 20000);
+    const triggers = parsedBody.data.triggers;
+    const context = sanitizeString(parsedBody.data.context, 500);
 
     if (!text) return NextResponse.json({ error: 'No text provided' }, { status: 400 });
 

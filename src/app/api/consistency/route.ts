@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
 import { parseAIJson, handleAnthropicError } from '@/lib/parseAIResponse';
+import { ConsistencyRequestSchema, parseBody } from '@/lib/schemas';
 
 const client = new Anthropic();
 
@@ -12,7 +13,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Request too large' }, { status: 413 });
   }
   try {
-    const { questions, knowledgeBase } = await req.json();
+    const raw = await req.json();
+    const parsed = parseBody(ConsistencyRequestSchema, raw);
+    if (parsed.error) return parsed.error;
+    const { questions, knowledgeBase } = parsed.data;
 
     // Condense questions to fit within context limits
     const condensed = questions.map(

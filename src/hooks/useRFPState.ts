@@ -434,6 +434,13 @@ export function useRFPState() {
   );
 
   // === AI Rewrite (with diff) ===
+  const activeRewriteRef = useRef<AbortController | null>(null);
+
+  const cancelRewrite = useCallback(() => {
+    activeRewriteRef.current?.abort();
+    activeRewriteRef.current = null;
+  }, []);
+
   const handleAiRewrite = useCallback(
     async (
       question: Question,
@@ -441,10 +448,16 @@ export function useRFPState() {
       rowRules: string,
       feedback: FeedbackItem[],
     ): Promise<string> => {
+      // Cancel any in-flight rewrite before starting a new one
+      activeRewriteRef.current?.abort();
+      const controller = new AbortController();
+      activeRewriteRef.current = controller;
+
       const res = await fetch('/api/rewrite', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ question, field, globalRules, rowRules, feedback, knowledgeBase }),
+        signal: controller.signal,
       });
       const { text, error } = await res.json();
       if (error) {
@@ -510,6 +523,7 @@ export function useRFPState() {
         }));
       }
 
+      activeRewriteRef.current = null;
       addToast('info', `AI suggestion ready for ${field} — review the diff`);
       return text;
     },
@@ -930,6 +944,7 @@ export function useRFPState() {
     handleCellEdit,
     updateQuestion,
     handleAiRewrite,
+    cancelRewrite,
     handleAddFeedback,
     handleResolveFeedback,
     handleExportCSV,
