@@ -242,6 +242,14 @@ export function useRFPState() {
     [data, versions],
   );
 
+  const deleteVersion = useCallback((timestamp: number) => {
+    setVersions((v) => {
+      const next = v.filter((x) => x.timestamp !== timestamp);
+      localStorage.setItem('rfp-versions', JSON.stringify(next));
+      return next;
+    });
+  }, []);
+
   const [cloudSyncStatus, setCloudSyncStatus] = useState<'idle' | 'syncing' | 'synced' | 'error'>('idle');
 
   const handleSave = useCallback(async () => {
@@ -824,6 +832,7 @@ export function useRFPState() {
     updateValidationRules,
     feedbackItems,
     versions,
+    deleteVersion,
     knowledgeBase,
     updateKnowledgeBase,
     // Actions

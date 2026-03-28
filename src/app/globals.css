@@ -140,6 +140,9 @@ thead .sticky-col-ref {
 .density-comfortable td, .density-comfortable th { padding-top: 0.625rem; padding-bottom: 0.625rem; }
 .density-spacious td, .density-spacious th { padding-top: 1rem; padding-bottom: 1rem; }
 
+/* Disable global transitions on table cells — prevents animating 383+ cells on filter/sort */
+td, th { transition: none; }
+
 /* Collapsible section animation */
 .collapsible-content {
   overflow: hidden;

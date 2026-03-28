@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useCallback, useRef, lazy, Suspense } from 'react';
+import { useState, useMemo, useCallback, useRef, useEffect, lazy, Suspense } from 'react';
 import {
   Save,
   Download,
@@ -30,6 +30,7 @@ import {
   FileStack,
   Bot,
   Keyboard,
+  Settings,
 } from 'lucide-react';
 import { useRFPState } from '@/hooks/useRFPState';
 import GridView from '@/components/GridView';
@@ -59,6 +60,7 @@ const Onboarding = lazy(() => import('@/components/Onboarding'));
 const VersionCompare = lazy(() => import('@/components/VersionCompare'));
 const TemplateManager = lazy(() => import('@/components/TemplateManager'));
 const HumanizeView = lazy(() => import('@/components/HumanizeView'));
+const SettingsPanel = lazy(() => import('@/components/SettingsPanel'));
 import { ToastContainer } from '@/components/Toast';
 import type { ConsistencyIssue, ViewTab } from '@/types';
 
@@ -67,9 +69,11 @@ export default function Home() {
   const [consistencyIssues, setConsistencyIssues] = useState<ConsistencyIssue[]>([]);
   const [consistencyLoading, setConsistencyLoading] = useState(false);
   const [density, setDensity] = useState<TableDensity>('comfortable');
+  const [showSettings, setShowSettings] = useState(false);
   const lastSavedRef = useRef<number | null>(null);
   const [, setLastSavedTick] = useState(0);
   const lastSaved = lastSavedRef.current;
+  const searchInputRef = useRef<HTMLInputElement>(null);
   const [showOnboarding, setShowOnboarding] = useState(() => {
     if (typeof window !== 'undefined') return !localStorage.getItem('rfp-onboarded');
     return false;
@@ -180,6 +184,23 @@ export default function Home() {
     if (diff < 60) return 'just now';
     if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
     return `${Math.floor(diff / 3600)}h ago`;
+  }, []);
+
+  const handleClearFilters = useCallback(() => {
+    state.resetFilters();
+  }, [state]);
+
+  // Cmd+K / Ctrl+K: focus the search input
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+        searchInputRef.current?.select();
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
   }, []);
 
   if (state.loading) {
@@ -313,41 +334,49 @@ export default function Home() {
             </span>
           </div>
           <div className="w-px h-5 bg-gray-200" />
-          <button
-            onClick={() => { state.setSelectedQuestion(null); state.setShowWinThemes(!state.showWinThemes); }}
-            className={`p-1.5 rounded-md ${state.showWinThemes ? 'text-violet-600 bg-violet-50' : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100'}`}
-            title="Strategic Win Themes"
-          >
-            <Target size={14} />
-          </button>
-          <button
-            onClick={() => { state.setSelectedQuestion(null); state.setShowRules(!state.showRules); }}
-            className={`p-1.5 rounded-md ${state.showRules ? 'text-blue-600 bg-blue-50' : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100'}`}
-            title="AI Writing Rules & Direction"
-          >
-            <BookOpen size={14} />
-          </button>
-          <button
-            onClick={() => state.setShowChecklist(true)}
-            className="p-1.5 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100"
-            title="Submission Checklist"
-          >
-            <ClipboardList size={14} />
-          </button>
-          <button
-            onClick={() => state.setShowTemplates(true)}
-            className="p-1.5 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100"
-            title="Templates"
-          >
-            <FileStack size={14} />
-          </button>
-          <button
-            onClick={() => setShowShortcuts(true)}
-            className="p-1.5 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100"
-            title="Shortcuts (?)"
-          >
-            <Keyboard size={14} />
-          </button>
+          {[
+            {
+              icon: Target, label: 'Win Themes', active: state.showWinThemes,
+              onClick: () => { state.setSelectedQuestion(null); state.setShowWinThemes(!state.showWinThemes); },
+              activeClass: 'text-violet-600 bg-violet-50',
+            },
+            {
+              icon: BookOpen, label: 'Rules', active: state.showRules,
+              onClick: () => { state.setSelectedQuestion(null); state.setShowRules(!state.showRules); },
+              activeClass: 'text-blue-600 bg-blue-50',
+            },
+            {
+              icon: ClipboardList, label: 'Checklist', active: false,
+              onClick: () => state.setShowChecklist(true),
+              activeClass: '',
+            },
+            {
+              icon: FileStack, label: 'Templates', active: false,
+              onClick: () => state.setShowTemplates(true),
+              activeClass: '',
+            },
+            {
+              icon: Keyboard, label: 'Keys', active: false,
+              onClick: () => setShowShortcuts(true),
+              activeClass: '',
+            },
+            {
+              icon: Settings, label: 'Settings', active: showSettings,
+              onClick: () => { state.setSelectedQuestion(null); state.setShowRules(false); state.setShowWinThemes(false); setShowSettings(true); },
+              activeClass: 'text-gray-700 bg-gray-100',
+            },
+          ].map(({ icon: Icon, label, active, onClick, activeClass }) => (
+            <button
+              key={label}
+              onClick={onClick}
+              title={label}
+              aria-label={label}
+              className={`flex flex-col items-center gap-0.5 px-1.5 py-1 rounded-md text-center ${active ? activeClass : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100'}`}
+            >
+              <Icon size={14} />
+              <span className="text-[8px] leading-none font-medium">{label}</span>
+            </button>
+          ))}
         </div>
       </header>
 
@@ -390,8 +419,9 @@ export default function Home() {
                 className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400"
               />
               <input
+                ref={searchInputRef}
                 type="text"
-                placeholder="Search..."
+                placeholder="Search… (⌘K)"
                 value={state.search}
                 onChange={(e) => state.setSearch(e.target.value)}
                 className="border border-gray-200 rounded-lg pl-8 pr-3 py-1.5 text-xs w-56 focus:outline-none focus:ring-2 focus:ring-blue-500/20 bg-gray-50 placeholder:text-gray-400"
@@ -524,28 +554,33 @@ export default function Home() {
                   options: ['All Delivery', 'OOB', 'Config', 'Custom'],
                 },
               ].map((f, i) => (
-                <select
-                  key={i}
-                  value={f.value}
-                  onChange={(e) => f.onChange(e.target.value)}
-                  className="border border-gray-200 rounded-lg px-2 py-1 text-xs text-gray-600 bg-white focus:outline-none"
-                >
-                  {f.options.map((o) => (
-                    <option key={o}>{o}</option>
-                  ))}
-                </select>
+                <div key={i} className="relative">
+                  <select
+                    value={f.value}
+                    onChange={(e) => f.onChange(e.target.value)}
+                    className="border border-gray-200 rounded-lg pl-2.5 pr-7 py-1 text-xs text-gray-600 bg-white appearance-none cursor-pointer hover:border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400"
+                  >
+                    {f.options.map((o) => (
+                      <option key={o}>{o}</option>
+                    ))}
+                  </select>
+                  <ChevronDown size={11} className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+                </div>
               ))}
-              <select
-                value={state.statusFilter}
-                onChange={(e) => state.setStatusFilter(e.target.value)}
-                className="border border-gray-200 rounded-lg px-2 py-1 text-xs text-gray-600 bg-white focus:outline-none"
-              >
-                <option>All Status</option>
-                <option value="draft">Draft</option>
-                <option value="reviewed">Reviewed</option>
-                <option value="approved">Approved</option>
-                <option value="flagged">Flagged</option>
-              </select>
+              <div className="relative">
+                <select
+                  value={state.statusFilter}
+                  onChange={(e) => state.setStatusFilter(e.target.value)}
+                  className="border border-gray-200 rounded-lg pl-2.5 pr-7 py-1 text-xs text-gray-600 bg-white appearance-none cursor-pointer hover:border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400"
+                >
+                  <option>All Status</option>
+                  <option value="draft">Draft</option>
+                  <option value="reviewed">Reviewed</option>
+                  <option value="approved">Approved</option>
+                  <option value="flagged">Flagged</option>
+                </select>
+                <ChevronDown size={11} className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+              </div>
               <button
                 data-reset-filters
                 onClick={state.resetFilters}
@@ -585,6 +620,8 @@ export default function Home() {
           {state.activeTab === 'grid' && (
             <GridView
               questions={state.filteredQuestions}
+              totalCount={state.data?.questions.length ?? 0}
+              onClearFilters={handleClearFilters}
               getConfidenceColor={state.getConfidenceColor}
               onSelectQuestion={handleSelectQuestion}
               onCellEdit={state.handleCellEdit}
@@ -652,6 +689,27 @@ export default function Home() {
               onUpdateRules={state.setGlobalRules}
               validationRules={state.validationRules}
               onUpdateValidationRules={state.updateValidationRules}
+            />
+          )}
+          {showSettings && (
+            <SettingsPanel
+              onClose={() => setShowSettings(false)}
+              kb={state.knowledgeBase}
+              onUpdateKB={state.updateKnowledgeBase}
+              onSaveKB={state.saveToLocal}
+              globalRules={state.globalRules}
+              onUpdateRules={state.setGlobalRules}
+              validationRules={state.validationRules}
+              onUpdateValidationRules={state.updateValidationRules}
+              pricing={state.pricingModel}
+              onUpdatePricing={state.updatePricing}
+              milestones={state.milestones}
+              onUpdateMilestones={state.updateMilestones}
+              slas={state.slaCommitments}
+              onUpdateSLAs={state.updateSLAs}
+              versions={state.versions}
+              onSaveVersion={state.saveVersion}
+              onDeleteVersion={state.deleteVersion}
             />
           )}
           {state.showWinThemes && (

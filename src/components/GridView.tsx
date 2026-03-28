@@ -1,7 +1,6 @@
 'use client';
 
-import { useState, useEffect, memo } from 'react';
-import { useRef, useCallback } from 'react';
+import { useState, useEffect, useCallback, memo } from 'react';
 import {
   FileText,
   Circle,
@@ -42,6 +41,8 @@ export type TableDensity = 'compact' | 'comfortable' | 'spacious';
 
 interface GridViewProps {
   questions: Question[];
+  totalCount?: number;
+  onClearFilters?: () => void;
   getConfidenceColor?: (conf: string) => string;
   onSelectQuestion: (q: Question) => void;
   onCellEdit: (ref: string, field: keyof Question, value: string) => void;
@@ -456,6 +457,7 @@ function StatusBadge({ value, onClick }: { value: WorkflowStatus; onClick: () =>
         onClick();
       }}
       className={`text-[10px] px-2 py-0.5 rounded-full border font-semibold capitalize cursor-pointer hover:opacity-80 ${STATUS_COLORS[value]}`}
+      aria-label={`Status: ${value}. Click to cycle workflow status`}
       title="Click to cycle: draft → reviewed → approved → flagged"
     >
       {value}
@@ -529,6 +531,7 @@ function ColumnToggle({
     <div className="relative">
       <button
         onClick={() => setOpen(!open)}
+        aria-label="Show or hide columns"
         className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium border border-gray-200 text-gray-500 hover:bg-gray-50"
       >
         <Columns3 size={13} /> Columns
@@ -612,6 +615,8 @@ function DensityToggle({
 
 export default function GridView({
   questions,
+  totalCount,
+  onClearFilters,
   onSelectQuestion,
   onCellEdit,
   selectedRows,
@@ -691,19 +696,26 @@ export default function GridView({
 
   if (questions.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center h-full text-gray-400 gap-3">
-        <FileText size={48} strokeWidth={1} />
-        <p className="text-lg font-medium">No questions match your filters</p>
-        <p className="text-sm">Try adjusting your search or filter criteria</p>
-        <button
-          onClick={() => {
-            const resetBtn = document.querySelector('[data-reset-filters]') as HTMLButtonElement;
-            if (resetBtn) resetBtn.click();
-          }}
-          className="mt-2 text-sm text-blue-600 hover:text-blue-700 font-medium"
-        >
-          Clear all filters
-        </button>
+      <div className="flex flex-col items-center justify-center h-full text-center px-8 gap-3">
+        <FileText size={40} strokeWidth={1} className="text-gray-300" />
+        <p className="text-base font-medium text-gray-500">
+          {searchQuery
+            ? `No results for "${searchQuery}"`
+            : 'No questions match the active filters'}
+        </p>
+        <p className="text-sm text-gray-400">
+          {searchQuery
+            ? 'Try a different search term or clear filters'
+            : 'Adjust your confidence, status, or delivery filters'}
+        </p>
+        {onClearFilters && (
+          <button
+            onClick={onClearFilters}
+            className="mt-1 text-sm text-blue-600 hover:text-blue-700 font-medium hover:underline"
+          >
+            Clear all filters
+          </button>
+        )}
       </div>
     );
   }
@@ -853,6 +865,12 @@ export default function GridView({
     <div className="flex flex-col h-full">
       <div className="flex items-center justify-between px-4 py-1.5 bg-gray-50/50 border-b border-gray-100 flex-shrink-0">
         <div className="flex items-center gap-3">
+          <span className="text-[10px] text-gray-500 font-medium tabular-nums">
+            {totalCount !== undefined && questions.length !== totalCount
+              ? `Showing ${questions.length} of ${totalCount} questions`
+              : `${questions.length} questions`}
+          </span>
+          <div className="w-px h-3.5 bg-gray-200" />
           <span className="text-[10px] text-gray-400 font-medium">
             {activeCols.length}/{ALL_COLUMNS.length} columns
           </span>

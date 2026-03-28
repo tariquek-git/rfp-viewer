@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { ChevronDown } from 'lucide-react';
 import type {
  Question,
@@ -187,6 +187,21 @@ export default function DetailPanel({
  const [critiqueResults, setCritiqueResults] = useState<Record<string, CritiqueResult>>({});
  const [rescoring, setRescoring] = useState(false);
  const [humanizing, setHumanizing] = useState<'bullet' | 'paragraph' | null>(null);
+ const closeButtonRef = useRef<HTMLButtonElement>(null);
+
+ // Focus the close button when panel mounts
+ useEffect(() => {
+  closeButtonRef.current?.focus();
+ }, []);
+
+ // Close on Escape key
+ useEffect(() => {
+  const handler = (e: KeyboardEvent) => {
+   if (e.key === 'Escape') onClose();
+  };
+  window.addEventListener('keydown', handler);
+  return () => window.removeEventListener('keydown', handler);
+ }, [onClose]);
 
  const [questionKey, setQuestionKey] = useState(question.ref);
  if (question.ref !== questionKey) {
@@ -294,7 +309,12 @@ export default function DetailPanel({
  const paragraphDiffKey = `${q.ref}:paragraph`;
 
  return (
- <div className="absolute right-0 top-0 bottom-0 w-[560px] bg-white border-l shadow-xl z-30 flex flex-col panel-slide-in">
+ <div
+  role="dialog"
+  aria-modal="true"
+  aria-label={`Question ${q.ref}`}
+  className="absolute right-0 top-0 bottom-0 w-[560px] bg-white border-l shadow-xl z-30 flex flex-col panel-slide-in"
+ >
  <div className="flex items-center justify-between px-6 py-4 border-b flex-shrink-0">
  <div>
  <h2 className="text-lg font-semibold text-gray-900">{q.ref}</h2>
@@ -318,7 +338,9 @@ export default function DetailPanel({
  </>
  )}
  <button
+ ref={closeButtonRef}
  onClick={() => { if (dirty && !window.confirm('You have unsaved changes. Close anyway?')) return; onClose(); }}
+ aria-label="Close detail panel"
  className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 text-lg font-bold"
  >
  ×
@@ -402,6 +424,7 @@ export default function DetailPanel({
  <button
  onClick={() => handleHumanize('bullet')}
  disabled={humanizing === 'bullet'}
+ aria-label="Humanize bullet response"
  className="text-xs bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded hover:bg-emerald-200 disabled:opacity-50 font-medium"
  >
  {humanizing === 'bullet' ? '...' : 'Humanize'}
@@ -410,6 +433,7 @@ export default function DetailPanel({
  <button
  onClick={() => handleCritique('bullet')}
  disabled={critiquing === 'bullet'}
+ aria-label="Critique bullet response"
  className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded hover:bg-blue-200 disabled:opacity-50 font-medium"
  >
  {critiquing === 'bullet' ? '...' : 'Critique'}
@@ -417,6 +441,7 @@ export default function DetailPanel({
  <button
  onClick={() => handleRewrite('bullet')}
  disabled={rewritingBullet}
+ aria-label="AI rewrite bullet response"
  className="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded hover:bg-purple-200 disabled:opacity-50 font-medium"
  >
  {rewritingBullet ? 'Rewriting...' : 'AI Rewrite'}
@@ -473,6 +498,7 @@ export default function DetailPanel({
  <button
  onClick={() => handleHumanize('paragraph')}
  disabled={humanizing === 'paragraph'}
+ aria-label="Humanize paragraph response"
  className="text-xs bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded hover:bg-emerald-200 disabled:opacity-50 font-medium"
  >
  {humanizing === 'paragraph' ? '...' : 'Humanize'}
@@ -481,6 +507,7 @@ export default function DetailPanel({
  <button
  onClick={() => handleCritique('paragraph')}
  disabled={critiquing === 'paragraph'}
+ aria-label="Critique paragraph response"
  className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded hover:bg-blue-200 disabled:opacity-50 font-medium"
  >
  {critiquing === 'paragraph' ? '...' : 'Critique'}
@@ -488,6 +515,7 @@ export default function DetailPanel({
  <button
  onClick={() => handleRewrite('paragraph')}
  disabled={rewritingParagraph}
+ aria-label="AI rewrite paragraph response"
  className="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded hover:bg-purple-200 disabled:opacity-50 font-medium"
  >
  {rewritingParagraph ? 'Rewriting...' : 'AI Rewrite'}
