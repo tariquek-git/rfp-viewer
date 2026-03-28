@@ -83,6 +83,33 @@ export default function Home() {
     localStorage.setItem('rfp-onboarded', 'true');
   }, []);
 
+  // On first load, check if an emergency snapshot is newer than the main save
+  useEffect(() => {
+    try {
+      const emergency = localStorage.getItem('rfp-emergency');
+      const main = localStorage.getItem('rfp-edits');
+      if (!emergency) return;
+      const { data: emergencyData, timestamp } = JSON.parse(emergency);
+      const mainTimestamp = main ? (JSON.parse(main) as { _savedAt?: number })._savedAt ?? 0 : 0;
+      if (timestamp > mainTimestamp && emergencyData?.questions?.length) {
+        const minutes = Math.round((Date.now() - timestamp) / 60000);
+        const label = minutes < 2 ? 'just now' : `${minutes}m ago`;
+        if (
+          window.confirm(
+            `An emergency save from ${label} was found with unsaved changes. Restore it?`,
+          )
+        ) {
+          state.loadTemplateData(emergencyData);
+          state.addToast('success', 'Emergency snapshot restored — press ⌘S to save');
+        }
+        localStorage.removeItem('rfp-emergency');
+      }
+    } catch {
+      /* ignore malformed emergency data */
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // intentionally run only on mount
+
   const { showShortcuts, setShowShortcuts } = useKeyboardShortcuts({
     onSwitchTab: (tab) => state.setActiveTab(tab as ViewTab),
   });
@@ -91,7 +118,6 @@ export default function Home() {
   if (state.hasUnsaved !== prevHasUnsaved) {
     setPrevHasUnsaved(state.hasUnsaved);
     if (!state.hasUnsaved && state.data) {
-      // eslint-disable-next-line react-hooks/purity -- tracking save timestamp for display only
       lastSavedRef.current = Date.now();
       setLastSavedTick((t) => t + 1);
     }
@@ -197,17 +223,26 @@ export default function Home() {
     state.resetFilters();
   }, [state]);
 
-  // Warn before closing/refreshing with unsaved changes
+  // Warn before closing/refreshing with unsaved changes; write emergency snapshot first
   useEffect(() => {
     const handler = (e: BeforeUnloadEvent) => {
-      if (state.hasUnsaved) {
+      if (state.hasUnsaved && state.data) {
+        // Synchronously persist an emergency snapshot before the dialog fires
+        try {
+          localStorage.setItem(
+            'rfp-emergency',
+            JSON.stringify({ data: state.data, timestamp: Date.now() }),
+          );
+        } catch {
+          /* quota — at least the IDB mirror has a recent copy */
+        }
         e.preventDefault();
         e.returnValue = '';
       }
     };
     window.addEventListener('beforeunload', handler);
     return () => window.removeEventListener('beforeunload', handler);
-  }, [state.hasUnsaved]);
+  }, [state.hasUnsaved, state.data]);
 
   // Cmd+K / Ctrl+K: focus the search input
   useEffect(() => {

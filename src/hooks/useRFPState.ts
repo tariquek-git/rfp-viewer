@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useMemo, useCallback } from 'react';
+import { useEffect, useState, useMemo, useCallback, useRef } from 'react';
 import type {
   RFPData,
   Question,
@@ -22,6 +22,7 @@ import { computeWordDiff } from '@/lib/diff';
 import { pushToCloud, pullFromCloud, pushVersion } from '@/lib/supabaseSync';
 import { isSupabaseConfigured } from '@/lib/supabase';
 import { useToast } from '@/components/Toast';
+import { idbGet, idbMirrorState, idbSet } from '@/lib/indexedDB';
 
 const EMPTY_KB: KnowledgeBase = {
   companyFacts: '',
@@ -98,7 +99,7 @@ export function useRFPState() {
         let loadedData = { ...d, questions };
 
         const saved = localStorage.getItem('rfp-edits');
-        if (saved)
+        if (saved) {
           try {
             const edits = JSON.parse(saved);
             if (edits.questions) {
@@ -111,8 +112,20 @@ export function useRFPState() {
               };
             }
           } catch {
-            /* ignore */
+            // localStorage data corrupted — try IDB mirror
+            idbGet<{ data: RFPData }>('rfp-full-state').then((mirror) => {
+              if (mirror?.data?.questions?.length) {
+                setData({
+                  ...mirror.data,
+                  questions: mirror.data.questions.map((q) => ({
+                    ...q,
+                    status: q.status || 'draft',
+                  })),
+                });
+              }
+            });
           }
+        }
 
         setData(loadedData);
 
@@ -144,8 +157,17 @@ export function useRFPState() {
         try {
           const v = localStorage.getItem('rfp-versions');
           if (v) setVersions(JSON.parse(v));
+          else {
+            // localStorage empty — check IDB backup
+            idbGet<Version[]>('rfp-versions').then((idbVersions) => {
+              if (idbVersions?.length) setVersions(idbVersions);
+            });
+          }
         } catch {
-          /* */
+          // Parse failed — try IDB fallback
+          idbGet<Version[]>('rfp-versions').then((idbVersions) => {
+            if (idbVersions?.length) setVersions(idbVersions);
+          });
         }
         try {
           const v = localStorage.getItem('rfp-knowledge-base');
@@ -202,12 +224,22 @@ export function useRFPState() {
       localStorage.setItem('rfp-slas', JSON.stringify(slaCommitments));
       setHasUnsaved(false);
       addToast('success', 'Changes saved locally');
+      // Mirror to IndexedDB as secondary local backup (async, non-blocking)
+      idbMirrorState({
+        data, cellHistory, globalRules, validationRules, feedbackItems,
+        knowledgeBase, pricingModel, winThemes, milestones, slaCommitments,
+      });
     } catch (err) {
       const isQuota =
         err instanceof DOMException &&
         (err.name === 'QuotaExceededError' || err.name === 'NS_ERROR_DOM_QUOTA_REACHED');
       if (isQuota) {
-        addToast('error', 'Storage full — try deleting old versions to free space');
+        // localStorage full — still mirror to IDB so data isn't lost
+        idbMirrorState({
+          data, cellHistory, globalRules, validationRules, feedbackItems,
+          knowledgeBase, pricingModel, winThemes, milestones, slaCommitments,
+        });
+        addToast('error', 'Local storage full — data backed up to browser DB. Delete old versions to free space.');
       } else {
         addToast('error', 'Save failed — check browser permissions');
       }
@@ -242,16 +274,33 @@ export function useRFPState() {
   const saveVersion = useCallback(
     (label?: string) => {
       if (!data) return;
+      const isAutoSave = !label || label === 'Auto-save';
+      const timeLabel = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
       const v: Version = {
-        label: label || `v${versions.length + 1}`,
+        label: isAutoSave ? `Auto-save ${timeLabel}` : label,
         timestamp: Date.now(),
         data: JSON.parse(JSON.stringify(data)),
       };
-      const newVersions = [...versions, v];
-      setVersions(newVersions);
-      localStorage.setItem('rfp-versions', JSON.stringify(newVersions));
+      setVersions((prev) => {
+        // Separate auto-saves from named (user-created) versions
+        const named = prev.filter((x) => !x.label.startsWith('Auto-save'));
+        const autoSaves = prev.filter((x) => x.label.startsWith('Auto-save'));
+        // Cap auto-saves at 20 — rotate out the oldest
+        const trimmedAutoSaves = autoSaves.length >= 20 ? autoSaves.slice(-19) : autoSaves;
+        const next = isAutoSave
+          ? [...named, ...trimmedAutoSaves, v]
+          : [...named, ...trimmedAutoSaves, v]; // named versions always appended
+        try {
+          localStorage.setItem('rfp-versions', JSON.stringify(next));
+        } catch {
+          /* quota — IDB fallback below */
+        }
+        // Mirror versions to IDB for redundancy
+        idbSet('rfp-versions', next);
+        return next;
+      });
     },
-    [data, versions],
+    [data],
   );
 
   const deleteVersion = useCallback((timestamp: number) => {
@@ -261,6 +310,22 @@ export function useRFPState() {
       return next;
     });
   }, []);
+
+  // === Periodic Auto-Save (every 5 minutes when unsaved changes exist) ===
+  const hasUnsavedRef = useRef(hasUnsaved);
+  useEffect(() => {
+    hasUnsavedRef.current = hasUnsaved;
+  }, [hasUnsaved]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (hasUnsavedRef.current) {
+        saveToLocal();
+        saveVersion('Auto-save');
+      }
+    }, 5 * 60 * 1000); // 5 minutes
+    return () => clearInterval(interval);
+  }, [saveToLocal, saveVersion]);
 
   const [cloudSyncStatus, setCloudSyncStatus] = useState<'idle' | 'syncing' | 'synced' | 'error'>('idle');
 
