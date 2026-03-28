@@ -98,6 +98,14 @@ export default function Home() {
     [state.pendingDiffs],
   );
 
+  // Stable callback — avoids re-rendering GridView rows on every page render
+  const { setShowRules, setShowWinThemes, setSelectedQuestion } = state;
+  const handleSelectQuestion = useCallback((q: Parameters<typeof setSelectedQuestion>[0]) => {
+    setShowRules(false);
+    setShowWinThemes(false);
+    setSelectedQuestion(q);
+  }, [setShowRules, setShowWinThemes, setSelectedQuestion]);
+
   const handleConsistencyCheck = useCallback(async () => {
     if (!state.data) return;
     state.setShowConsistency(true);
@@ -578,7 +586,7 @@ export default function Home() {
             <GridView
               questions={state.filteredQuestions}
               getConfidenceColor={state.getConfidenceColor}
-              onSelectQuestion={(q) => { state.setShowRules(false); state.setShowWinThemes(false); state.setSelectedQuestion(q); }}
+              onSelectQuestion={handleSelectQuestion}
               onCellEdit={state.handleCellEdit}
               selectedRows={state.selectedRows}
               onToggleRow={state.toggleRow}
@@ -590,6 +598,7 @@ export default function Home() {
               density={density}
               onChangeDensity={setDensity}
               feedbackItems={state.feedbackItems}
+              searchQuery={state.search}
             />
           )}
           {state.activeTab === 'context' && (

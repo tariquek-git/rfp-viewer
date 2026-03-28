@@ -691,6 +691,11 @@ export function useRFPState() {
     setHasUnsaved(true);
   }, []);
 
+  const setGlobalRulesWithUnsaved = useCallback((r: string[]) => {
+    setGlobalRules(r);
+    setHasUnsaved(true);
+  }, []);
+
   // === CPO feature updaters ===
   // === Cloud Sync ===
   const handlePushToCloud = useCallback(async () => {
@@ -814,10 +819,7 @@ export function useRFPState() {
     cellHistory,
     hasUnsaved,
     globalRules,
-    setGlobalRules: (r: string[]) => {
-      setGlobalRules(r);
-      setHasUnsaved(true);
-    },
+    setGlobalRules: setGlobalRulesWithUnsaved,
     validationRules,
     updateValidationRules,
     feedbackItems,

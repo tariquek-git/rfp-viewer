@@ -67,6 +67,20 @@ function CollapsibleSection({
  );
 }
 
+/** Shimmer skeleton shown while an AI operation is in progress */
+function SkeletonField({ rows = 4 }: { rows?: number }) {
+ return (
+  <div className="w-full border rounded px-3 py-2 bg-gray-50 space-y-2" style={{ minHeight: rows * 24 }}>
+   <div className="skeleton h-3 w-full rounded" />
+   <div className="skeleton h-3 w-5/6 rounded" />
+   <div className="skeleton h-3 w-4/6 rounded" />
+   {rows > 4 && <div className="skeleton h-3 w-5/6 rounded" />}
+   {rows > 4 && <div className="skeleton h-3 w-3/4 rounded" />}
+   <div className="mt-1 text-xs text-purple-500 animate-pulse font-medium">AI rewriting…</div>
+  </div>
+ );
+}
+
 function WordCount({ text }: { text: string }) {
  const wc = countWords(text);
  const color = getWordCountColor(wc);
@@ -409,7 +423,9 @@ export default function DetailPanel({
  </button>
  </div>
  </div>
- {pendingDiffs[bulletDiffKey] ? (
+ {rewritingBullet ? (
+ <SkeletonField rows={6} />
+ ) : pendingDiffs[bulletDiffKey] ? (
  <DiffView
  diff={pendingDiffs[bulletDiffKey]}
  onAccept={() => onAcceptDiff(bulletDiffKey)}
@@ -426,6 +442,9 @@ export default function DetailPanel({
  historyCount={historyFor('bullet').length}
  history={historyFor('bullet')}
  />
+ )}
+ {critiquing === 'bullet' && !critiqueResults[`${q.ref}:bullet`] && (
+  <div className="skeleton h-16 w-full rounded mt-2" />
  )}
  {critiqueResults[`${q.ref}:bullet`] && (
  <CritiquePanel result={critiqueResults[`${q.ref}:bullet`]} />
@@ -475,7 +494,9 @@ export default function DetailPanel({
  </button>
  </div>
  </div>
- {pendingDiffs[paragraphDiffKey] ? (
+ {rewritingParagraph ? (
+ <SkeletonField rows={6} />
+ ) : pendingDiffs[paragraphDiffKey] ? (
  <DiffView
  diff={pendingDiffs[paragraphDiffKey]}
  onAccept={() => onAcceptDiff(paragraphDiffKey)}
@@ -492,6 +513,9 @@ export default function DetailPanel({
  historyCount={historyFor('paragraph').length}
  history={historyFor('paragraph')}
  />
+ )}
+ {critiquing === 'paragraph' && !critiqueResults[`${q.ref}:paragraph`] && (
+  <div className="skeleton h-16 w-full rounded mt-2" />
  )}
  {critiqueResults[`${q.ref}:paragraph`] && (
  <CritiquePanel result={critiqueResults[`${q.ref}:paragraph`]} />

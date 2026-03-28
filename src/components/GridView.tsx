@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, memo } from 'react';
 import { useRef, useCallback } from 'react';
 import {
   FileText,
@@ -16,6 +16,27 @@ import {
 import type { Question, SortConfig, WorkflowStatus, FeedbackItem } from '@/types';
 import { countWords, getWordCountColor, getWordCountClasses } from '@/lib/wordCount';
 import { detectAIWriting, aiDetectClasses, aiDetectLabel } from '@/lib/aiDetect';
+import { useVirtualScroll } from '@/hooks/useVirtualScroll';
+
+/** Highlights all occurrences of `query` in `text` with a yellow mark. */
+function Highlight({ text, query }: { text: string; query: string }) {
+  if (!query || !text) return <>{text}</>;
+  const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const parts = text.split(new RegExp(`(${escaped})`, 'gi'));
+  return (
+    <>
+      {parts.map((part, i) =>
+        part.toLowerCase() === query.toLowerCase() ? (
+          <mark key={i} className="bg-yellow-200 text-yellow-900 rounded-sm px-0.5">
+            {part}
+          </mark>
+        ) : (
+          part
+        ),
+      )}
+    </>
+  );
+}
 
 export type TableDensity = 'compact' | 'comfortable' | 'spacious';
 
@@ -34,6 +55,7 @@ interface GridViewProps {
   density?: TableDensity;
   onChangeDensity?: (d: TableDensity) => void;
   feedbackItems?: FeedbackItem[];
+  searchQuery?: string;
 }
 
 type ColumnKey =
@@ -304,13 +326,17 @@ const STATUS_COLORS: Record<WorkflowStatus, string> = {
 };
 
 // Sub-components
-function EditableCell({
+const EditableCell = memo(function EditableCell({
   value,
-  onSave,
+  rowRef,
+  field,
+  onCellEdit,
   maxLen = 180,
 }: {
   value: string;
-  onSave: (val: string) => void;
+  rowRef: string;
+  field: string;
+  onCellEdit: (ref: string, field: string, value: string) => void;
   maxLen?: number;
 }) {
   const [editing, setEditing] = useState(false);
@@ -324,7 +350,7 @@ function EditableCell({
         value={draft}
         onChange={(e) => setDraft(e.target.value)}
         onBlur={() => {
-          if (draft !== value) onSave(draft);
+          if (draft !== value) onCellEdit(rowRef, field, draft);
           setEditing(false);
         }}
         onKeyDown={(e) => {
@@ -390,7 +416,7 @@ function EditableCell({
       </div>
     </div>
   );
-}
+});
 
 function ConfidenceBadge({ value }: { value: string }) {
   const cls =
@@ -598,12 +624,30 @@ export default function GridView({
   density = 'comfortable',
   onChangeDensity,
   feedbackItems = [],
+  searchQuery = '',
 }: GridViewProps) {
   const [visibleCols, setVisibleCols] = useState<Set<ColumnKey>>(
     () => new Set(ALL_COLUMNS.filter((c) => c.defaultVisible).map((c) => c.key)),
   );
   const [focusedRow, setFocusedRow] = useState(-1);
-  const tableRef = useRef<HTMLDivElement>(null);
+
+  const ROW_HEIGHT = density === 'compact' ? 52 : density === 'spacious' ? 132 : 100;
+  const { containerRef, virtualItems, totalHeight, containerProps } = useVirtualScroll({
+    totalItems: questions.length,
+    itemHeight: ROW_HEIGHT,
+  });
+
+  // Scroll to keep focused row in view when navigating with keyboard
+  useEffect(() => {
+    if (focusedRow < 0 || !containerRef.current) return;
+    const el = containerRef.current;
+    const rowTop = focusedRow * ROW_HEIGHT;
+    if (rowTop < el.scrollTop) {
+      el.scrollTop = rowTop;
+    } else if (rowTop + ROW_HEIGHT > el.scrollTop + el.clientHeight) {
+      el.scrollTop = rowTop + ROW_HEIGHT - el.clientHeight;
+    }
+  }, [focusedRow, ROW_HEIGHT, containerRef]);
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
@@ -771,7 +815,7 @@ export default function GridView({
               title="Click to open detail panel"
             >
               <span className="group-hover:bg-blue-50 group-hover:outline group-hover:outline-1 group-hover:outline-blue-200 rounded px-0.5 -mx-0.5 leading-relaxed">
-                {truncated ? val.slice(0, 180) + ' ...' : val}
+                <Highlight text={truncated ? val.slice(0, 180) + ' ...' : val} query={searchQuery} />
               </span>
               <span className="absolute top-0 right-0 opacity-0 group-hover:opacity-100 text-blue-400 transition-opacity" title="Open detail">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
@@ -789,14 +833,16 @@ export default function GridView({
           return (
             <EditableCell
               value={val}
-              onSave={(v) => onCellEdit(q.ref, col.key as keyof Question, v)}
+              rowRef={q.ref}
+              field={col.key}
+              onCellEdit={onCellEdit as (ref: string, field: string, value: string) => void}
             />
           );
         }
         if (!val) return <span className="text-gray-300">—</span>;
         return (
           <span className="leading-relaxed">
-            {val.length > 180 ? val.slice(0, 180) + ' ...' : val}
+            <Highlight text={val.length > 180 ? val.slice(0, 180) + ' ...' : val} query={searchQuery} />
           </span>
         );
       }
@@ -838,9 +884,10 @@ export default function GridView({
 
       <div
         className="overflow-auto flex-1 focus:outline-none"
-        ref={tableRef}
+        ref={containerRef as React.RefObject<HTMLDivElement>}
         tabIndex={0}
         onKeyDown={handleKeyDown}
+        onScroll={containerProps.onScroll}
       >
         <table className={`w-full text-sm border-collapse density-${density}`}>
           <thead className="bg-gray-50/80 backdrop-blur-sm sticky top-0 z-10 border-b">
@@ -880,21 +927,32 @@ export default function GridView({
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
-            {questions.map((q, i) => {
+            {/* Top spacer row for virtual scrolling */}
+            {virtualItems.length > 0 && virtualItems[0].offsetTop > 0 && (
+              <tr style={{ height: virtualItems[0].offsetTop }} aria-hidden="true">
+                <td colSpan={activeCols.length + 1} style={{ padding: 0 }} />
+              </tr>
+            )}
+            {/* Render only the visible window of rows (fallback to all rows before ResizeObserver fires) */}
+            {(virtualItems.length > 0
+              ? virtualItems
+              : questions.map((_, idx) => ({ index: idx, offsetTop: idx * ROW_HEIGHT }))
+            ).map(({ index }) => {
+              const q = questions[index];
               const rowBg =
                 q.confidence === 'RED'
                   ? 'bg-red-50/50'
                   : q.confidence === 'YELLOW'
                     ? 'bg-amber-50/30'
-                    : i % 2 === 0
+                    : index % 2 === 0
                       ? 'bg-white'
                       : 'bg-gray-50/30';
               const isSelected = selectedRows.has(q.ref);
-              const isFocused = i === focusedRow;
+              const isFocused = index === focusedRow;
               return (
                 <tr
                   key={q.ref}
-                  onClick={() => setFocusedRow(i)}
+                  onClick={() => setFocusedRow(index)}
                   className={`${rowBg} hover:bg-blue-50/60 group relative ${isSelected ? 'ring-1 ring-inset ring-blue-300 bg-blue-50/40' : ''} ${isFocused ? 'ring-2 ring-inset ring-blue-500' : ''}`}
                 >
                   <td className="px-2 py-2.5">
@@ -913,6 +971,17 @@ export default function GridView({
                 </tr>
               );
             })}
+            {/* Bottom spacer row for virtual scrolling */}
+            {(() => {
+              if (virtualItems.length === 0) return null;
+              const last = virtualItems[virtualItems.length - 1];
+              const bottomHeight = totalHeight - last.offsetTop - ROW_HEIGHT;
+              return bottomHeight > 0 ? (
+                <tr style={{ height: bottomHeight }} aria-hidden="true">
+                  <td colSpan={activeCols.length + 1} style={{ padding: 0 }} />
+                </tr>
+              ) : null;
+            })()}
           </tbody>
         </table>
       </div>
