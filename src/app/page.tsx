@@ -553,6 +553,7 @@ export default function Home() {
               <div className="w-px h-6 bg-gray-300 mx-1" />
               <button
                 onClick={state.handlePushToCloud}
+                aria-label="Push to Supabase cloud"
                 className="flex items-center gap-1 border border-gray-200 text-gray-600 px-2 py-1.5 rounded-lg text-xs font-medium hover:bg-gray-50"
                 title="Push to Supabase"
               >
@@ -560,6 +561,7 @@ export default function Home() {
               </button>
               <button
                 onClick={state.handlePullFromCloud}
+                aria-label="Pull from Supabase cloud"
                 className="flex items-center gap-1 border border-gray-200 text-gray-600 px-2 py-1.5 rounded-lg text-xs font-medium hover:bg-gray-50"
                 title="Pull from Supabase"
               >
@@ -574,6 +576,7 @@ export default function Home() {
               {state.versions.length > 0 && (
                 <button
                   onClick={() => state.setShowVersionCompare(true)}
+                  aria-label="Compare versions"
                   className="flex items-center border border-gray-200 text-gray-600 p-1.5 rounded-lg text-xs hover:bg-gray-50"
                   title="Compare versions"
                 >

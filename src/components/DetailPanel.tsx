@@ -188,16 +188,33 @@ export default function DetailPanel({
  const [rescoring, setRescoring] = useState(false);
  const [humanizing, setHumanizing] = useState<'bullet' | 'paragraph' | null>(null);
  const closeButtonRef = useRef<HTMLButtonElement>(null);
+ const panelRef = useRef<HTMLDivElement>(null);
 
  // Focus the close button when panel mounts
  useEffect(() => {
   closeButtonRef.current?.focus();
  }, []);
 
- // Close on Escape key
+ // Close on Escape; trap Tab focus inside the panel
  useEffect(() => {
   const handler = (e: KeyboardEvent) => {
-   if (e.key === 'Escape') onClose();
+   if (e.key === 'Escape') { onClose(); return; }
+   if (e.key !== 'Tab' || !panelRef.current) return;
+   const focusable = Array.from(
+    panelRef.current.querySelectorAll<HTMLElement>(
+     'a[href],button:not([disabled]),textarea:not([disabled]),input:not([disabled]),select:not([disabled]),[tabindex]:not([tabindex="-1"])',
+    ),
+   ).filter((el) => !el.closest('[aria-hidden="true"]'));
+   if (focusable.length === 0) return;
+   const first = focusable[0];
+   const last = focusable[focusable.length - 1];
+   if (e.shiftKey && document.activeElement === first) {
+    e.preventDefault();
+    last.focus();
+   } else if (!e.shiftKey && document.activeElement === last) {
+    e.preventDefault();
+    first.focus();
+   }
   };
   window.addEventListener('keydown', handler);
   return () => window.removeEventListener('keydown', handler);
@@ -310,6 +327,7 @@ export default function DetailPanel({
 
  return (
  <div
+  ref={panelRef}
   role="dialog"
   aria-modal="true"
   aria-label={`Question ${q.ref}`}
