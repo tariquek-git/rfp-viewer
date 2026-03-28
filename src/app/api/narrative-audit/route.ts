@@ -4,7 +4,13 @@ import { parseAIJson, handleAnthropicError } from '@/lib/parseAIResponse';
 
 const client = new Anthropic();
 
+const MAX_BODY_BYTES = 512 * 1024;
+
 export async function POST(req: NextRequest) {
+  const contentLength = Number(req.headers.get('content-length') ?? 0);
+  if (contentLength > MAX_BODY_BYTES) {
+    return NextResponse.json({ error: 'Request too large' }, { status: 413 });
+  }
   try {
     const { questions, winThemes, knowledgeBase } = await req.json();
 

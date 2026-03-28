@@ -4,7 +4,13 @@ import { parseAIJson, handleAnthropicError } from '@/lib/parseAIResponse';
 
 const client = new Anthropic();
 
+const MAX_BODY_BYTES = 64 * 1024;
+
 export async function POST(req: NextRequest) {
+  const contentLength = Number(req.headers.get('content-length') ?? 0);
+  if (contentLength > MAX_BODY_BYTES) {
+    return NextResponse.json({ error: 'Request too large' }, { status: 413 });
+  }
   try {
     const { question, knowledgeBase } = await req.json();
 
@@ -15,7 +21,7 @@ export async function POST(req: NextRequest) {
     const message = await client.messages.create({
       model: process.env.CLAUDE_MODEL || 'claude-sonnet-4-20250514',
       temperature: 0.4,
-      max_tokens: 1000,
+      max_tokens: 1500,
       messages: [
         {
           role: 'user',

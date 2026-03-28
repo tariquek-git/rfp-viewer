@@ -1,5 +1,17 @@
 import type { NextConfig } from "next";
 
+// Fail fast at build time on Vercel production deploys if required env vars are missing
+if (process.env.VERCEL_ENV === 'production') {
+  if (!process.env.ANTHROPIC_API_KEY) {
+    throw new Error('Missing required env var: ANTHROPIC_API_KEY');
+  }
+  if (!process.env.SITE_PASSWORD) {
+    throw new Error('Missing required env var: SITE_PASSWORD');
+  }
+} else if (!process.env.ANTHROPIC_API_KEY || !process.env.SITE_PASSWORD) {
+  console.warn('[rfp-viewer] ANTHROPIC_API_KEY or SITE_PASSWORD not set — AI/auth features will not work');
+}
+
 const nextConfig: NextConfig = {
   // Compress responses
   compress: true,

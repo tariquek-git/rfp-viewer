@@ -10,7 +10,13 @@ import { handleAnthropicError } from '@/lib/parseAIResponse';
 
 const client = new Anthropic();
 
+const MAX_BODY_BYTES = 64 * 1024; // 64 KB
+
 export async function POST(req: NextRequest) {
+  const contentLength = Number(req.headers.get('content-length') ?? 0);
+  if (contentLength > MAX_BODY_BYTES) {
+    return NextResponse.json({ error: 'Request too large' }, { status: 413 });
+  }
   try {
     const body = await req.json();
     const question = sanitizeQuestionForAI(body.question || {});

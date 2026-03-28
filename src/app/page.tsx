@@ -278,10 +278,17 @@ export default function Home() {
     );
   }
 
-  if (!state.data)
+  if (state.loadError || !state.data)
     return (
-      <div className="flex items-center justify-center h-screen">
-        <p className="text-gray-500">Failed to load data.</p>
+      <div className="flex flex-col items-center justify-center h-screen gap-4">
+        <p className="text-gray-700 font-medium">Failed to load RFP data.</p>
+        <p className="text-gray-400 text-sm">Check your network connection and try again.</p>
+        <button
+          onClick={state.retryLoad}
+          className="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700"
+        >
+          Retry
+        </button>
       </div>
     );
 

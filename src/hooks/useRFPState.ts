@@ -44,6 +44,8 @@ export function useRFPState() {
   // Core data
   const [data, setData] = useState<RFPData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
 
   // UI state
   const [activeTab, setActiveTab] = useState<ViewTab>('grid');
@@ -203,10 +205,11 @@ export function useRFPState() {
         setLoading(false);
       })
       .catch((e) => {
-        console.error(e);
+        console.error('Failed to load RFP data:', e);
+        setLoadError(true);
         setLoading(false);
       });
-  }, []);
+  }, [retryCount]);
 
   // === Save / Persist ===
   const saveToLocal = useCallback(() => {
@@ -863,10 +866,18 @@ export function useRFPState() {
     setHasUnsaved(true);
   }, []);
 
+  const retryLoad = useCallback(() => {
+    setLoadError(false);
+    setLoading(true);
+    setRetryCount((c) => c + 1);
+  }, []);
+
   return {
     // Core
     data,
     loading,
+    loadError,
+    retryLoad,
     activeTab,
     setActiveTab,
     activeCategory,
