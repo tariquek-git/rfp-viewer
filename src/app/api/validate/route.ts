@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
+import { parseAIJson, handleAnthropicError } from '@/lib/parseAIResponse';
 
 const client = new Anthropic();
 
@@ -45,18 +46,10 @@ Return ONLY a valid JSON array, no other text.`,
     });
 
     const content = message.content[0].type === 'text' ? message.content[0].text : '[]';
-    let results;
-    try {
-      results = JSON.parse(content);
-    } catch {
-      // Try to extract JSON from response
-      const match = content.match(/\[[\s\S]*\]/);
-      results = match ? JSON.parse(match[0]) : [];
-    }
+    const results = parseAIJson(content, [], 'validate');
 
     return NextResponse.json({ results });
   } catch (error) {
-    console.error('Validation error:', error);
-    return NextResponse.json({ results: [] }, { status: 500 });
+    return handleAnthropicError(error, 'validate');
   }
 }

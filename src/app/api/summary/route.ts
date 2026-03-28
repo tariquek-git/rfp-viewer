@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
+import { parseAIJson, handleAnthropicError } from '@/lib/parseAIResponse';
 
 const client = new Anthropic();
 
@@ -67,24 +68,15 @@ Return ONLY valid JSON.`,
     });
 
     const content = message.content[0].type === 'text' ? message.content[0].text : '{}';
-    let result;
-    try {
-      result = JSON.parse(content);
-    } catch {
-      const match = content.match(/\{[\s\S]*\}/);
-      result = match
-        ? JSON.parse(match[0])
-        : {
-            coverLetter: 'Failed to generate',
-            strengthsSummary: 'Failed to generate',
-            riskAreas: 'Failed to generate',
-            recommendation: 'Failed to generate',
-          };
-    }
+    const result = parseAIJson(content, {
+      coverLetter: 'Failed to generate',
+      strengthsSummary: 'Failed to generate',
+      riskAreas: 'Failed to generate',
+      recommendation: 'Failed to generate',
+    }, 'summary');
 
     return NextResponse.json(result);
   } catch (error) {
-    console.error('Summary error:', error);
-    return NextResponse.json({ error: 'Failed to generate summary' }, { status: 500 });
+    return handleAnthropicError(error, 'summary');
   }
 }

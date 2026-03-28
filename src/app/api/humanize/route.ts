@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
 import { sanitizeString } from '@/lib/sanitize';
+import { handleAnthropicError } from '@/lib/parseAIResponse';
 
 const client = new Anthropic();
 
@@ -50,7 +51,6 @@ Output ONLY the humanized text. No preamble, no explanation.`,
     const result = message.content[0].type === 'text' ? message.content[0].text : '';
     return NextResponse.json({ text: result });
   } catch (error) {
-    console.error('Humanize error:', error);
-    return NextResponse.json({ error: 'Failed to humanize' }, { status: 500 });
+    return handleAnthropicError(error, 'humanize');
   }
 }

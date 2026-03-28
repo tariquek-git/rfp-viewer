@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
+import { parseAIJson, handleAnthropicError } from '@/lib/parseAIResponse';
 
 const client = new Anthropic();
 
@@ -45,19 +46,10 @@ Be specific. Reference actual content from the response. Return ONLY valid JSON.
     });
 
     const content = message.content[0].type === 'text' ? message.content[0].text : '{}';
-    let result;
-    try {
-      result = JSON.parse(content);
-    } catch {
-      const match = content.match(/\{[\s\S]*\}/);
-      result = match
-        ? JSON.parse(match[0])
-        : { strengths: [], weaknesses: [], suggestions: [], score: 5 };
-    }
+    const result = parseAIJson(content, { strengths: [], weaknesses: [], suggestions: [], score: 5 }, 'critique');
 
     return NextResponse.json(result);
   } catch (error) {
-    console.error('Critique error:', error);
-    return NextResponse.json({ error: 'Failed to critique' }, { status: 500 });
+    return handleAnthropicError(error, 'critique');
   }
 }

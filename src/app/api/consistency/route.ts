@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
+import { parseAIJson, handleAnthropicError } from '@/lib/parseAIResponse';
 
 const client = new Anthropic();
 
@@ -59,24 +60,12 @@ If no issues found, return an empty array []. Return ONLY valid JSON.`,
       });
 
       const content = message.content[0].type === 'text' ? message.content[0].text : '[]';
-      try {
-        const issues = JSON.parse(content);
-        allIssues.push(...issues);
-      } catch {
-        const match = content.match(/\[[\s\S]*\]/);
-        if (match) {
-          try {
-            allIssues.push(...JSON.parse(match[0]));
-          } catch {
-            /* skip */
-          }
-        }
-      }
+      const issues = parseAIJson<typeof allIssues>(content, [], 'consistency');
+      allIssues.push(...issues);
     }
 
     return NextResponse.json({ issues: allIssues });
   } catch (error) {
-    console.error('Consistency check error:', error);
-    return NextResponse.json({ issues: [] }, { status: 500 });
+    return handleAnthropicError(error, 'consistency');
   }
 }

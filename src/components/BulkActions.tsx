@@ -47,8 +47,14 @@ export default function BulkActions({
                 <button
                   key={s.value}
                   onClick={() => {
-                    onChangeStatus(s.value);
                     setShowStatusMenu(false);
+                    if (
+                      window.confirm(
+                        `Set ${selectedCount} question${selectedCount === 1 ? '' : 's'} to "${s.label}"?`,
+                      )
+                    ) {
+                      onChangeStatus(s.value);
+                    }
                   }}
                   className={`w-full text-left px-3 py-1.5 text-xs hover:bg-gray-50 ${s.cls}`}
                 >

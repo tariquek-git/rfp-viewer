@@ -6,6 +6,7 @@ import {
   sanitizeRules,
   sanitizeString,
 } from '@/lib/sanitize';
+import { handleAnthropicError } from '@/lib/parseAIResponse';
 
 const client = new Anthropic();
 
@@ -99,7 +100,6 @@ Rewrite the response. Output ONLY the rewritten response text, no preamble or ex
 
     return NextResponse.json({ text, model: message.model, usage: message.usage });
   } catch (error) {
-    console.error('AI rewrite error:', error);
-    return NextResponse.json({ error: 'Failed to rewrite' }, { status: 500 });
+    return handleAnthropicError(error, 'rewrite');
   }
 }

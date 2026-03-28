@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
+import { parseAIJson, handleAnthropicError } from '@/lib/parseAIResponse';
 
 const client = new Anthropic();
 
@@ -61,26 +62,17 @@ Return ONLY valid JSON.`,
     });
 
     const content = message.content[0].type === 'text' ? message.content[0].text : '{}';
-    let result;
-    try {
-      result = JSON.parse(content);
-    } catch {
-      const match = content.match(/\{[\s\S]*\}/);
-      result = match
-        ? JSON.parse(match[0])
-        : {
-            overallScore: 5,
-            voiceConsistency: 'Unable to assess',
-            themeAlignment: [],
-            genericLanguage: [],
-            storyBreaks: [],
-            recommendation: 'Unable to generate',
-          };
-    }
+    const result = parseAIJson(content, {
+      overallScore: 5,
+      voiceConsistency: 'Unable to assess',
+      themeAlignment: [],
+      genericLanguage: [],
+      storyBreaks: [],
+      recommendation: 'Unable to generate',
+    }, 'narrative-audit');
 
     return NextResponse.json(result);
   } catch (error) {
-    console.error('Narrative audit error:', error);
-    return NextResponse.json({ error: 'Failed to audit' }, { status: 500 });
+    return handleAnthropicError(error, 'narrative-audit');
   }
 }

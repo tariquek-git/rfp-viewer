@@ -189,18 +189,30 @@ export function useRFPState() {
   // === Save / Persist ===
   const saveToLocal = useCallback(() => {
     if (!data) return;
-    localStorage.setItem('rfp-edits', JSON.stringify(data));
-    localStorage.setItem('rfp-cell-history', JSON.stringify(cellHistory));
-    localStorage.setItem('rfp-global-rules', JSON.stringify(globalRules));
-    localStorage.setItem('rfp-validation-rules', JSON.stringify(validationRules));
-    localStorage.setItem('rfp-feedback', JSON.stringify(feedbackItems));
-    localStorage.setItem('rfp-knowledge-base', JSON.stringify(knowledgeBase));
-    localStorage.setItem('rfp-pricing', JSON.stringify(pricingModel));
-    localStorage.setItem('rfp-win-themes', JSON.stringify(winThemes));
-    localStorage.setItem('rfp-milestones', JSON.stringify(milestones));
-    localStorage.setItem('rfp-slas', JSON.stringify(slaCommitments));
-    setHasUnsaved(false);
-    addToast('success', 'Changes saved locally');
+    try {
+      localStorage.setItem('rfp-edits', JSON.stringify(data));
+      localStorage.setItem('rfp-cell-history', JSON.stringify(cellHistory));
+      localStorage.setItem('rfp-global-rules', JSON.stringify(globalRules));
+      localStorage.setItem('rfp-validation-rules', JSON.stringify(validationRules));
+      localStorage.setItem('rfp-feedback', JSON.stringify(feedbackItems));
+      localStorage.setItem('rfp-knowledge-base', JSON.stringify(knowledgeBase));
+      localStorage.setItem('rfp-pricing', JSON.stringify(pricingModel));
+      localStorage.setItem('rfp-win-themes', JSON.stringify(winThemes));
+      localStorage.setItem('rfp-milestones', JSON.stringify(milestones));
+      localStorage.setItem('rfp-slas', JSON.stringify(slaCommitments));
+      setHasUnsaved(false);
+      addToast('success', 'Changes saved locally');
+    } catch (err) {
+      const isQuota =
+        err instanceof DOMException &&
+        (err.name === 'QuotaExceededError' || err.name === 'NS_ERROR_DOM_QUOTA_REACHED');
+      if (isQuota) {
+        addToast('error', 'Storage full — try deleting old versions to free space');
+      } else {
+        addToast('error', 'Save failed — check browser permissions');
+      }
+      console.error('localStorage save failed:', err);
+    }
   }, [
     data,
     cellHistory,

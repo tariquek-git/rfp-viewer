@@ -1,8 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const SITE_PASSWORD = process.env.SITE_PASSWORD || 'brim2026';
+const SITE_PASSWORD = process.env.SITE_PASSWORD;
 
 export async function POST(request: NextRequest) {
+  if (!SITE_PASSWORD) {
+    console.error('SITE_PASSWORD env var is not set');
+    return NextResponse.json({ error: 'Auth not configured' }, { status: 503 });
+  }
+
   try {
     const { password } = await request.json();
 

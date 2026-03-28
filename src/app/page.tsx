@@ -124,8 +124,15 @@ export default function Home() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ questions: qs, knowledgeBase: state.knowledgeBase }),
       });
-      setConsistencyIssues((await res.json()).issues || []);
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        state.addToast('error', err.error || 'Consistency check failed — try again');
+        setConsistencyIssues([]);
+      } else {
+        setConsistencyIssues((await res.json()).issues || []);
+      }
     } catch {
+      state.addToast('error', 'Consistency check failed — check your connection');
       setConsistencyIssues([]);
     }
     setConsistencyLoading(false);
@@ -189,6 +196,18 @@ export default function Home() {
   const handleClearFilters = useCallback(() => {
     state.resetFilters();
   }, [state]);
+
+  // Warn before closing/refreshing with unsaved changes
+  useEffect(() => {
+    const handler = (e: BeforeUnloadEvent) => {
+      if (state.hasUnsaved) {
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    };
+    window.addEventListener('beforeunload', handler);
+    return () => window.removeEventListener('beforeunload', handler);
+  }, [state.hasUnsaved]);
 
   // Cmd+K / Ctrl+K: focus the search input
   useEffect(() => {
