@@ -27,6 +27,8 @@ export interface Question {
   committee_risk: string;
   committee_score: number;
   status: WorkflowStatus;
+  /** Rationale for non-compliant or partial compliance — shown in detail panel and export */
+  compliance_notes?: string;
 }
 
 export interface RFPStats {

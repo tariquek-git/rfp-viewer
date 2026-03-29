@@ -31,6 +31,9 @@ interface AppHeaderProps {
   setShowSettings: (v: boolean) => void;
   setShowShortcuts: (v: boolean) => void;
   setShowTour: (v: boolean) => void;
+  onFilterConfidence?: (conf: string) => void;
+  deadline?: string;
+  onDeadlineChange?: (v: string) => void;
 }
 
 const NAV_GROUPS = [
@@ -77,6 +80,9 @@ function AppHeaderInner({
   setShowSettings,
   setShowShortcuts,
   setShowTour,
+  onFilterConfidence,
+  deadline,
+  onDeadlineChange,
 }: AppHeaderProps) {
   const onToggleWinThemes = useCallback(() => {
     state.setSelectedQuestion(null);
@@ -166,19 +172,43 @@ function AppHeaderInner({
       <div className="flex items-center gap-2">
         <ProgressBar {...state.statusCounts} />
         <div data-tour="tour-confidence-stats" className="flex items-center gap-1.5 text-[10px] font-medium">
-          <span className="flex items-center gap-0.5">
+          <button
+            onClick={() => onFilterConfidence?.('GREEN')}
+            title="Filter by GREEN confidence"
+            className="flex items-center gap-0.5 hover:opacity-70 transition-opacity"
+          >
             <Circle size={6} fill="#10b981" className="text-emerald-500" />
             {liveStats.green}
-          </span>
-          <span className="flex items-center gap-0.5">
+          </button>
+          <button
+            onClick={() => onFilterConfidence?.('YELLOW')}
+            title="Filter by YELLOW confidence"
+            className="flex items-center gap-0.5 hover:opacity-70 transition-opacity"
+          >
             <Circle size={6} fill="#f59e0b" className="text-amber-500" />
             {liveStats.yellow}
-          </span>
-          <span className="flex items-center gap-0.5">
+          </button>
+          <button
+            onClick={() => onFilterConfidence?.('RED')}
+            title="Filter by RED confidence"
+            className="flex items-center gap-0.5 hover:opacity-70 transition-opacity"
+          >
             <Circle size={6} fill="#ef4444" className="text-red-500" />
             {liveStats.red}
-          </span>
+          </button>
         </div>
+        {onDeadlineChange !== undefined && (
+          <div className="flex items-center gap-1 text-[10px] text-gray-500">
+            <span className="font-medium text-gray-400">Due:</span>
+            <input
+              type="date"
+              value={deadline || ''}
+              onChange={(e) => onDeadlineChange(e.target.value)}
+              title="Submission deadline"
+              className="border border-gray-200 rounded px-1 py-0.5 text-[10px] text-gray-600 focus:outline-none focus:ring-1 focus:ring-blue-400 bg-white"
+            />
+          </div>
+        )}
         <div className="w-px h-5 bg-gray-200" />
         {iconButtons.map(({ icon: Icon, label, active, onClick, activeClass, dataTour }) => (
           <button

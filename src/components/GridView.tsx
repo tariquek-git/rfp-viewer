@@ -93,6 +93,7 @@ interface ColumnDef {
   editable?: boolean;
   type?: 'text' | 'badge' | 'bool' | 'score' | 'tags' | 'status';
   sortable?: boolean;
+  tooltip?: string;
 }
 
 type ColumnSource = 'bsb' | 'brim' | 'analysis' | 'feedback';
@@ -198,6 +199,7 @@ const ALL_COLUMNS: (ColumnDef & { source: ColumnSource })[] = [
     width: 'w-20',
     type: 'badge',
     source: 'analysis',
+    tooltip: 'AI Language Risk: HIGH = AI-sounding phrases detected, MEDIUM = some generic language, LOW = natural human tone',
   },
   {
     key: 'rationale',
@@ -925,6 +927,7 @@ export default function GridView({
               {activeCols.map((col) => (
                 <th
                   key={col.key}
+                  title={col.tooltip}
                   className={`text-left px-3 py-2.5 font-semibold text-gray-500 text-[10px] uppercase tracking-wider ${col.width} ${SOURCE_HEADER_COLORS[col.source]} ${col.sortable ? 'cursor-pointer hover:text-gray-700 select-none' : ''}`}
                   onClick={() => col.sortable && handleSort(col.key)}
                 >

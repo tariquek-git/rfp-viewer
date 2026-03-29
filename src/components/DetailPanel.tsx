@@ -422,10 +422,29 @@ export default function DetailPanel({
  <div className="flex-1 overflow-auto px-6 py-4 space-y-1">
  <FieldBlock label="BSB Question / Requirement" value={q.requirement} />
 
+ {/* Compliance Rationale — shown when compliant is N or Partial */}
+ {(q.compliant === 'N' || q.compliant === 'Partial') && (
+  <div className="mb-4">
+   <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">
+    Compliance Rationale
+   </label>
+   <textarea
+    value={q.compliance_notes || ''}
+    onChange={(e) => update('compliance_notes', e.target.value)}
+    placeholder="Explain why this requirement is not fully met..."
+    rows={3}
+    className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y border-amber-200 bg-amber-50/30"
+   />
+  </div>
+ )}
+
  {/* Bullet response */}
  <div className="flex items-center justify-between mb-1">
  <div className="flex items-center gap-2">
- <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+ <label
+  className="text-xs font-semibold text-gray-500 uppercase tracking-wide"
+  title="One-line response used in compliance matrix and executive summary"
+ >
  Brim Response (Bullet)
  </label>
  {bulletDetect.level !== 'low' && (
@@ -499,7 +518,10 @@ export default function DetailPanel({
  {/* Paragraph response */}
  <div className="flex items-center justify-between mb-1 mt-4">
  <div className="flex items-center gap-2">
- <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+ <label
+  className="text-xs font-semibold text-gray-500 uppercase tracking-wide"
+  title="Full narrative response included in the submission document"
+ >
  Brim Response (Paragraph)
  </label>
  {paragraphDetect.level !== 'low' && (

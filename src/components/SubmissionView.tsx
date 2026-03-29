@@ -111,7 +111,8 @@ export default function SubmissionView({
  const avgScore = questions.reduce((s, q) => s + (q.committee_score || 0), 0) / questions.length;
  const redQuestions = questions.filter((q) => q.confidence === 'RED');
  const yellowQuestions = questions.filter((q) => q.confidence === 'YELLOW');
- return { green, yellow, red, compliantY, compliantN, avgScore, redQuestions, yellowQuestions };
+ const approvedCount = questions.filter((q) => q.status === 'approved').length;
+ return { green, yellow, red, compliantY, compliantN, avgScore, redQuestions, yellowQuestions, approvedCount };
  }, [questions]);
 
  const catStats = useMemo(() => {
@@ -252,7 +253,9 @@ h3{font-size:14px;margin-top:16px;color:#374151}
  {questions.length} Requirements Addressed · {categories.length} Categories
  </p>
  <p className="text-[10px] text-gray-300 mt-4 italic">
- AI-assisted response preparation · All responses reviewed and approved by Brim Financial team
+ {stats.approvedCount >= questions.length
+  ? 'AI-assisted response preparation · All responses reviewed and approved by Brim Financial team'
+  : `${stats.approvedCount} of ${questions.length} responses approved by Brim Financial team`}
  </p>
  </div>
 

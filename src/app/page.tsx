@@ -43,6 +43,10 @@ export default function Home() {
   const [density, setDensity] = useState<TableDensity>('comfortable');
   const [showSettings, setShowSettings] = useState(false);
   const [showTour, setShowTour] = useState(false);
+  const [deadline, setDeadline] = useState(() => {
+    if (typeof window !== 'undefined') return localStorage.getItem(STORAGE_KEYS.DEADLINE) || '';
+    return '';
+  });
   const lastSavedRef = useRef<number | null>(null);
   const [, setLastSavedTick] = useState(0);
   const lastSaved = lastSavedRef.current;
@@ -307,6 +311,15 @@ export default function Home() {
         setShowSettings={setShowSettings}
         setShowShortcuts={setShowShortcuts}
         setShowTour={setShowTour}
+        onFilterConfidence={(conf) => {
+          state.setConfidenceFilter(conf);
+          state.setActiveTab('grid');
+        }}
+        deadline={deadline}
+        onDeadlineChange={(v) => {
+          setDeadline(v);
+          localStorage.setItem(STORAGE_KEYS.DEADLINE, v);
+        }}
       />
 
       {(state.activeTab === 'grid' || state.activeTab === 'compliance') && (
@@ -409,7 +422,23 @@ export default function Home() {
             />
           )}
           {state.activeTab === 'context' && (
-            <ContextView data={state.data} onNavigate={handleDashboardNavigate} />
+            <ContextView
+              data={state.data}
+              onNavigate={handleDashboardNavigate}
+              onBulkApproveGreen={() => {
+                if (!state.data) return;
+                const toApprove = state.data.questions.filter(
+                  (q) => q.confidence === 'GREEN' && q.status !== 'approved',
+                );
+                toApprove.forEach((q) =>
+                  state.updateQuestion({ ...q, status: 'approved' as const }),
+                );
+                state.addToast(
+                  'success',
+                  `Approved ${toApprove.length} GREEN question${toApprove.length !== 1 ? 's' : ''}`,
+                );
+              }}
+            />
           )}
           {state.activeTab === 'knowledgebase' && (
             <KnowledgeBaseView

@@ -15,6 +15,7 @@ import {
 interface ContextViewProps {
   data: RFPData;
   onNavigate?: (tab: string, filter?: { confidence?: string; category?: string }) => void;
+  onBulkApproveGreen?: () => void;
 }
 
 function StatCard({
@@ -137,7 +138,7 @@ function SectionScoreCard({
   );
 }
 
-export default function ContextView({ data, onNavigate }: ContextViewProps) {
+export default function ContextView({ data, onNavigate, onBulkApproveGreen }: ContextViewProps) {
   const sectionStats = useMemo(() => {
     const sections: Record<
       string,
@@ -175,7 +176,7 @@ export default function ContextView({ data, onNavigate }: ContextViewProps) {
 
   // Compute live stats from questions array so they stay accurate after edits
   const liveStats = useMemo(() => {
-    let green = 0, yellow = 0, red = 0, with_strategic = 0, with_reg_enable = 0;
+    let green = 0, yellow = 0, red = 0, with_strategic = 0, with_reg_enable = 0, compliant_y = 0;
     for (const q of data.questions) {
       const c = (q.confidence || '').trim().toUpperCase();
       if (c === 'GREEN') green++;
@@ -183,11 +184,20 @@ export default function ContextView({ data, onNavigate }: ContextViewProps) {
       else if (c === 'RED') red++;
       if (q.strategic) with_strategic++;
       if (q.reg_enable) with_reg_enable++;
+      if (q.compliant === 'Y') compliant_y++;
     }
-    return { total: data.questions.length, green, yellow, red, with_strategic, with_reg_enable };
+    return { total: data.questions.length, green, yellow, red, with_strategic, with_reg_enable, compliant_y };
   }, [data]);
 
   const greenPct = Math.round((liveStats.green / liveStats.total) * 100);
+
+  const readinessScore = useMemo(() => {
+    if (liveStats.total === 0) return 0;
+    return Math.round(
+      (liveStats.green / liveStats.total) * 50 +
+      (liveStats.compliant_y / liveStats.total) * 50,
+    );
+  }, [liveStats]);
 
   return (
     <div className="overflow-auto h-full p-6 space-y-6 bg-gray-50/30">
@@ -287,6 +297,74 @@ export default function ContextView({ data, onNavigate }: ContextViewProps) {
             accent="text-emerald-600"
             border="border-emerald-200 bg-emerald-50/50"
           />
+        </div>
+      </div>
+
+      {/* Submission Readiness + Bulk Approve */}
+      <div className="grid grid-cols-2 gap-4">
+        <div
+          className={`border-2 rounded-xl p-5 shadow-sm flex flex-col justify-between ${
+            readinessScore >= 80
+              ? 'border-emerald-300 bg-emerald-50/40'
+              : readinessScore >= 60
+              ? 'border-amber-300 bg-amber-50/40'
+              : 'border-red-300 bg-red-50/40'
+          }`}
+        >
+          <div>
+            <h3 className="text-sm font-semibold text-gray-700 mb-1">Submission Readiness</h3>
+            <p className="text-[10px] text-gray-400 mb-3">
+              Composite score: 50% GREEN confidence + 50% fully compliant
+            </p>
+          </div>
+          <div className="flex items-end gap-2">
+            <span
+              className={`text-5xl font-bold ${
+                readinessScore >= 80
+                  ? 'text-emerald-600'
+                  : readinessScore >= 60
+                  ? 'text-amber-600'
+                  : 'text-red-600'
+              }`}
+            >
+              {readinessScore}
+            </span>
+            <span className="text-lg text-gray-400 mb-1">/100</span>
+            <span
+              className={`ml-auto text-xs font-semibold px-2 py-1 rounded-full ${
+                readinessScore >= 80
+                  ? 'bg-emerald-100 text-emerald-700'
+                  : readinessScore >= 60
+                  ? 'bg-amber-100 text-amber-700'
+                  : 'bg-red-100 text-red-700'
+              }`}
+            >
+              {readinessScore >= 80 ? 'Ready' : readinessScore >= 60 ? 'Nearly Ready' : 'Needs Work'}
+            </span>
+          </div>
+        </div>
+
+        <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm flex flex-col justify-between">
+          <div>
+            <h3 className="text-sm font-semibold text-gray-700 mb-1">Bulk Approve GREEN</h3>
+            <p className="text-[10px] text-gray-400 mb-3">
+              Approve all GREEN-confidence questions that are not yet approved.
+            </p>
+          </div>
+          <div className="flex items-center gap-3">
+            <span className="text-xs text-gray-500">
+              {data.questions.filter((q) => q.confidence === 'GREEN' && q.status !== 'approved').length} GREEN questions pending approval
+            </span>
+            {onBulkApproveGreen && (
+              <button
+                onClick={onBulkApproveGreen}
+                className="ml-auto text-xs bg-emerald-600 text-white px-3 py-1.5 rounded-lg hover:bg-emerald-700 font-medium disabled:opacity-50"
+                disabled={data.questions.filter((q) => q.confidence === 'GREEN' && q.status !== 'approved').length === 0}
+              >
+                Approve All GREEN
+              </button>
+            )}
+          </div>
         </div>
       </div>
 

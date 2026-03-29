@@ -404,7 +404,13 @@ export function useRFPState() {
       const q = data.questions.find((q) => q.ref === ref);
       if (!q) return;
       addCellHistory(ref, field, value, 'human');
-      updateQuestion({ ...q, [field]: value });
+      const shouldResetStatus =
+        (field === 'bullet' || field === 'paragraph') && q.status === 'approved';
+      updateQuestion({
+        ...q,
+        [field]: value,
+        ...(shouldResetStatus ? { status: 'reviewed' as const } : {}),
+      });
     },
     [data, addCellHistory, updateQuestion],
   );

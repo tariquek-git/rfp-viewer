@@ -36,6 +36,8 @@ export const STORAGE_KEYS = {
   TEMPLATES_INDEX: 'rfp-templates-index',
   /** Prefix for individual template payloads: `${TEMPLATE_PREFIX}${timestamp}` */
   TEMPLATE_PREFIX: 'rfp-template-',
+  /** Submission deadline date string */
+  DEADLINE: 'rfp-deadline',
 } as const;
 
 export type StorageKey = (typeof STORAGE_KEYS)[keyof typeof STORAGE_KEYS];
