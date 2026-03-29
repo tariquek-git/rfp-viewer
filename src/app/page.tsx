@@ -345,11 +345,15 @@ export default function Home() {
           onExportJSON={state.handleExportJSON}
           onPushToCloud={state.handlePushToCloud}
           onPullFromCloud={state.handlePullFromCloud}
-          onSaveVersion={state.saveVersion}
+          onSaveVersion={() => {
+            state.saveVersion(`Snapshot ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`);
+            state.addToast('success', 'Version snapshot saved');
+          }}
           onShowVersionCompare={() => state.setShowVersionCompare(true)}
           onConsistencyCheck={handleConsistencyCheck}
           onShowNarrativeAudit={() => state.setShowNarrativeAudit(true)}
           onShowSummary={() => state.setShowSummary(true)}
+          onBulkAiRewrite={() => { state.setActiveTab('humanize'); state.setSelectedQuestion(null); }}
           needsAttention={liveStats.yellow + liveStats.red}
         />
       )}
@@ -363,19 +367,24 @@ export default function Home() {
         }
       >
         <div className="flex-1 overflow-hidden relative flex flex-col">
-          <div className="px-6 py-1 text-xs text-gray-400 border-b border-gray-100 bg-white flex items-center gap-1.5 flex-shrink-0">
-            <span className="font-medium text-gray-500">
+          <div className="px-4 py-1 text-xs border-b border-gray-100 bg-gray-50/60 flex items-center gap-1.5 flex-shrink-0 select-none">
+            <span className="font-semibold text-gray-600 tracking-tight">
               {{ grid: 'Response Grid', context: 'Dashboard', humanize: 'AI QA', knowledgebase: 'Knowledge Base', pricing: 'Pricing', timeline: 'Timeline', sla: 'SLAs', compliance: 'Compliance', submission: 'Export' }[state.activeTab] || state.activeTab}
             </span>
             {state.activeTab === 'grid' && state.activeCategory !== 'All' && (
               <>
-                <span className="text-gray-300">/</span>
-                <span>{state.activeCategory}</span>
+                <span className="text-gray-300 text-[10px]">›</span>
+                <span className="text-gray-500">{state.activeCategory}</span>
               </>
             )}
-            <span className="ml-auto text-gray-300">
-              {state.activeTab === 'grid' && `${state.filteredQuestions.length} of ${liveStats.total}`}
-            </span>
+            {state.activeTab === 'grid' && (
+              <span className="ml-auto text-[10px] text-gray-400 tabular-nums">
+                {state.filteredQuestions.length < liveStats.total
+                  ? <><span className="font-semibold text-gray-500">{state.filteredQuestions.length}</span> of {liveStats.total}</>
+                  : <><span className="font-semibold text-gray-500">{liveStats.total}</span> questions</>
+                }
+              </span>
+            )}
           </div>
           <div className="flex-1 overflow-hidden relative">
           {state.activeTab === 'grid' && (
@@ -568,23 +577,33 @@ export default function Home() {
       </Suspense>
 
       {/* Footer */}
-      <footer className="border-t border-gray-200 px-6 py-2 text-xs text-gray-400 flex items-center justify-between flex-shrink-0 bg-gray-50/50">
-        <div className="flex items-center gap-4">
-          <span className="flex items-center gap-1">
-            <kbd className="px-1 py-0.5 bg-gray-100 rounded text-[10px] font-mono border border-gray-200">⌘S</kbd> save
-          </span>
+      <footer className="border-t border-gray-200 px-4 py-1.5 text-[10px] text-gray-400 flex items-center justify-between flex-shrink-0 bg-gray-50/60">
+        <div className="flex items-center gap-3">
+          {[
+            { key: '⌘S', label: 'save' },
+            { key: '⌘K', label: 'search' },
+            { key: '↑↓', label: 'navigate rows' },
+          ].map(({ key, label }) => (
+            <span key={key} className="flex items-center gap-1">
+              <kbd className="px-1 py-0.5 bg-white rounded text-[9px] font-mono border border-gray-200 shadow-sm">{key}</kbd>
+              <span>{label}</span>
+            </span>
+          ))}
+          <span className="text-gray-300">·</span>
           <span>Click ref to open detail</span>
         </div>
         <div className="flex items-center gap-3">
           {state.hasUnsaved && (
             <span className="flex items-center gap-1 text-amber-600 font-medium">
-              <span className="w-1.5 h-1.5 rounded-full bg-amber-500" /> Unsaved
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" /> Unsaved changes
             </span>
           )}
           {state.unresolvedFeedback > 0 && (
-            <span className="text-orange-500">{state.unresolvedFeedback} open feedback</span>
+            <span className="text-orange-500 font-medium">{state.unresolvedFeedback} open feedback</span>
           )}
-          <span className="text-gray-300">v{state.versions.length}</span>
+          {state.versions.length > 0 && (
+            <span className="text-gray-400 font-medium">{state.versions.length} version{state.versions.length !== 1 ? 's' : ''}</span>
+          )}
         </div>
       </footer>
     </div>

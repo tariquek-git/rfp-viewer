@@ -50,12 +50,10 @@ test.describe('Grid View', () => {
   });
 
   test('filters by category tab', async ({ page }) => {
-    const allCount = await page.locator('tbody tr').count();
     const loyaltyTab = page.locator('[data-tour="tour-category-nav"] button').filter({ hasText: /Loyalty/ }).first();
     await loyaltyTab.click();
     await page.waitForTimeout(300);
     const filteredCount = await page.locator('tbody tr').count();
-    expect(filteredCount).toBeGreaterThan(0);
     expect(filteredCount).toBeGreaterThan(0);
   });
 

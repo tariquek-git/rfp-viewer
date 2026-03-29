@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useCallback, memo } from 'react';
 import {
-  FileText,
+  SearchX,
+  SlidersHorizontal,
   Circle,
   Check,
   Minus,
@@ -695,23 +696,26 @@ export default function GridView({
   const allRefsSelected = questions.length > 0 && questions.every((q) => selectedRows.has(q.ref));
 
   if (questions.length === 0) {
+    const EmptyIcon = searchQuery ? SearchX : SlidersHorizontal;
     return (
       <div className="flex flex-col items-center justify-center h-full text-center px-8 gap-3">
-        <FileText size={40} strokeWidth={1} className="text-gray-300" />
-        <p className="text-base font-medium text-gray-500">
+        <div className="w-16 h-16 rounded-2xl bg-gray-100 flex items-center justify-center mb-1">
+          <EmptyIcon size={28} strokeWidth={1.5} className="text-gray-400" />
+        </div>
+        <p className="text-base font-semibold text-gray-600">
           {searchQuery
             ? `No results for "${searchQuery}"`
             : 'No questions match the active filters'}
         </p>
-        <p className="text-sm text-gray-400">
+        <p className="text-sm text-gray-400 max-w-xs">
           {searchQuery
-            ? 'Try a different search term or clear filters'
-            : 'Adjust your confidence, status, or delivery filters'}
+            ? 'Try a different search term or clear the filters below.'
+            : 'Adjust your confidence, compliant, or status filter to see more questions.'}
         </p>
         {onClearFilters && (
           <button
             onClick={onClearFilters}
-            className="mt-1 text-sm text-blue-600 hover:text-blue-700 font-medium hover:underline"
+            className="mt-1 px-4 py-1.5 text-sm text-blue-600 border border-blue-200 rounded-lg hover:bg-blue-50 font-medium transition-colors"
           >
             Clear all filters
           </button>

@@ -54,6 +54,7 @@ interface GridToolbarProps {
   onConsistencyCheck: () => void;
   onShowNarrativeAudit: () => void;
   onShowSummary: () => void;
+  onBulkAiRewrite: () => void;
   needsAttention: number;
 }
 
@@ -89,6 +90,7 @@ const GridToolbar = memo(function GridToolbar({
   onConsistencyCheck,
   onShowNarrativeAudit,
   onShowSummary,
+  onBulkAiRewrite,
   needsAttention,
 }: GridToolbarProps) {
   const filterSelects = [
@@ -186,7 +188,8 @@ const GridToolbar = memo(function GridToolbar({
           </button>
           <button
             onClick={onSaveVersion}
-            className="flex items-center gap-1 border border-gray-200 text-gray-600 px-2 py-1.5 rounded-lg text-xs font-medium hover:bg-gray-50"
+            title={`Save version snapshot (v${versionCount + 1})`}
+            className="flex items-center gap-1 border border-gray-200 text-gray-600 px-2 py-1.5 rounded-lg text-xs font-medium hover:bg-gray-50 hover:border-gray-300"
           >
             <History size={11} /> v{versionCount + 1}
           </button>
@@ -222,9 +225,15 @@ const GridToolbar = memo(function GridToolbar({
           >
             <FileText size={11} /> Summary
           </button>
-          <button className="flex items-center gap-1 bg-gradient-to-r from-violet-600 to-purple-600 text-white px-2.5 py-1.5 rounded-lg text-xs font-medium hover:from-violet-700 hover:to-purple-700 shadow-sm">
+          <button
+            onClick={onBulkAiRewrite}
+            title={`${needsAttention} questions need attention — open AI QA view`}
+            className="flex items-center gap-1 bg-gradient-to-r from-violet-600 to-purple-600 text-white px-2.5 py-1.5 rounded-lg text-xs font-medium hover:from-violet-700 hover:to-purple-700 shadow-sm"
+          >
             <Sparkles size={11} /> AI Rewrite{' '}
-            <span className="bg-white/20 px-1 rounded text-[9px]">{needsAttention}</span>
+            {needsAttention > 0 && (
+              <span className="bg-white/20 px-1 rounded text-[9px]">{needsAttention}</span>
+            )}
           </button>
         </div>
       </div>
