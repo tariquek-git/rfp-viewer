@@ -29,7 +29,7 @@ if (typeof setInterval !== 'undefined') {
   }, 60_000);
 }
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   // === Password Protection ===
   const { pathname } = request.nextUrl;
 

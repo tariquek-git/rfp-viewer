@@ -49,9 +49,12 @@ function CollapsibleSection({
  const [open, setOpen] = useState(defaultOpen);
  return (
  <div className="border-t pt-3 mt-3">
- <button
+ <div
+ role="button"
+ tabIndex={0}
  onClick={() => setOpen(!open)}
- className="flex items-center justify-between w-full text-left mb-2"
+ onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setOpen(!open); } }}
+ className="flex items-center justify-between w-full text-left mb-2 cursor-pointer"
  >
  <h3 className="text-sm font-semibold text-gray-700">{title}</h3>
  <div className="flex items-center gap-2">
@@ -61,7 +64,7 @@ function CollapsibleSection({
  className={`text-gray-400 transition-transform ${open ? 'rotate-180' : ''}`}
  />
  </div>
- </button>
+ </div>
  {open && <div>{children}</div>}
  </div>
  );

@@ -9592,8 +9592,8 @@
   ],
   "stats": {
     "total": 383,
-    "green": 309,
-    "yellow": 67,
+    "green": 376,
+    "yellow": 0,
     "red": 7,
     "compliant_y": 375,
     "compliant_n": 5,

@@ -173,35 +173,49 @@ export default function ContextView({ data, onNavigate }: ContextViewProps) {
     return { high, med, low };
   }, [data]);
 
-  const greenPct = Math.round((data.stats.green / data.stats.total) * 100);
+  // Compute live stats from questions array so they stay accurate after edits
+  const liveStats = useMemo(() => {
+    let green = 0, yellow = 0, red = 0, with_strategic = 0, with_reg_enable = 0;
+    for (const q of data.questions) {
+      const c = (q.confidence || '').trim().toUpperCase();
+      if (c === 'GREEN') green++;
+      else if (c === 'YELLOW') yellow++;
+      else if (c === 'RED') red++;
+      if (q.strategic) with_strategic++;
+      if (q.reg_enable) with_reg_enable++;
+    }
+    return { total: data.questions.length, green, yellow, red, with_strategic, with_reg_enable };
+  }, [data]);
+
+  const greenPct = Math.round((liveStats.green / liveStats.total) * 100);
 
   return (
     <div className="overflow-auto h-full p-6 space-y-6 bg-gray-50/30">
       {/* Top Stats */}
       <div className="grid grid-cols-4 gap-4">
         <StatCard
-          value={data.stats.total}
+          value={liveStats.total}
           label="Total Questions"
           icon={FileText}
           accent="text-gray-900"
           onClick={() => onNavigate?.('grid')}
         />
         <StatCard
-          value={data.stats.green}
+          value={liveStats.green}
           label={`GREEN (${greenPct}%) — click to filter`}
           icon={CheckCircle}
           accent="text-emerald-600"
           onClick={() => onNavigate?.('grid', { confidence: 'GREEN' })}
         />
         <StatCard
-          value={data.stats.yellow}
+          value={liveStats.yellow}
           label="YELLOW — click to filter"
           icon={AlertTriangle}
           accent="text-amber-600"
           onClick={() => onNavigate?.('grid', { confidence: 'YELLOW' })}
         />
         <StatCard
-          value={data.stats.red}
+          value={liveStats.red}
           label="RED — click to filter"
           icon={Shield}
           accent="text-red-600"
@@ -212,13 +226,13 @@ export default function ContextView({ data, onNavigate }: ContextViewProps) {
       {/* Strategic & Regulatory */}
       <div className="grid grid-cols-2 gap-4">
         <StatCard
-          value={data.stats.with_strategic}
+          value={liveStats.with_strategic}
           label="Questions with Strategic Positioning"
           icon={Crosshair}
           accent="text-violet-600"
         />
         <StatCard
-          value={data.stats.with_reg_enable}
+          value={liveStats.with_reg_enable}
           label="Questions with Regulatory Enablement"
           icon={Scale}
           accent="text-blue-600"

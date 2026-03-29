@@ -1,0 +1,15 @@
+{
+  "cookies": [
+    {
+      "name": "rfp-auth",
+      "value": "authenticated",
+      "domain": "localhost",
+      "path": "/",
+      "expires": 1775349054.557232,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "Lax"
+    }
+  ],
+  "origins": []
+}

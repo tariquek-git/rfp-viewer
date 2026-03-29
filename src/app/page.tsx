@@ -1,42 +1,12 @@
 'use client';
 
 import { useState, useMemo, useCallback, useRef, useEffect, lazy, Suspense } from 'react';
-import {
-  Save,
-  Download,
-  FileJson,
-  CloudUpload,
-  CloudDownload,
-  Sparkles,
-  BookOpen,
-  LayoutGrid,
-  BarChart3,
-  SlidersHorizontal,
-  RotateCcw,
-  ChevronDown,
-  Circle,
-  History,
-  Search,
-  ClipboardCheck,
-  FileText,
-  Scan,
-  DollarSign,
-  Calendar,
-  Shield,
-  Target,
-  BookText,
-  ClipboardList,
-  GitCompareArrows,
-  FileStack,
-  Bot,
-  Keyboard,
-  Settings,
-} from 'lucide-react';
 import { useRFPState } from '@/hooks/useRFPState';
 import GridView from '@/components/GridView';
 import type { TableDensity } from '@/components/GridView';
-import ProgressBar from '@/components/ProgressBar';
-import BulkActions from '@/components/BulkActions';
+import AppHeader from '@/components/AppHeader';
+import CategoryNav from '@/components/CategoryNav';
+import GridToolbar from '@/components/GridToolbar';
 import { useKeyboardShortcuts } from '@/components/KeyboardShortcuts';
 
 const ContextView = lazy(() => import('@/components/ContextView'));
@@ -61,6 +31,7 @@ const VersionCompare = lazy(() => import('@/components/VersionCompare'));
 const TemplateManager = lazy(() => import('@/components/TemplateManager'));
 const HumanizeView = lazy(() => import('@/components/HumanizeView'));
 const SettingsPanel = lazy(() => import('@/components/SettingsPanel'));
+import TourOverlay from '@/components/TourOverlay';
 import { ToastContainer } from '@/components/Toast';
 import type { ConsistencyIssue, ViewTab } from '@/types';
 
@@ -70,10 +41,25 @@ export default function Home() {
   const [consistencyLoading, setConsistencyLoading] = useState(false);
   const [density, setDensity] = useState<TableDensity>('comfortable');
   const [showSettings, setShowSettings] = useState(false);
+  const [showTour, setShowTour] = useState(false);
   const lastSavedRef = useRef<number | null>(null);
   const [, setLastSavedTick] = useState(0);
   const lastSaved = lastSavedRef.current;
   const searchInputRef = useRef<HTMLInputElement>(null);
+
+  // Live stats computed from questions array (data.stats may be stale)
+  const liveStats = useMemo(() => {
+    if (!state.data) return { green: 0, yellow: 0, red: 0, total: 0 };
+    let green = 0, yellow = 0, red = 0;
+    for (const q of state.data.questions) {
+      const c = (q.confidence || '').trim().toUpperCase();
+      if (c === 'GREEN') green++;
+      else if (c === 'YELLOW') yellow++;
+      else if (c === 'RED') red++;
+    }
+    return { green, yellow, red, total: state.data.questions.length };
+  }, [state.data]);
+
   const [showOnboarding, setShowOnboarding] = useState(() => {
     if (typeof window !== 'undefined') return !localStorage.getItem('rfp-onboarded');
     return false;
@@ -228,15 +214,6 @@ export default function Home() {
     [state],
   );
 
-  const formatTimeSince = useCallback((ts: number | null) => {
-    if (!ts) return '';
-    const now = performance.timeOrigin + performance.now();
-    const diff = Math.floor((now - ts) / 1000);
-    if (diff < 60) return 'just now';
-    if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
-    return `${Math.floor(diff / 3600)}h ago`;
-  }, []);
-
   const handleClearFilters = useCallback(() => {
     state.resetFilters();
   }, [state]);
@@ -310,369 +287,71 @@ export default function Home() {
       </div>
     );
 
-  // Nav organized into groups
-  const NAV_GROUPS = [
-    {
-      label: 'RFP Work',
-      tabs: [
-        { key: 'grid' as const, icon: LayoutGrid, label: 'Response Grid' },
-        { key: 'context' as const, icon: BarChart3, label: 'Dashboard' },
-        { key: 'humanize' as const, icon: Bot, label: 'AI QA' },
-      ],
-    },
-    {
-      label: 'Strategy',
-      tabs: [
-        { key: 'knowledgebase' as const, icon: BookOpen, label: 'Knowledge Base' },
-        { key: 'pricing' as const, icon: DollarSign, label: 'Pricing' },
-        { key: 'timeline' as const, icon: Calendar, label: 'Timeline' },
-        { key: 'sla' as const, icon: Shield, label: 'SLAs' },
-      ],
-    },
-    {
-      label: 'Review & Submit',
-      tabs: [
-        { key: 'compliance' as const, icon: ClipboardCheck, label: 'Compliance' },
-        { key: 'submission' as const, icon: FileText, label: 'Export' },
-      ],
-    },
-  ];
-
   return (
     <div className="flex flex-col h-screen bg-white text-gray-900">
       <ToastContainer toasts={state.toasts} onRemove={state.removeToast} />
 
-      {/* Header */}
-      <header className="border-b border-gray-200 px-4 py-2 flex items-center justify-between flex-shrink-0 bg-white">
-        <div className="flex items-center gap-3">
-          <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center">
-            <BookOpen size={14} className="text-white" />
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <h1 className="text-sm font-bold text-gray-900">BSB Credit Card RFP</h1>
-              {state.hasUnsaved ? (
-                <span className="text-[9px] bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded font-medium">
-                  Unsaved
-                </span>
-              ) : (
-                lastSaved && (
-                  <span className="text-[9px] text-gray-400 font-medium">
-                    Saved {formatTimeSince(lastSaved)}
-                  </span>
-                )
-              )}
-            </div>
-            <p className="text-[10px] text-gray-400">
-              {state.data.stats.total} Qs · {state.data.categories.length} Categories
-            </p>
-          </div>
-        </div>
-
-        {/* Grouped Nav Tabs */}
-        <div className="flex items-center gap-1">
-          {NAV_GROUPS.map((group, gi) => (
-            <div key={group.label} className="flex items-center">
-              {gi > 0 && <div className="w-px h-5 bg-gray-200 mx-1.5" />}
-              <span className="text-[8px] text-gray-400 uppercase tracking-wider font-semibold mr-1 hidden lg:inline">
-                {group.label}
-              </span>
-              <div className="flex items-center bg-gray-100 rounded-lg p-0.5">
-                {group.tabs.map((tab) => (
-                  <button
-                    key={tab.key}
-                    onClick={() => {
-                      state.setActiveTab(tab.key);
-                      state.setSelectedQuestion(null);
-                    }}
-                    className={`flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium whitespace-nowrap transition-all ${state.activeTab === tab.key ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
-                  >
-                    <tab.icon size={11} /> {tab.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Right side */}
-        <div className="flex items-center gap-2">
-          <ProgressBar {...state.statusCounts} />
-          <div className="flex items-center gap-1.5 text-[10px] font-medium">
-            <span className="flex items-center gap-0.5">
-              <Circle size={6} fill="#10b981" className="text-emerald-500" />
-              {state.data.stats.green}
-            </span>
-            <span className="flex items-center gap-0.5">
-              <Circle size={6} fill="#f59e0b" className="text-amber-500" />
-              {state.data.stats.yellow}
-            </span>
-            <span className="flex items-center gap-0.5">
-              <Circle size={6} fill="#ef4444" className="text-red-500" />
-              {state.data.stats.red}
-            </span>
-          </div>
-          <div className="w-px h-5 bg-gray-200" />
-          {[
-            {
-              icon: Target, label: 'Win Themes', active: state.showWinThemes,
-              onClick: () => { state.setSelectedQuestion(null); state.setShowWinThemes(!state.showWinThemes); },
-              activeClass: 'text-violet-600 bg-violet-50',
-            },
-            {
-              icon: BookOpen, label: 'Rules', active: state.showRules,
-              onClick: () => { state.setSelectedQuestion(null); state.setShowRules(!state.showRules); },
-              activeClass: 'text-blue-600 bg-blue-50',
-            },
-            {
-              icon: ClipboardList, label: 'Checklist', active: false,
-              onClick: () => state.setShowChecklist(true),
-              activeClass: '',
-            },
-            {
-              icon: FileStack, label: 'Templates', active: false,
-              onClick: () => state.setShowTemplates(true),
-              activeClass: '',
-            },
-            {
-              icon: Keyboard, label: 'Keys', active: false,
-              onClick: () => setShowShortcuts(true),
-              activeClass: '',
-            },
-            {
-              icon: Settings, label: 'Settings', active: showSettings,
-              onClick: () => { state.setSelectedQuestion(null); state.setShowRules(false); state.setShowWinThemes(false); setShowSettings(true); },
-              activeClass: 'text-gray-700 bg-gray-100',
-            },
-          ].map(({ icon: Icon, label, active, onClick, activeClass }) => (
-            <button
-              key={label}
-              onClick={onClick}
-              title={label}
-              aria-label={label}
-              className={`flex flex-col items-center gap-0.5 px-1.5 py-1 rounded-md text-center ${active ? activeClass : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100'}`}
-            >
-              <Icon size={14} />
-              <span className="text-[8px] leading-none font-medium">{label}</span>
-            </button>
-          ))}
-        </div>
-      </header>
-
-      {/* Category Tabs */}
-      {(state.activeTab === 'grid' || state.activeTab === 'compliance') && (
-        <div className="border-b border-gray-200 px-6 py-1.5 flex gap-1 overflow-x-auto flex-shrink-0 bg-gray-50/50 scrollbar-hide">
-          {['All', ...state.data.categories].map((cat) => {
-            const isActive = state.activeCategory === cat;
-            const catStat = state.categoryStats[cat];
-            return (
-              <button
-                key={cat}
-                onClick={() => state.setActiveCategory(cat)}
-                className={`px-2.5 py-1 rounded-md text-xs font-medium whitespace-nowrap ${isActive ? 'bg-blue-600 text-white shadow-sm' : 'text-gray-500 hover:bg-gray-100'}`}
-              >
-                {cat}{' '}
-                <span className={isActive ? 'text-blue-200' : 'text-gray-400'}>
-                  {catStat?.total || 0}
-                </span>
-                {catStat && catStat.total > 0 && (
-                  <span
-                    className={`ml-0.5 text-[8px] ${isActive ? 'text-blue-200' : 'text-gray-300'}`}
-                  >
-                    ({catStat.approved}/{catStat.total})
-                  </span>
-                )}
-              </button>
-            );
-          })}
-        </div>
+      {showTour && (
+        <TourOverlay
+          onNavigate={(tab) => { state.setActiveTab(tab as Parameters<typeof state.setActiveTab>[0]); state.setSelectedQuestion(null); }}
+          onClose={() => setShowTour(false)}
+        />
       )}
 
-      {/* Filter & Action Bar (Grid view) */}
+      <AppHeader
+        state={state}
+        liveStats={liveStats}
+        lastSaved={lastSaved}
+        showSettings={showSettings}
+        setShowSettings={setShowSettings}
+        setShowShortcuts={setShowShortcuts}
+        setShowTour={setShowTour}
+      />
+
+      {(state.activeTab === 'grid' || state.activeTab === 'compliance') && (
+        <CategoryNav
+          categories={state.data.categories}
+          activeCategory={state.activeCategory}
+          categoryStats={state.categoryStats}
+          onSetCategory={state.setActiveCategory}
+        />
+      )}
+
       {state.activeTab === 'grid' && (
-        <div className="border-b border-gray-200 px-6 py-2 flex-shrink-0 bg-white space-y-1.5">
-          <div className="flex items-center gap-2">
-            <div className="relative flex-shrink-0">
-              <Search
-                size={13}
-                className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400"
-              />
-              <input
-                ref={searchInputRef}
-                type="text"
-                placeholder="Search… (⌘K)"
-                value={state.search}
-                onChange={(e) => state.setSearch(e.target.value)}
-                className="border border-gray-200 rounded-lg pl-8 pr-3 py-1.5 text-xs w-56 focus:outline-none focus:ring-2 focus:ring-blue-500/20 bg-gray-50 placeholder:text-gray-400"
-              />
-            </div>
-            <button
-              onClick={() => state.setShowFilters(!state.showFilters)}
-              className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium border ${state.showFilters ? 'border-blue-300 text-blue-600 bg-blue-50' : 'border-gray-200 text-gray-500'}`}
-            >
-              <SlidersHorizontal size={12} /> Filters{' '}
-              <ChevronDown size={10} className={state.showFilters ? 'rotate-180' : ''} />
-            </button>
-            <span className="text-[10px] text-gray-500 bg-gray-100 px-2 py-0.5 rounded font-medium">
-              {state.filteredQuestions.length}/{state.data.stats.total}
-            </span>
-
-            {state.selectedRows.size > 0 && (
-              <BulkActions
-                selectedCount={state.selectedRows.size}
-                onChangeStatus={state.bulkSetStatus}
-                onClearSelection={() => state.selectAllFiltered([])}
-              />
-            )}
-
-            <div className="flex-1" />
-
-            {/* Actions grouped: Save | Export | Cloud | AI */}
-            <div className="flex items-center gap-1">
-              <button
-                onClick={state.handleSave}
-                className="flex items-center gap-1 bg-blue-600 text-white px-2.5 py-1.5 rounded-lg text-xs font-medium hover:bg-blue-700 shadow-sm"
-              >
-                <Save size={12} /> Save
-              </button>
-
-              <div className="w-px h-6 bg-gray-300 mx-1" />
-              <button
-                onClick={state.handleExportCSV}
-                className="flex items-center gap-1 border border-gray-200 text-gray-600 px-2 py-1.5 rounded-lg text-xs font-medium hover:bg-gray-50"
-              >
-                <Download size={11} /> CSV
-              </button>
-              <button
-                onClick={state.handleExportJSON}
-                className="flex items-center gap-1 border border-gray-200 text-gray-600 px-2 py-1.5 rounded-lg text-xs font-medium hover:bg-gray-50"
-              >
-                <FileJson size={11} /> JSON
-              </button>
-
-              <div className="w-px h-6 bg-gray-300 mx-1" />
-              <button
-                onClick={state.handlePushToCloud}
-                aria-label="Push to Supabase cloud"
-                className="flex items-center gap-1 border border-gray-200 text-gray-600 px-2 py-1.5 rounded-lg text-xs font-medium hover:bg-gray-50"
-                title="Push to Supabase"
-              >
-                <CloudUpload size={11} /> Push
-              </button>
-              <button
-                onClick={state.handlePullFromCloud}
-                aria-label="Pull from Supabase cloud"
-                className="flex items-center gap-1 border border-gray-200 text-gray-600 px-2 py-1.5 rounded-lg text-xs font-medium hover:bg-gray-50"
-                title="Pull from Supabase"
-              >
-                <CloudDownload size={11} /> Pull
-              </button>
-              <button
-                onClick={() => state.saveVersion()}
-                className="flex items-center gap-1 border border-gray-200 text-gray-600 px-2 py-1.5 rounded-lg text-xs font-medium hover:bg-gray-50"
-              >
-                <History size={11} /> v{state.versions.length + 1}
-              </button>
-              {state.versions.length > 0 && (
-                <button
-                  onClick={() => state.setShowVersionCompare(true)}
-                  aria-label="Compare versions"
-                  className="flex items-center border border-gray-200 text-gray-600 p-1.5 rounded-lg text-xs hover:bg-gray-50"
-                  title="Compare versions"
-                >
-                  <GitCompareArrows size={11} />
-                </button>
-              )}
-
-              <div className="w-px h-6 bg-gray-300 mx-1" />
-              <button
-                onClick={handleConsistencyCheck}
-                className="flex items-center gap-1 border border-gray-200 text-gray-600 px-2 py-1.5 rounded-lg text-xs font-medium hover:bg-gray-50"
-                title="Consistency Check"
-              >
-                <Scan size={11} /> Check
-              </button>
-              <button
-                onClick={() => state.setShowNarrativeAudit(true)}
-                className="flex items-center gap-1 border border-gray-200 text-gray-600 px-2 py-1.5 rounded-lg text-xs font-medium hover:bg-gray-50"
-                title="Narrative Audit"
-              >
-                <BookText size={11} /> Audit
-              </button>
-              <button
-                onClick={() => state.setShowSummary(true)}
-                className="flex items-center gap-1 border border-gray-200 text-gray-600 px-2 py-1.5 rounded-lg text-xs font-medium hover:bg-gray-50"
-              >
-                <FileText size={11} /> Summary
-              </button>
-              <button className="flex items-center gap-1 bg-gradient-to-r from-violet-600 to-purple-600 text-white px-2.5 py-1.5 rounded-lg text-xs font-medium hover:from-violet-700 hover:to-purple-700 shadow-sm">
-                <Sparkles size={11} /> AI Rewrite{' '}
-                <span className="bg-white/20 px-1 rounded text-[9px]">
-                  {state.data.stats.yellow + state.data.stats.red}
-                </span>
-              </button>
-            </div>
-          </div>
-
-          {state.showFilters && (
-            <div className="flex items-center gap-1.5 pt-0.5">
-              <span className="text-[9px] text-gray-400 uppercase tracking-wider font-semibold mr-1">
-                Filter
-              </span>
-              {[
-                {
-                  value: state.confidenceFilter,
-                  onChange: state.setConfidenceFilter,
-                  options: ['All Confidence', 'GREEN', 'YELLOW', 'RED'],
-                },
-                {
-                  value: state.compliantFilter,
-                  onChange: state.setCompliantFilter,
-                  options: ['All Compliant', 'Y', 'N', 'Partial'],
-                },
-                {
-                  value: state.deliveryFilter,
-                  onChange: state.setDeliveryFilter,
-                  options: ['All Delivery', 'OOB', 'Config', 'Custom'],
-                },
-              ].map((f, i) => (
-                <div key={i} className="relative">
-                  <select
-                    value={f.value}
-                    onChange={(e) => f.onChange(e.target.value)}
-                    className="border border-gray-200 rounded-lg pl-2.5 pr-7 py-1 text-xs text-gray-600 bg-white appearance-none cursor-pointer hover:border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400"
-                  >
-                    {f.options.map((o) => (
-                      <option key={o}>{o}</option>
-                    ))}
-                  </select>
-                  <ChevronDown size={11} className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
-                </div>
-              ))}
-              <div className="relative">
-                <select
-                  value={state.statusFilter}
-                  onChange={(e) => state.setStatusFilter(e.target.value)}
-                  className="border border-gray-200 rounded-lg pl-2.5 pr-7 py-1 text-xs text-gray-600 bg-white appearance-none cursor-pointer hover:border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400"
-                >
-                  <option>All Status</option>
-                  <option value="draft">Draft</option>
-                  <option value="reviewed">Reviewed</option>
-                  <option value="approved">Approved</option>
-                  <option value="flagged">Flagged</option>
-                </select>
-                <ChevronDown size={11} className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
-              </div>
-              <button
-                data-reset-filters
-                onClick={state.resetFilters}
-                className="flex items-center gap-0.5 text-xs text-gray-400 hover:text-blue-500 font-medium ml-1"
-              >
-                <RotateCcw size={10} /> Reset
-              </button>
-            </div>
-          )}
-        </div>
+        <GridToolbar
+          search={state.search}
+          onSearchChange={state.setSearch}
+          searchInputRef={searchInputRef}
+          showFilters={state.showFilters}
+          onToggleFilters={() => state.setShowFilters(!state.showFilters)}
+          confidenceFilter={state.confidenceFilter}
+          onConfidenceChange={state.setConfidenceFilter}
+          compliantFilter={state.compliantFilter}
+          onCompliantChange={state.setCompliantFilter}
+          deliveryFilter={state.deliveryFilter}
+          onDeliveryChange={state.setDeliveryFilter}
+          statusFilter={state.statusFilter}
+          onStatusChange={state.setStatusFilter}
+          onResetFilters={state.resetFilters}
+          filteredCount={state.filteredQuestions.length}
+          totalCount={liveStats.total}
+          selectedRows={state.selectedRows}
+          onBulkSetStatus={state.bulkSetStatus}
+          onClearSelection={() => state.selectAllFiltered([])}
+          versionCount={state.versions.length}
+          hasVersions={state.versions.length > 0}
+          onSave={state.handleSave}
+          onExportCSV={state.handleExportCSV}
+          onExportJSON={state.handleExportJSON}
+          onPushToCloud={state.handlePushToCloud}
+          onPullFromCloud={state.handlePullFromCloud}
+          onSaveVersion={state.saveVersion}
+          onShowVersionCompare={() => state.setShowVersionCompare(true)}
+          onConsistencyCheck={handleConsistencyCheck}
+          onShowNarrativeAudit={() => state.setShowNarrativeAudit(true)}
+          onShowSummary={() => state.setShowSummary(true)}
+          needsAttention={liveStats.yellow + liveStats.red}
+        />
       )}
 
       {/* Main Content */}
@@ -695,7 +374,7 @@ export default function Home() {
               </>
             )}
             <span className="ml-auto text-gray-300">
-              {state.activeTab === 'grid' && `${state.filteredQuestions.length} of ${state.data.stats.total}`}
+              {state.activeTab === 'grid' && `${state.filteredQuestions.length} of ${liveStats.total}`}
             </span>
           </div>
           <div className="flex-1 overflow-hidden relative">

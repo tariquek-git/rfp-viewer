@@ -216,6 +216,35 @@ export interface SLACommitment {
   currentPerformance: string;
 }
 
+// === API Contract Types (inferred from Zod schemas for client-side use) ===
+// Import from @/lib/schemas if you need the Zod schemas themselves.
+export type RewriteField = 'bullet' | 'paragraph';
+
+export interface RewriteRequest {
+  question: Question;
+  field: RewriteField;
+  globalRules: string[];
+  rowRules: string;
+  feedback: { field: string; comment: string }[];
+  knowledgeBase?: KnowledgeBase;
+}
+
+export interface RewriteResponse {
+  text: string;
+  model: string;
+  usage: { input_tokens: number; output_tokens: number };
+  warning?: string;
+}
+
+export interface CritiqueResponse {
+  critique: CritiqueResult;
+  model: string;
+}
+
+export interface ApiErrorResponse {
+  error: string;
+}
+
 // === Q&A Log ===
 
 export interface QAEntry {

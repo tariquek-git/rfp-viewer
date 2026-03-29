@@ -54,6 +54,7 @@ Differentiators: ${knowledgeBase.differentiators}
 Competitive Positioning: ${knowledgeBase.competitivePositioning}`
       : '';
 
+    const timeout = AbortSignal.timeout(30_000);
     const message = await client.messages.create({
       model: process.env.CLAUDE_MODEL || 'claude-sonnet-4-20250514',
       temperature: 0.4,
@@ -94,7 +95,7 @@ RULES:
 Rewrite the response. Output ONLY the rewritten response text, no preamble or explanation.`,
         },
       ],
-    });
+    }, { signal: timeout });
 
     const text = message.content[0].type === 'text' ? message.content[0].text : '';
 
@@ -108,6 +109,9 @@ Rewrite the response. Output ONLY the rewritten response text, no preamble or ex
 
     return NextResponse.json({ text, model: message.model, usage: message.usage });
   } catch (error) {
+    if (error instanceof Error && error.name === 'TimeoutError') {
+      return NextResponse.json({ error: 'AI request timed out after 30s — try again' }, { status: 504 });
+    }
     return handleAnthropicError(error, 'rewrite');
   }
 }
