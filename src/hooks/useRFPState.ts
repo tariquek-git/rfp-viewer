@@ -23,6 +23,7 @@ import { pushToCloud, pullFromCloud, pushVersion } from '@/lib/supabaseSync';
 import { isSupabaseConfigured } from '@/lib/supabase';
 import { useToast } from '@/components/Toast';
 import { idbGet, idbMirrorState, idbSet } from '@/lib/indexedDB';
+import { STORAGE_KEYS } from '@/lib/storageKeys';
 
 const EMPTY_KB: KnowledgeBase = {
   companyFacts: '',
@@ -100,7 +101,7 @@ export function useRFPState() {
         }));
         let loadedData = { ...d, questions };
 
-        const saved = localStorage.getItem('rfp-edits');
+        const saved = localStorage.getItem(STORAGE_KEYS.EDITS);
         if (saved) {
           try {
             const edits = JSON.parse(saved);
@@ -133,70 +134,70 @@ export function useRFPState() {
 
         // Load other persisted state
         try {
-          const v = localStorage.getItem('rfp-cell-history');
+          const v = localStorage.getItem(STORAGE_KEYS.CELL_HISTORY);
           if (v) setCellHistory(JSON.parse(v));
         } catch {
           /* */
         }
         try {
-          const v = localStorage.getItem('rfp-global-rules');
+          const v = localStorage.getItem(STORAGE_KEYS.GLOBAL_RULES);
           if (v) setGlobalRules(JSON.parse(v));
         } catch {
           /* */
         }
         try {
-          const v = localStorage.getItem('rfp-validation-rules');
+          const v = localStorage.getItem(STORAGE_KEYS.VALIDATION_RULES);
           if (v) setValidationRules(JSON.parse(v));
         } catch {
           /* */
         }
         try {
-          const v = localStorage.getItem('rfp-feedback');
+          const v = localStorage.getItem(STORAGE_KEYS.FEEDBACK);
           if (v) setFeedbackItems(JSON.parse(v));
         } catch {
           /* */
         }
         try {
-          const v = localStorage.getItem('rfp-versions');
+          const v = localStorage.getItem(STORAGE_KEYS.VERSIONS);
           if (v) setVersions(JSON.parse(v));
           else {
             // localStorage empty — check IDB backup
-            idbGet<Version[]>('rfp-versions').then((idbVersions) => {
+            idbGet<Version[]>(STORAGE_KEYS.VERSIONS).then((idbVersions) => {
               if (idbVersions?.length) setVersions(idbVersions);
             });
           }
         } catch {
           // Parse failed — try IDB fallback
-          idbGet<Version[]>('rfp-versions').then((idbVersions) => {
+          idbGet<Version[]>(STORAGE_KEYS.VERSIONS).then((idbVersions) => {
             if (idbVersions?.length) setVersions(idbVersions);
           });
         }
         try {
-          const v = localStorage.getItem('rfp-knowledge-base');
+          const v = localStorage.getItem(STORAGE_KEYS.KNOWLEDGE_BASE);
           if (v) setKnowledgeBase(JSON.parse(v));
         } catch {
           /* */
         }
         try {
-          const v = localStorage.getItem('rfp-pricing');
+          const v = localStorage.getItem(STORAGE_KEYS.PRICING);
           if (v) setPricingModel(JSON.parse(v));
         } catch {
           /* */
         }
         try {
-          const v = localStorage.getItem('rfp-win-themes');
+          const v = localStorage.getItem(STORAGE_KEYS.WIN_THEMES);
           if (v) setWinThemes(JSON.parse(v));
         } catch {
           /* */
         }
         try {
-          const v = localStorage.getItem('rfp-milestones');
+          const v = localStorage.getItem(STORAGE_KEYS.MILESTONES);
           if (v) setMilestones(JSON.parse(v));
         } catch {
           /* */
         }
         try {
-          const v = localStorage.getItem('rfp-slas');
+          const v = localStorage.getItem(STORAGE_KEYS.SLAS);
           if (v) setSLACommitments(JSON.parse(v));
         } catch {
           /* */
@@ -215,16 +216,16 @@ export function useRFPState() {
   const saveToLocal = useCallback(() => {
     if (!data) return;
     try {
-      localStorage.setItem('rfp-edits', JSON.stringify(data));
-      localStorage.setItem('rfp-cell-history', JSON.stringify(cellHistory));
-      localStorage.setItem('rfp-global-rules', JSON.stringify(globalRules));
-      localStorage.setItem('rfp-validation-rules', JSON.stringify(validationRules));
-      localStorage.setItem('rfp-feedback', JSON.stringify(feedbackItems));
-      localStorage.setItem('rfp-knowledge-base', JSON.stringify(knowledgeBase));
-      localStorage.setItem('rfp-pricing', JSON.stringify(pricingModel));
-      localStorage.setItem('rfp-win-themes', JSON.stringify(winThemes));
-      localStorage.setItem('rfp-milestones', JSON.stringify(milestones));
-      localStorage.setItem('rfp-slas', JSON.stringify(slaCommitments));
+      localStorage.setItem(STORAGE_KEYS.EDITS, JSON.stringify(data));
+      localStorage.setItem(STORAGE_KEYS.CELL_HISTORY, JSON.stringify(cellHistory));
+      localStorage.setItem(STORAGE_KEYS.GLOBAL_RULES, JSON.stringify(globalRules));
+      localStorage.setItem(STORAGE_KEYS.VALIDATION_RULES, JSON.stringify(validationRules));
+      localStorage.setItem(STORAGE_KEYS.FEEDBACK, JSON.stringify(feedbackItems));
+      localStorage.setItem(STORAGE_KEYS.KNOWLEDGE_BASE, JSON.stringify(knowledgeBase));
+      localStorage.setItem(STORAGE_KEYS.PRICING, JSON.stringify(pricingModel));
+      localStorage.setItem(STORAGE_KEYS.WIN_THEMES, JSON.stringify(winThemes));
+      localStorage.setItem(STORAGE_KEYS.MILESTONES, JSON.stringify(milestones));
+      localStorage.setItem(STORAGE_KEYS.SLAS, JSON.stringify(slaCommitments));
       setHasUnsaved(false);
       addToast('success', 'Changes saved locally');
       // Mirror to IndexedDB as secondary local backup (async, non-blocking)
@@ -294,12 +295,12 @@ export function useRFPState() {
           ? [...named, ...trimmedAutoSaves, v]
           : [...named, ...trimmedAutoSaves, v]; // named versions always appended
         try {
-          localStorage.setItem('rfp-versions', JSON.stringify(next));
+          localStorage.setItem(STORAGE_KEYS.VERSIONS, JSON.stringify(next));
         } catch {
           /* quota — IDB fallback below */
         }
         // Mirror versions to IDB for redundancy
-        idbSet('rfp-versions', next);
+        idbSet(STORAGE_KEYS.VERSIONS, next);
         return next;
       });
     },
@@ -309,7 +310,7 @@ export function useRFPState() {
   const deleteVersion = useCallback((timestamp: number) => {
     setVersions((v) => {
       const next = v.filter((x) => x.timestamp !== timestamp);
-      localStorage.setItem('rfp-versions', JSON.stringify(next));
+      localStorage.setItem(STORAGE_KEYS.VERSIONS, JSON.stringify(next));
       return next;
     });
   }, []);
@@ -774,13 +775,6 @@ export function useRFPState() {
 
   const unresolvedFeedback = feedbackItems.filter((f) => !f.resolved).length;
 
-  const getConfidenceColor = useCallback((conf: string) => {
-    if (conf === 'GREEN' || conf === 'High') return 'bg-green-500';
-    if (conf === 'YELLOW' || conf === 'Medium') return 'bg-yellow-400';
-    if (conf === 'RED' || conf === 'Low') return 'bg-red-500';
-    return 'bg-gray-300';
-  }, []);
-
   // === Knowledge Base ===
   const updateKnowledgeBase = useCallback((kb: KnowledgeBase) => {
     setKnowledgeBase({ ...kb, lastUpdated: Date.now() });
@@ -950,7 +944,6 @@ export function useRFPState() {
     handleExportCSV,
     handleExportJSON,
     resetFilters,
-    getConfidenceColor,
     addCellHistory,
     cycleStatus,
     bulkSetStatus,

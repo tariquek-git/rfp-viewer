@@ -5,6 +5,7 @@ import { X, Save, Download, FileStack } from 'lucide-react';
 import { isSupabaseConfigured } from '@/lib/supabase';
 import { saveAsTemplate, listTemplates, loadTemplate } from '@/lib/supabaseSync';
 import type { RFPData } from '@/types';
+import { STORAGE_KEYS } from '@/lib/storageKeys';
 
 interface TemplateManagerProps {
  currentData: RFPData;
@@ -78,7 +79,7 @@ export default function TemplateManager({
  if (!configured && !localTemplatesLoaded) {
  setLocalTemplatesLoaded(true);
  try {
- const saved = localStorage.getItem('rfp-templates-index');
+ const saved = localStorage.getItem(STORAGE_KEYS.TEMPLATES_INDEX);
  if (saved) setLocalTemplates(JSON.parse(saved));
  } catch {
  /* */
@@ -87,35 +88,26 @@ export default function TemplateManager({
 
  const handleSaveLocal = () => {
  if (!saveName.trim()) return;
- const key = `rfp-template-${Date.now()}`;
- localStorage.setItem(key, JSON.stringify(currentData));
- const entry = { name: saveName.trim(), description: saveDesc.trim(), timestamp: Date.now() };
+ const ts = Date.now();
+ localStorage.setItem(`${STORAGE_KEYS.TEMPLATE_PREFIX}${ts}`, JSON.stringify(currentData));
+ const entry = { name: saveName.trim(), description: saveDesc.trim(), timestamp: ts };
  const updated = [...localTemplates, entry];
  setLocalTemplates(updated);
- localStorage.setItem('rfp-templates-index', JSON.stringify(updated));
+ localStorage.setItem(STORAGE_KEYS.TEMPLATES_INDEX, JSON.stringify(updated));
  setSaveName('');
  setSaveDesc('');
  addToast('success', 'Template saved locally');
  };
 
- // eslint-disable-next-line @typescript-eslint/no-unused-vars
  const handleLoadLocal = (timestamp: number) => {
  try {
- // Find the key by looking through localStorage
- for (let i = 0; i < localStorage.length; i++) {
- const key = localStorage.key(i);
- if (key?.startsWith('rfp-template-')) {
- const data = JSON.parse(localStorage.getItem(key)!);
- if (data) {
- onLoadTemplate(data);
+ const stored = localStorage.getItem(`${STORAGE_KEYS.TEMPLATE_PREFIX}${timestamp}`);
+ if (!stored) { addToast('error', 'Template not found'); return; }
+ onLoadTemplate(JSON.parse(stored));
  addToast('success', 'Template loaded');
  onClose();
- return;
- }
- }
- }
  } catch {
- addToast('error', 'Failed to load');
+ addToast('error', 'Failed to load template');
  }
  };
 

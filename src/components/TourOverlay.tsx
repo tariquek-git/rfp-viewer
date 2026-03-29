@@ -1,6 +1,7 @@
 'use client';
 import React, { useState, useEffect, useCallback } from 'react';
 import { X, ChevronRight, ChevronLeft, Compass } from 'lucide-react';
+import { STORAGE_KEYS } from '@/lib/storageKeys';
 
 interface TourStep {
   title: string;
@@ -115,7 +116,7 @@ export default function TourOverlay({
   }, [step, current.tab, measure, onNavigate]);
 
   const finish = useCallback(() => {
-    localStorage.setItem('rfp-tour-done', '1');
+    localStorage.setItem(STORAGE_KEYS.TOUR_DONE, '1');
     onClose();
   }, [onClose]);
 

@@ -44,7 +44,6 @@ interface GridViewProps {
   questions: Question[];
   totalCount?: number;
   onClearFilters?: () => void;
-  getConfidenceColor?: (conf: string) => string;
   onSelectQuestion: (q: Question) => void;
   onCellEdit: (ref: string, field: keyof Question, value: string) => void;
   selectedRows: Set<string>;

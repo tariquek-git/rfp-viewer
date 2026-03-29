@@ -34,6 +34,7 @@ const SettingsPanel = lazy(() => import('@/components/SettingsPanel'));
 import TourOverlay from '@/components/TourOverlay';
 import { ToastContainer } from '@/components/Toast';
 import type { ConsistencyIssue, ViewTab } from '@/types';
+import { STORAGE_KEYS } from '@/lib/storageKeys';
 
 export default function Home() {
   const state = useRFPState();
@@ -61,19 +62,19 @@ export default function Home() {
   }, [state.data]);
 
   const [showOnboarding, setShowOnboarding] = useState(() => {
-    if (typeof window !== 'undefined') return !localStorage.getItem('rfp-onboarded');
+    if (typeof window !== 'undefined') return !localStorage.getItem(STORAGE_KEYS.ONBOARDED);
     return false;
   });
   const closeOnboarding = useCallback(() => {
     setShowOnboarding(false);
-    localStorage.setItem('rfp-onboarded', 'true');
+    localStorage.setItem(STORAGE_KEYS.ONBOARDED, 'true');
   }, []);
 
   // On first load, check if an emergency snapshot is newer than the main save
   useEffect(() => {
     try {
-      const emergency = localStorage.getItem('rfp-emergency');
-      const main = localStorage.getItem('rfp-edits');
+      const emergency = localStorage.getItem(STORAGE_KEYS.EMERGENCY);
+      const main = localStorage.getItem(STORAGE_KEYS.EDITS);
       if (!emergency) return;
       const { data: emergencyData, timestamp } = JSON.parse(emergency);
       const mainTimestamp = main ? (JSON.parse(main) as { _savedAt?: number })._savedAt ?? 0 : 0;
@@ -88,7 +89,7 @@ export default function Home() {
           state.loadTemplateData(emergencyData);
           state.addToast('success', 'Emergency snapshot restored — press ⌘S to save');
         }
-        localStorage.removeItem('rfp-emergency');
+        localStorage.removeItem(STORAGE_KEYS.EMERGENCY);
       }
     } catch {
       /* ignore malformed emergency data */
@@ -225,7 +226,7 @@ export default function Home() {
         // Synchronously persist an emergency snapshot before the dialog fires
         try {
           localStorage.setItem(
-            'rfp-emergency',
+            STORAGE_KEYS.EMERGENCY,
             JSON.stringify({ data: state.data, timestamp: Date.now() }),
           );
         } catch {
@@ -392,7 +393,6 @@ export default function Home() {
               questions={state.filteredQuestions}
               totalCount={state.data?.questions.length ?? 0}
               onClearFilters={handleClearFilters}
-              getConfidenceColor={state.getConfidenceColor}
               onSelectQuestion={handleSelectQuestion}
               onCellEdit={state.handleCellEdit}
               selectedRows={state.selectedRows}
