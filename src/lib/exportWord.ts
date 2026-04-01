@@ -13,6 +13,7 @@ import {
   PageBreak,
   Header,
   Footer,
+  BorderStyle,
 } from 'docx';
 import { saveAs } from 'file-saver';
 import type { RFPData, KnowledgeBase, ValidationRule } from '@/types';
@@ -123,7 +124,14 @@ export async function exportToWord(data: RFPData, options?: ExportOptions) {
       ],
     }),
     new Paragraph({
-      spacing: { before: 600 },
+      children: [new TextRun({ text: '', size: 4 })],
+      border: {
+        bottom: { color: '1e3a5f', space: 1, style: BorderStyle.THICK, size: 12 },
+      },
+      spacing: { before: 400, after: 400 },
+    }),
+    new Paragraph({
+      spacing: { before: 200 },
       alignment: AlignmentType.CENTER,
       children: [
         new TextRun({
@@ -725,7 +733,7 @@ export async function exportToWord(data: RFPData, options?: ExportOptions) {
       // Question header
       sections.push(
         new Paragraph({
-          spacing: { before: 300 },
+          spacing: { before: 120, after: 40 },
           children: [
             new TextRun({ text: q.ref, bold: true, size: 20, color: COLORS.blue, font: 'Calibri' }),
             new TextRun({ text: `  ·  ${q.topic}`, size: 18, color: COLORS.gray, font: 'Calibri' }),
@@ -797,7 +805,7 @@ export async function exportToWord(data: RFPData, options?: ExportOptions) {
       // Requirement
       sections.push(
         new Paragraph({
-          spacing: { before: 120 },
+          spacing: { before: 80, after: 0 },
           children: [
             new TextRun({
               text: 'BSB REQUIREMENT',
@@ -811,7 +819,7 @@ export async function exportToWord(data: RFPData, options?: ExportOptions) {
         }),
         new Paragraph({
           shading: { type: ShadingType.SOLID, color: COLORS.grayBg },
-          spacing: { before: 40 },
+          spacing: { before: 20, after: 0 },
           children: [
             new TextRun({ text: q.requirement, size: 18, color: COLORS.medium, font: 'Calibri' }),
           ],
@@ -821,7 +829,7 @@ export async function exportToWord(data: RFPData, options?: ExportOptions) {
       // Response
       sections.push(
         new Paragraph({
-          spacing: { before: 120 },
+          spacing: { before: 80, after: 0 },
           children: [
             new TextRun({
               text: 'BRIM FINANCIAL RESPONSE',
@@ -835,6 +843,7 @@ export async function exportToWord(data: RFPData, options?: ExportOptions) {
         }),
         new Paragraph({
           spacing: { before: 40 },
+          shading: { type: ShadingType.SOLID, color: 'EFF6FF' },
           children: [
             new TextRun({
               text: q.paragraph || q.bullet || 'No response provided.',
@@ -1065,6 +1074,16 @@ export async function exportToWord(data: RFPData, options?: ExportOptions) {
   );
 
   const doc = new Document({
+    styles: {
+      default: {
+        document: {
+          run: {
+            font: 'Calibri',
+            size: 22, // 11pt = 22 half-points
+          },
+        },
+      },
+    },
     sections: [
       {
         properties: {

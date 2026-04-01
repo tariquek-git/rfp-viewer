@@ -12,9 +12,9 @@ import {
  FileSpreadsheet,
 } from 'lucide-react';
 import type { Question, RFPData, KnowledgeBase, ValidationRule } from '@/types';
+import { saveAs } from 'file-saver';
 import { exportToWord } from '@/lib/exportWord';
 import { exportToPDF } from '@/lib/exportPDF';
-import { exportToXLSX } from '@/lib/exportXLSX';
 
 interface SubmissionViewProps {
  questions: Question[];
@@ -94,13 +94,20 @@ export default function SubmissionView({
  setExporting(null);
  };
 
- const handleExcelExport = () => {
+ const handleExcelExport = async () => {
  if (!data) return;
  setExporting('excel');
  try {
- exportToXLSX(data, exportOpts);
+  const res = await fetch('/api/export-excel', {
+   method: 'POST',
+   headers: { 'Content-Type': 'application/json' },
+   body: JSON.stringify({ data }),
+  });
+  if (!res.ok) throw new Error('Export failed');
+  const blob = await res.blob();
+  saveAs(blob, 'BSB_RFP_Compliance_Matrix_Brim_Financial.xlsx');
  } catch (e) {
- console.error(e);
+  console.error(e);
  }
  setExporting(null);
  };
