@@ -68,11 +68,13 @@ function makeCell(
     bg?: string;
     width?: number;
     alignment?: (typeof AlignmentType)[keyof typeof AlignmentType];
+    size?: number;
   },
 ) {
   return new TableCell({
     width: options?.width ? { size: options.width, type: WidthType.PERCENTAGE } : undefined,
     shading: options?.bg ? { type: ShadingType.SOLID, color: options.bg } : undefined,
+    margins: { top: 80, bottom: 80, left: 120, right: 120 },
     children: [
       new Paragraph({
         alignment: options?.alignment,
@@ -81,7 +83,7 @@ function makeCell(
             text,
             bold: options?.bold,
             color: options?.color || COLORS.dark,
-            size: 18,
+            size: options?.size ?? 18,
             font: 'Calibri',
           }),
         ],
@@ -730,78 +732,87 @@ export async function exportToWord(data: RFPData, options?: ExportOptions) {
 
     for (const q of catQs) {
       const conf = confidenceColor(q.confidence);
+      const isRed = q.confidence === 'RED';
+      const isYellow = q.confidence === 'YELLOW';
+
+      // Thin divider between questions
+      sections.push(
+        new Paragraph({
+          spacing: { before: 200, after: 0 },
+          border: {
+            bottom: {
+              color: isRed ? COLORS.red : isYellow ? COLORS.yellow : COLORS.grayLight,
+              space: 1,
+              style: isRed ? BorderStyle.THICK : BorderStyle.SINGLE,
+              size: isRed ? 6 : 2,
+            },
+          },
+          children: [],
+        }),
+      );
 
       // Question header
       sections.push(
         new Paragraph({
           spacing: { before: 120, after: 40 },
           children: [
-            new TextRun({ text: q.ref, bold: true, size: 20, color: COLORS.blue, font: 'Calibri' }),
-            new TextRun({ text: `  ·  ${q.topic}`, size: 18, color: COLORS.gray, font: 'Calibri' }),
+            new TextRun({ text: q.ref, bold: true, size: 22, color: COLORS.blue, font: 'Calibri' }),
+            new TextRun({ text: `  ·  ${q.topic}`, size: 20, color: COLORS.gray, font: 'Calibri' }),
           ],
         }),
       );
 
-      // Status badges row
-      const badges: TextRun[] = [
-        new TextRun({
-          text: `[${conf.label}]`,
-          color: conf.text,
-          size: 16,
-          bold: true,
-          font: 'Calibri',
-        }),
-        new TextRun({
-          text: `  [${q.compliant === 'Y' ? 'Compliant' : q.compliant === 'N' ? 'Non-Compliant' : 'Partial'}]`,
-          color:
-            q.compliant === 'Y'
-              ? COLORS.greenText
-              : q.compliant === 'N'
-                ? COLORS.redText
-                : COLORS.yellowText,
-          size: 16,
-          bold: true,
-          font: 'Calibri',
-        }),
-        new TextRun({
-          text: `  Score: ${q.committee_score}/10`,
-          color: scoreColor(q.committee_score),
-          size: 16,
-          bold: true,
-          font: 'Calibri',
-        }),
-      ];
+      // Status table — colored cells matching Excel formatting
       const delivery: string[] = [];
-      if (q.a_oob) delivery.push('Out-of-Box');
+      if (q.a_oob) delivery.push('OOB');
       if (q.b_config) delivery.push('Config');
       if (q.c_custom) delivery.push('Custom');
-      if (delivery.length > 0)
-        badges.push(
-          new TextRun({
-            text: `  Delivery: ${delivery.join(', ')}`,
-            color: COLORS.gray,
-            size: 16,
-            font: 'Calibri',
-          }),
-        );
-      // AI Detection badge
+      if (q.d_dnm) delivery.push('DNM');
+      const deliveryLabel = delivery.join(' / ') || '—';
+
       const aiDetect = detectAIWriting(q.bullet + ' ' + q.paragraph);
-      const aiColor =
-        aiDetect.level === 'high'
-          ? COLORS.redText
-          : aiDetect.level === 'medium'
-            ? COLORS.yellowText
-            : COLORS.greenText;
-      badges.push(
-        new TextRun({
-          text: `  [AI: ${aiDetectLabel(aiDetect.level)}]`,
-          color: aiColor,
-          size: 16,
-          bold: true,
-          font: 'Calibri',
+      const aiLevel = aiDetect.level;
+      const aiRiskBg = aiLevel === 'high' ? COLORS.redBg : aiLevel === 'medium' ? COLORS.yellowBg : COLORS.greenBg;
+      const aiRiskText = aiLevel === 'high' ? COLORS.redText : aiLevel === 'medium' ? COLORS.yellowText : COLORS.greenText;
+      const aiRiskLabel = aiLevel === 'high' ? 'HIGH' : aiLevel === 'medium' ? 'MEDIUM' : 'LOW';
+
+      const compliantBg = q.compliant === 'Y' ? COLORS.greenBg : q.compliant === 'N' ? COLORS.redBg : COLORS.yellowBg;
+      const compliantText = q.compliant === 'Y' ? COLORS.greenText : q.compliant === 'N' ? COLORS.redText : COLORS.yellowText;
+      const compliantLabel = q.compliant === 'Y' ? 'Compliant' : q.compliant === 'N' ? 'Non-Compliant' : 'Partial';
+
+      const score = q.committee_score ?? 0;
+      const scoreBg = score >= 8 ? COLORS.greenBg : score >= 6 ? COLORS.yellowBg : COLORS.redBg;
+      const scoreText = score >= 8 ? COLORS.greenText : score >= 6 ? COLORS.yellowText : COLORS.redText;
+
+      sections.push(
+        new Table({
+          width: { size: 100, type: WidthType.PERCENTAGE },
+          rows: [
+            // Label row
+            new TableRow({
+              children: [
+                makeCell('CONFIDENCE', { bold: true, bg: '1e3a5f', color: 'FFFFFF', width: 20, size: 16 }),
+                makeCell('COMPLIANT', { bold: true, bg: '1e3a5f', color: 'FFFFFF', width: 18, size: 16 }),
+                makeCell('SCORE', { bold: true, bg: '1e3a5f', color: 'FFFFFF', width: 12, alignment: AlignmentType.CENTER, size: 16 }),
+                makeCell('DELIVERY', { bold: true, bg: '1e3a5f', color: 'FFFFFF', width: 25, size: 16 }),
+                makeCell('AI RISK', { bold: true, bg: '1e3a5f', color: 'FFFFFF', width: 15, alignment: AlignmentType.CENTER, size: 16 }),
+                makeCell('STATUS', { bold: true, bg: '1e3a5f', color: 'FFFFFF', width: 10, alignment: AlignmentType.CENTER, size: 16 }),
+              ],
+            }),
+            // Values row
+            new TableRow({
+              children: [
+                makeCell(conf.label, { bold: true, bg: conf.bg, color: conf.text, width: 20, size: 18 }),
+                makeCell(compliantLabel, { bold: true, bg: compliantBg, color: compliantText, width: 18, size: 18 }),
+                makeCell(`${score}/10`, { bold: true, bg: scoreBg, color: scoreText, width: 12, alignment: AlignmentType.CENTER, size: 18 }),
+                makeCell(deliveryLabel, { bg: COLORS.grayBg, color: COLORS.medium, width: 25, size: 18 }),
+                makeCell(aiRiskLabel, { bold: true, bg: aiRiskBg, color: aiRiskText, width: 15, alignment: AlignmentType.CENTER, size: 18 }),
+                makeCell(q.status ?? 'draft', { bg: COLORS.grayBg, color: COLORS.gray, width: 10, alignment: AlignmentType.CENTER, size: 18 }),
+              ],
+            }),
+          ],
         }),
       );
-      sections.push(new Paragraph({ spacing: { before: 60 }, children: badges }));
 
       // Requirement
       sections.push(
@@ -821,8 +832,9 @@ export async function exportToWord(data: RFPData, options?: ExportOptions) {
         new Paragraph({
           shading: { type: ShadingType.SOLID, color: COLORS.grayBg },
           spacing: { before: 20, after: 0 },
+          indent: { left: 160, right: 160 },
           children: [
-            new TextRun({ text: q.requirement, size: 18, color: COLORS.medium, font: 'Calibri' }),
+            new TextRun({ text: q.requirement, size: 20, color: COLORS.medium, font: 'Calibri' }),
           ],
         }),
       );
@@ -842,18 +854,22 @@ export async function exportToWord(data: RFPData, options?: ExportOptions) {
             }),
           ],
         }),
-        new Paragraph({
-          spacing: { before: 40 },
-          shading: { type: ShadingType.SOLID, color: 'EFF6FF' },
-          children: [
-            new TextRun({
-              text: q.paragraph || q.bullet || 'No response provided.',
-              size: 20,
-              color: COLORS.dark,
-              font: 'Calibri',
-            }),
-          ],
-        }),
+        ...((q.paragraph || q.bullet || 'No response provided.')
+          .split(/\n+/)
+          .filter((line) => line.trim().length > 0)
+          .map((line, i, arr) => new Paragraph({
+            spacing: { before: i === 0 ? 40 : 80, after: i === arr.length - 1 ? 60 : 0 },
+            shading: { type: ShadingType.SOLID, color: 'EFF6FF' },
+            indent: { left: 160, right: 160 },
+            children: [
+              new TextRun({
+                text: line.trim(),
+                size: 20,
+                color: COLORS.dark,
+                font: 'Calibri',
+              }),
+            ],
+          }))),
       );
 
       // Score reasoning
