@@ -23,6 +23,7 @@ export interface ExportOptions {
   knowledgeBase?: KnowledgeBase;
   globalRules?: string[];
   validationRules?: ValidationRule[];
+  returnBuffer?: boolean;
 }
 
 const COLORS = {
@@ -1128,6 +1129,9 @@ export async function exportToWord(data: RFPData, options?: ExportOptions) {
     ],
   });
 
-  const blob = await Packer.toBlob(doc);
+  const buffer = await Packer.toBuffer(doc);
+  if (options?.returnBuffer) return buffer;
+  const arrayBuffer = buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength) as ArrayBuffer;
+  const blob = new Blob([arrayBuffer], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
   saveAs(blob, 'BSB_RFP_Response_Brim_Financial.docx');
 }

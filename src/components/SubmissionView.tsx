@@ -13,7 +13,6 @@ import {
 } from 'lucide-react';
 import type { Question, RFPData, KnowledgeBase, ValidationRule } from '@/types';
 import { saveAs } from 'file-saver';
-import { exportToWord } from '@/lib/exportWord';
 import { exportToPDF } from '@/lib/exportPDF';
 
 interface SubmissionViewProps {
@@ -76,7 +75,14 @@ export default function SubmissionView({
  if (!data) return;
  setExporting('word');
  try {
- await exportToWord(data, exportOpts);
+  const res = await fetch('/api/export-word', {
+   method: 'POST',
+   headers: { 'Content-Type': 'application/json' },
+   body: JSON.stringify({ data, ...exportOpts }),
+  });
+  if (!res.ok) throw new Error('Export failed');
+  const blob = await res.blob();
+  saveAs(blob, 'BSB_RFP_Response_Brim_Financial.docx');
  } catch (e) {
  console.error(e);
  }
