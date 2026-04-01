@@ -223,12 +223,11 @@ export default function DetailPanel({
   return () => window.removeEventListener('keydown', handler);
  }, [onClose]);
 
- const [questionKey, setQuestionKey] = useState(question.ref);
- if (question.ref !== questionKey) {
- setQuestionKey(question.ref);
- setQ({ ...question });
- setDirty(false);
- }
+ useEffect(() => {
+  setQ({ ...question });
+  setDirty(false);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+ }, [question.ref]);
 
  const update = (field: keyof Question, value: string | boolean | number) => {
  setQ({ ...q, [field]: value } as Question);

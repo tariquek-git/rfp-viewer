@@ -127,6 +127,7 @@ export function useRFPState() {
                 });
               }
             });
+            return; // prevent setData(loadedData) from overwriting IDB-restored data
           }
         }
 

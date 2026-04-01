@@ -123,14 +123,13 @@ export default function Home() {
     }, [state]),
   });
 
-  const [prevHasUnsaved, setPrevHasUnsaved] = useState(state.hasUnsaved);
-  if (state.hasUnsaved !== prevHasUnsaved) {
-    setPrevHasUnsaved(state.hasUnsaved);
+  useEffect(() => {
     if (!state.hasUnsaved && state.data) {
       lastSavedRef.current = Date.now();
       setLastSavedTick((t) => t + 1);
     }
-  }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state.hasUnsaved]);
 
   const pendingDiffKeys = useMemo(
     () => new Set(Object.keys(state.pendingDiffs)),

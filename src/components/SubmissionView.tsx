@@ -14,6 +14,7 @@ import {
 import type { Question, RFPData, KnowledgeBase, ValidationRule } from '@/types';
 import { exportToWord } from '@/lib/exportWord';
 import { exportToPDF } from '@/lib/exportPDF';
+import { exportToXLSX } from '@/lib/exportXLSX';
 
 interface SubmissionViewProps {
  questions: Question[];
@@ -69,7 +70,7 @@ export default function SubmissionView({
  const exportOpts = { knowledgeBase, globalRules, validationRules };
  const [mode, setMode] = useState<ExportMode>('full');
  const [showAdvisory, setShowAdvisory] = useState(true);
- const [exporting, setExporting] = useState<string | null>(null);
+ const [exporting, setExporting] = useState<'word' | 'pdf' | 'excel' | null>(null);
 
  const handleWordExport = async () => {
  if (!data) return;
@@ -93,6 +94,17 @@ export default function SubmissionView({
  setExporting(null);
  };
 
+ const handleExcelExport = async () => {
+ if (!data) return;
+ setExporting('excel');
+ try {
+ await exportToXLSX(data, exportOpts);
+ } catch (e) {
+ console.error(e);
+ }
+ setExporting(null);
+ };
+
  const grouped = useMemo(() => {
  const map: Record<string, Question[]> = {};
  for (const q of questions) {
@@ -108,7 +120,9 @@ export default function SubmissionView({
  const red = questions.filter((q) => q.confidence === 'RED').length;
  const compliantY = questions.filter((q) => q.compliant === 'Y').length;
  const compliantN = questions.filter((q) => q.compliant === 'N').length;
- const avgScore = questions.reduce((s, q) => s + (q.committee_score || 0), 0) / questions.length;
+ const avgScore = questions.length > 0
+     ? questions.reduce((s, q) => s + (q.committee_score || 0), 0) / questions.length
+     : 0;
  const redQuestions = questions.filter((q) => q.confidence === 'RED');
  const yellowQuestions = questions.filter((q) => q.confidence === 'YELLOW');
  const approvedCount = questions.filter((q) => q.status === 'approved').length;
@@ -207,6 +221,13 @@ h3{font-size:14px;margin-top:16px;color:#374151}
  className="flex items-center gap-1.5 bg-blue-600 text-white px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-blue-700 disabled:opacity-50"
  >
  <FileSpreadsheet size={13} /> {exporting === 'word' ? 'Exporting...' : 'Word (.docx)'}
+ </button>
+ <button
+ onClick={handleExcelExport}
+ disabled={exporting === 'excel'}
+ className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-white border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50 text-gray-700"
+ >
+ <FileSpreadsheet size={13} /> {exporting === 'excel' ? 'Exporting...' : 'Excel (.xlsx)'}
  </button>
  <button
  onClick={handleExportHTML}

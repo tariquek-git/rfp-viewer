@@ -884,6 +884,21 @@ export async function exportToWord(data: RFPData, options?: ExportOptions) {
         );
       }
 
+      // Add compliance notes if present
+      if (q.compliance_notes) {
+        sections.push(
+          new Paragraph({
+            children: [
+              new TextRun({ text: 'Compliance Rationale: ', bold: true, color: '374151', size: 18 }),
+              new TextRun({ text: q.compliance_notes, color: '374151', size: 18 }),
+            ],
+            shading: { type: ShadingType.SOLID, color: 'F3F4F6' },
+            spacing: { before: 80, after: 80 },
+            indent: { left: 200, right: 200 },
+          })
+        );
+      }
+
       // Risk assessment
       if (q.committee_risk && q.committee_risk !== 'LOW') {
         sections.push(
