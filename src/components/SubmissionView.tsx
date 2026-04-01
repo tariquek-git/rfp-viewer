@@ -94,11 +94,11 @@ export default function SubmissionView({
  setExporting(null);
  };
 
- const handleExcelExport = async () => {
+ const handleExcelExport = () => {
  if (!data) return;
  setExporting('excel');
  try {
- await exportToXLSX(data, exportOpts);
+ exportToXLSX(data, exportOpts);
  } catch (e) {
  console.error(e);
  }
