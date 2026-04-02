@@ -174,6 +174,21 @@ export default function ContextView({ data, onNavigate, onBulkApproveGreen }: Co
     return { high, med, low };
   }, [data]);
 
+  // Flagged questions for the Action Required card
+  const flaggedIssues = useMemo(() => {
+    return data.questions
+      .filter((q) => {
+        const risk = (q.committee_risk || '').toUpperCase().trim();
+        return (risk === 'HIGH' || risk === 'MEDIUM') && (q.committee_review || '').trim();
+      })
+      .sort((a, b) => {
+        const order = { HIGH: 0, MEDIUM: 1 };
+        const ra = order[(a.committee_risk || '').toUpperCase().trim() as keyof typeof order] ?? 2;
+        const rb = order[(b.committee_risk || '').toUpperCase().trim() as keyof typeof order] ?? 2;
+        return ra - rb;
+      });
+  }, [data]);
+
   // Compute live stats from questions array so they stay accurate after edits
   const liveStats = useMemo(() => {
     let green = 0,
@@ -311,6 +326,58 @@ export default function ContextView({ data, onNavigate, onBulkApproveGreen }: Co
           />
         </div>
       </div>
+
+      {/* Action Required — flagged issues summary */}
+      {flaggedIssues.length > 0 && (
+        <div className="bg-white border-2 border-red-200 rounded-xl p-5 shadow-sm">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <AlertTriangle size={16} className="text-red-500" />
+              <h3 className="text-sm font-semibold text-gray-900">Action Required</h3>
+              <span className="ml-1 px-1.5 py-0.5 rounded-full bg-red-100 text-[10px] font-bold text-red-700 tabular-nums">
+                {flaggedIssues.length} issues
+              </span>
+            </div>
+            <button
+              onClick={() => onNavigate?.('issues')}
+              className="text-[11px] text-blue-600 hover:text-blue-800 font-medium flex items-center gap-0.5"
+            >
+              View all →
+            </button>
+          </div>
+          <div className="space-y-2">
+            {flaggedIssues.slice(0, 5).map((q) => {
+              const isHigh = (q.committee_risk || '').toUpperCase().trim() === 'HIGH';
+              const flagText = (q.committee_review || '').split(' | ')[0];
+              return (
+                <div
+                  key={q.ref}
+                  onClick={() => onNavigate?.('issues')}
+                  className="flex items-start gap-2.5 p-2.5 rounded-lg bg-gray-50 hover:bg-gray-100 cursor-pointer transition-colors"
+                >
+                  <span
+                    className={`mt-0.5 flex-shrink-0 px-1.5 py-0.5 rounded text-[9px] font-bold uppercase ${isHigh ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-700'}`}
+                  >
+                    {isHigh ? 'HIGH' : 'MED'}
+                  </span>
+                  <div className="min-w-0">
+                    <span className="text-[11px] font-semibold text-gray-700">{q.ref} </span>
+                    <span className="text-[11px] text-gray-500 leading-snug">{flagText}</span>
+                  </div>
+                </div>
+              );
+            })}
+            {flaggedIssues.length > 5 && (
+              <button
+                onClick={() => onNavigate?.('issues')}
+                className="w-full text-[11px] text-gray-400 hover:text-gray-600 py-1 text-center"
+              >
+                +{flaggedIssues.length - 5} more — view all issues →
+              </button>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Submission Readiness + Bulk Approve */}
       <div className="grid grid-cols-2 gap-4">

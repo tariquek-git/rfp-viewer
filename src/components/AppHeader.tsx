@@ -17,6 +17,7 @@ import {
   Keyboard,
   Settings,
   Circle,
+  AlertTriangle,
 } from 'lucide-react';
 import ProgressBar from '@/components/ProgressBar';
 import { TourLaunchButton } from '@/components/TourOverlay';
@@ -43,6 +44,7 @@ const NAV_GROUPS = [
       { key: 'grid' as ViewTab, icon: LayoutGrid, label: 'Response Grid' },
       { key: 'context' as ViewTab, icon: BarChart3, label: 'Dashboard' },
       { key: 'humanize' as ViewTab, icon: Bot, label: 'AI QA' },
+      { key: 'issues' as ViewTab, icon: AlertTriangle, label: 'Issues' },
     ],
   },
   {

@@ -30,6 +30,7 @@ const Onboarding = lazy(() => import('@/components/Onboarding'));
 const VersionCompare = lazy(() => import('@/components/VersionCompare'));
 const TemplateManager = lazy(() => import('@/components/TemplateManager'));
 const HumanizeView = lazy(() => import('@/components/HumanizeView'));
+const IssuesView = lazy(() => import('@/components/IssuesView'));
 const SettingsPanel = lazy(() => import('@/components/SettingsPanel'));
 import TourOverlay from '@/components/TourOverlay';
 import { ToastContainer } from '@/components/Toast';
@@ -405,6 +406,7 @@ export default function Home() {
                 grid: 'Response Grid',
                 context: 'Dashboard',
                 humanize: 'AI QA',
+                issues: 'Issues',
                 knowledgebase: 'Knowledge Base',
                 pricing: 'Pricing',
                 timeline: 'Timeline',
@@ -504,6 +506,12 @@ export default function Home() {
                 questions={state.data.questions}
                 onUpdateQuestion={state.updateQuestion}
                 addToast={state.addToast}
+              />
+            )}
+            {state.activeTab === 'issues' && (
+              <IssuesView
+                questions={state.data.questions}
+                onSelectQuestion={handleSelectQuestion}
               />
             )}
             {state.activeTab === 'submission' && (

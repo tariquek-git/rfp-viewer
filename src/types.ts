@@ -54,13 +54,14 @@ export interface RFPData {
 export type ViewTab =
   | 'grid'
   | 'context'
+  | 'humanize'
+  | 'issues'
   | 'knowledgebase'
   | 'compliance'
   | 'submission'
   | 'pricing'
   | 'timeline'
-  | 'sla'
-  | 'humanize';
+  | 'sla';
 export type StatusFilter = 'All Status' | 'draft' | 'reviewed' | 'approved' | 'flagged';
 
 // === Diff / AI Suggestion Types ===
