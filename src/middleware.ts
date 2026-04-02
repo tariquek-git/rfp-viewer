@@ -19,14 +19,14 @@ function rateLimit(ip: string): boolean {
   return false;
 }
 
-// Clean up old entries periodically
-if (typeof setInterval !== 'undefined') {
-  setInterval(() => {
+// Clean up stale entries on each rate-limit check (no setInterval in serverless)
+function cleanupRateLimitMap() {
+  if (rateLimitMap.size > 1000) {
     const now = Date.now();
     for (const [key, val] of rateLimitMap.entries()) {
       if (now > val.resetAt) rateLimitMap.delete(key);
     }
-  }, 60_000);
+  }
 }
 
 export default function middleware(request: NextRequest) {
@@ -54,7 +54,8 @@ export default function middleware(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized. Please log in.' }, { status: 401 });
     }
 
-    // Rate limit authenticated API calls
+    // Rate limit authenticated API calls (lazy cleanup to avoid memory leak)
+    cleanupRateLimitMap();
     const ip =
       request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
       request.headers.get('x-real-ip') ||
@@ -114,7 +115,8 @@ function addSecurityHeaders(response: NextResponse) {
 
 export const config = {
   matcher: [
-    // Apply to all routes except Next.js static files and images
-    '/((?!_next/static|_next/image|favicon.ico).*)',
+    // Only run middleware on pages and API routes — skip all static assets
+    // to minimise serverless function invocations (Vercel cost optimisation)
+    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:png|jpg|jpeg|gif|svg|ico|woff2?|ttf|css|js|map)$).*)',
   ],
 };

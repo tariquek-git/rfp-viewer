@@ -22,20 +22,29 @@ const nextConfig: NextConfig = {
   // Optimize packages
   serverExternalPackages: ["@anthropic-ai/sdk"],
 
-  // Headers for caching static assets
+  // Headers for caching — reduces bandwidth + function invocations
   async headers() {
     return [
       {
         source: "/rfp_data.json",
         headers: [
-          { key: "Cache-Control", value: "public, max-age=3600, stale-while-revalidate=86400" },
+          // Cache for 24h, serve stale for 7d while revalidating
+          { key: "Cache-Control", value: "public, max-age=86400, stale-while-revalidate=604800" },
         ],
       },
       {
-        source: "/(.*)",
+        // Cache static page shells aggressively (HTML is ~small, data loads client-side)
+        source: "/((?!api/).*)",
         headers: [
           { key: "X-DNS-Prefetch-Control", value: "on" },
           { key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains; preload" },
+        ],
+      },
+      {
+        // API routes: no caching (dynamic data)
+        source: "/api/:path*",
+        headers: [
+          { key: "Cache-Control", value: "no-store" },
         ],
       },
     ];

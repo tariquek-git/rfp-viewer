@@ -63,10 +63,7 @@ function ConfidenceBadge({ value }: { value: string }) {
       />
     );
   return (
-    <span
-      className="inline-block w-1.5 h-1.5 rounded-full bg-green-500"
-      title="GREEN confidence"
-    />
+    <span className="inline-block w-1.5 h-1.5 rounded-full bg-green-500" title="GREEN confidence" />
   );
 }
 
