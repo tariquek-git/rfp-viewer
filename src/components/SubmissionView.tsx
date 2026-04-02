@@ -76,6 +76,14 @@ export default function SubmissionView({
   onResolveFeedback,
 }: SubmissionViewProps) {
   const exportOpts = { knowledgeBase, globalRules, validationRules };
+
+  function exportTs() {
+    const now = new Date();
+    const d = now.toISOString().slice(0, 10); // 2026-04-02
+    const t = now.toTimeString().slice(0, 5).replace(':', ''); // 1430
+    return `${d}_${t}`;
+  }
+
   const [mode, setMode] = useState<ExportMode>('full');
   const [showAdvisory, setShowAdvisory] = useState(true);
   const [exporting, setExporting] = useState<'word' | 'word-review' | 'word-submission' | 'pdf' | 'excel' | null>(null);
@@ -93,7 +101,7 @@ export default function SubmissionView({
       });
       if (!res.ok) throw new Error('Export failed');
       const blob = await res.blob();
-      saveAs(blob, 'BSB_RFP_Response_Brim_Financial.docx');
+      saveAs(blob, `BSB_RFP_Full_Brim_${exportTs()}.docx`);
     } catch (e) {
       console.error(e);
     }
@@ -111,7 +119,7 @@ export default function SubmissionView({
       });
       if (!res.ok) throw new Error('Export failed');
       const blob = await res.blob();
-      saveAs(blob, 'BSB_RFP_Working_Copy_Brim_Financial.docx');
+      saveAs(blob, `BSB_RFP_WorkingCopy_Brim_${exportTs()}.docx`);
     } catch (e) {
       console.error(e);
     }
@@ -129,7 +137,7 @@ export default function SubmissionView({
       });
       if (!res.ok) throw new Error('Export failed');
       const blob = await res.blob();
-      saveAs(blob, 'BSB_RFP_Submission_Brim_Financial.docx');
+      saveAs(blob, `BSB_RFP_Submission_Brim_${exportTs()}.docx`);
     } catch (e) {
       console.error(e);
     }
@@ -158,7 +166,7 @@ export default function SubmissionView({
       });
       if (!res.ok) throw new Error('Export failed');
       const blob = await res.blob();
-      saveAs(blob, 'BSB_RFP_Compliance_Matrix_Brim_Financial.xlsx');
+      saveAs(blob, `BSB_RFP_Matrix_Brim_${exportTs()}.xlsx`);
     } catch (e) {
       console.error(e);
     }
