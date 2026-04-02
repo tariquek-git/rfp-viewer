@@ -262,11 +262,11 @@ Live Programs:
 
 MANULIFE BANK (Manulife Vitality Visa) — Consumer, Visa. Health-rewards card linking spend to Vitality benefit milestones (fitness goals, health screenings, wellness activity). MANULIFE BANK is a Schedule I federally chartered bank serving 550,000 banking clients through a network of 55,000 financial advisors — part of the 7M+ client Manulife parent ecosystem. The card program is positioned to grow into that broader advisor-referred client base. Converted from Fiserv. Brim replaced the legacy infrastructure end-to-end: real-time onboarding, instant virtual issuance, a unified cardholder experience, and a rewards engine integrated directly with the Vitality health program. Live Q3 2025.
 
-AFFINITY CREDIT UNION — Consumer and business, Mastercard. Community-focused rewards program with spend-based earn rates and a local merchant-funded rewards ecosystem built around cooperative values. Saskatchewan's largest credit union. Converted from a traditional agent banking infrastructure (Valera/Collabria), where the CU had no control over the member experience. On Brim, AFFINITY owns the full program: card design, pricing, credit policy, rewards structure, and servicing. Consumer cards live since 2022; business cards added 2024.
+AFFINITY CREDIT UNION — Consumer and business, Mastercard. Community-focused rewards program with spend-based earn rates and a local merchant-funded rewards ecosystem built around cooperative values. Saskatchewan's largest credit union. Converted from Valera (previously Co-op Financial Services, jointly owned with Collabria) — a traditional agent banking infrastructure where the credit union had no direct control over the member experience, card design, or credit policy. On Brim, AFFINITY owns the full program: card design, pricing, credit policy, rewards structure, and servicing. Consumer cards live since 2022; business cards added 2024.
 
-ZOLVE / CONTINENTAL BANK — Consumer, Mastercard. Cross-border credit card for new-to-country immigrants arriving in the US. ZOLVE serves Indian immigrants without a US credit history; CONTINENTAL BANK is the US issuing sponsor bank. Brim replaced Zolve's legacy processor and introduced CONTINENTAL BANK as a new sponsor from Brim's network. Pre-arrival card issuance — cards mailed internationally and geo-activated on landing. Alternative underwriting uses home-country credit history. Implemented in 90 days. Expanding to Canada in 2025 where Brim is direct Mastercard issuer. Full compliance with Reg Z, Reg B, FCRA, and BSA/AML.
+ZOLVE / CONTINENTAL BANK — Consumer, Mastercard. Cross-border credit card for new-to-country immigrants arriving in the US. ZOLVE serves Indian immigrants without a US credit history; CONTINENTAL BANK is the US issuing sponsor bank. Brim replaced Zolve's legacy processor and introduced CONTINENTAL BANK as a new sponsor from Brim's network. Pre-arrival card issuance — cards mailed internationally and geo-activated on landing. Alternative underwriting uses home-country credit history. Implemented in 90 days. Canada expansion underway where Brim is direct Mastercard issuer. Full compliance with Reg Z, Reg B, FCRA, and BSA/AML.
 
-CANADIAN WESTERN BANK (CWB) — Consumer (mass affluent, personal) and business/commercial, Mastercard. Converted from traditional agent banking via Valera. Temenos core integration. Business Pro product delivers new monthly non-interest income per user; meaningful spend increase post-migration. CWB President and CEO cited Brim as a growth catalyst in their 2023 Annual Report.
+CANADIAN WESTERN BANK (CWB) — Consumer (mass affluent, personal) and business/commercial, Mastercard. Converted from Valera (previously Co-op Financial Services, jointly owned with Collabria) — the same agent banking infrastructure Affinity converted from. Temenos core integration. Business Pro product delivers new monthly non-interest income per user; meaningful spend increase post-migration. CWB President and CEO cited Brim as a growth catalyst in their 2023 Annual Report.
 
 LAURENTIAN BANK — Consumer, SMB, and large corporate. Issued on LAURENTIAN BANK's own Visa BIN. Full end-to-end rewards. Replaced five legacy vendors. Issuance time cut from 25 days to instant. 90% reduction in manual processes.
 
@@ -276,7 +276,7 @@ MOMENTUM FINANCIAL / MONEY MART — Consumer secured and prepaid cards. Serving 
 
 ZOOMER / CARP — Consumer lifestyle-based rewards card for the 50+ segment. Targeted rewards tied to the CARP member ecosystem and lifestyle spending categories.
 
-Platform: 7+ years of live issuing operations. TSYS (TMS platform) as core processor. Both Mastercard and Visa networks — Brim operates programs on both (e.g., MANULIFE BANK on Visa; ZOLVE/CONTINENTAL BANK and AFFINITY CREDIT UNION on Mastercard). US programs via Continental Bank sponsorship. 100% institutional client retention since launch.`,
+Platform: 7+ years of live issuing operations. TSYS (TMS platform) as core processor. Both Mastercard and Visa networks — Brim operates programs on both (e.g., MANULIFE BANK on Visa; ZOLVE/CONTINENTAL BANK and AFFINITY CREDIT UNION on Mastercard). US programs via Continental Bank sponsorship. Long-term client relationships across all program types.`,
       'HIGH',
       'FULL',
       '10/10',
@@ -285,16 +285,23 @@ Platform: 7+ years of live issuing operations. TSYS (TMS platform) as core proce
     ...question(
       'Q3.3 — Product Acquisitions (Last 5 Years)',
       'Disclose any product or service acquisitions made in the last 5 years relevant to this RFI.',
-      `Brim Financial has not made any material product or service acquisitions in the last 5 years. The platform has been developed entirely organically through internal engineering investment. This means there are no integration seams, legacy stacks, or acquired-product technical debt in the solution.
+      `Brim Financial has not made any material product or service acquisitions in the last 5 years. The platform has been developed entirely organically — no integration seams, no acquired-product technical debt.
 
-Brim has entered strategic partnerships (not acquisitions) with:
+Core platform partnerships:
 • TSYS / Global Payments — Core processing and authorization
 • IDEMIA — Card personalization and fulfillment
 • TransUnion / Equifax / Experian — Bureau data for underwriting and fraud
-• Mastercard — Network and product certification (Canada direct; US via Continental Bank sponsorship)
-• Visa — Network certification (issued via Laurentian Bank BIN)
+• Mastercard — Network certification (Canada direct; US via Continental Bank sponsorship)
+• Visa — Network certification (Laurentian Bank BIN)
 
-The solution is US-ready and currently deployed in the US market through the Zolve/Continental Bank program. The platform supports English and French (Canadian bilingual programs). Spanish-language support is on the roadmap for 2026.`,
+Third-party integrations in production: Brim's open API architecture supports deep integration with third-party systems across the live portfolio:
+• AFFINITY CREDIT UNION — Integrated with AFFINITY's in-house digital banking front-end. Cardholders access their card account natively within AFFINITY's own digital experience.
+• CANADIAN WESTERN BANK (CWB) — Integrated with CWB's Temenos core banking system. Account data, customer identity, and transaction feeds connect bidirectionally.
+• LAURENTIAN BANK — Multi-system integration replacing five legacy vendors. Card issuance, servicing, and reporting all connect through Brim's API layer.
+• AIR FRANCE-KLM — Open API integration with the Flying Blue loyalty platform. Earn accrues on Brim; redemption and burn happen natively in Flying Blue.
+• MANULIFE BANK — Fiserv core banking migration. Brim replaced Fiserv end-to-end using a parallel-run migration with no data loss.
+
+For BSB, the Jack Henry integration uses the same methodology as the Fiserv/Manulife conversion. The platform supports English and French bilingual programs; Spanish is on the roadmap for 2026.`,
       'HIGH',
       'FULL',
       '9/10',
@@ -303,7 +310,7 @@ The solution is US-ready and currently deployed in the US market through the Zol
     ...question(
       'Q3.4 — Market Competitiveness, R&D Investment & Technology Development',
       'How do you ensure your system remains market competitive? Describe major technology developments and R&D investment.',
-      `Brim dedicates approximately 30–35% of annual revenue to R&D and platform development — significantly above the industry average of 10–15% for comparably sized fintech platforms. This investment funds:
+      `Brim maintains a high R&D investment rate relative to revenue, focused on platform depth and competitive differentiation. Recent investment areas:
 
 Recent Major Technology Developments:
 • Real-time authorization engine upgrade (sub-100ms average decisioning time in production)
@@ -313,7 +320,7 @@ Recent Major Technology Developments:
 • Embedded Buy Now Pay Later (BNPL) functionality within existing credit card accounts
 • Real-time notifications (push, SMS, email) triggered on authorization events
 • Configurable rewards engine 2.0: real-time earn/burn, coalition merchant support, tiered earn
-• Digital wallet integration: Apple Pay, Google Pay, Samsung Pay certified
+• Digital wallet integration: Apple Pay, Google Pay certified
 
 3-Year Roadmap (2025–2027):
 • Banking-as-a-Service (BaaS) layer for deeper core banking integration
@@ -354,20 +361,20 @@ D&B Report: Available upon request under NDA.`,
     ...question(
       'Q3.6 — Product & Services Roadmap (Next 3 Years)',
       'Provide a roadmap of priorities for products and services development over the next 3 years.',
-      `2025 (In Progress / Near Complete):
+      `Delivered (2025):
 • US market expansion: full compliance coverage for Regulation Z, Regulation B, FCRA, BSA/AML, FDCPA
 • Real-time data API v3 GA release
 • Embedded installment/BNPL within revolving credit accounts
 • Enhanced cardholder mobile app (white-labeled SDK for bank apps)
 
-2026:
+2026 (In Progress):
 • Open Banking / CFPB 1033 readiness module
 • AI credit risk model (replacing static scorecard with adaptive ML model for credit limit management)
 • Expanded BaaS integration layer for deeper core banking connectivity (Jack Henry Banno, Fiserv Navigator, FIS Modern Banking Platform)
 • Spanish-language cardholder experience
 • Mastercard Commercial Solutions expansion (virtual card, travel & expense management)
 
-2027:
+2027 (Planned):
 • Real-time credit decisioning via alternative data (cash flow underwriting)
 • Climate/ESG-linked rewards products
 • Multi-currency card support
@@ -400,7 +407,7 @@ Primary Features:
 • Configurable credit policy engine (no-code rule management for BSB administrators)
 • Native Mastercard network integration (US programs via Continental Bank sponsorship)
 • Multi-program multi-FI architecture: BSB can manage its own program and any agent bank sub-programs from a single portal
-• PCI DSS v4.0.1 certified Service Provider, SOC 2 Type 2, ISO 27001:2022
+• PCI DSS certified Service Provider, SOC 2 Type 2, ISO 27001:2022
 
 Live Programs (Selected): ZOLVE / CONTINENTAL BANK (US — cross-border consumer), MANULIFE BANK (consumer health-rewards), AFFINITY CREDIT UNION (consumer + business, community cooperative), AIR FRANCE-KLM (Flying Blue loyalty card), PAYFACTO (SMB same-day merchant settlement), CANADIAN WESTERN BANK (consumer + commercial), LAURENTIAN BANK (consumer + SMB + corporate, Visa BIN).
 
@@ -421,13 +428,13 @@ Deployment: SaaS only. Hosted on LeaseWeb colocation infrastructure (primary: Mo
 Indicative Pricing Structure (subject to final program scoping):
 
 SETUP & IMPLEMENTATION:
-• Platform implementation and configuration: $150,000 – $250,000 (one-time; scope-dependent)
+• Platform implementation and configuration: Scoped per program complexity (one-time)
 • Jack Henry core integration: $40,000 – $75,000 (one-time)
 • Card art and product configuration: $15,000 – $25,000 (one-time)
 • Testing and UAT support: Included in implementation fee
 
 ONGOING PLATFORM FEES (Annual):
-• Platform access fee: $60,000 – $120,000/year (based on program scale)
+• Platform access fee: Volume-tiered annual fee (based on program scale)
 • Per-active-account fee: $2.50 – $4.50/account/month (volume tiers; pricing decreases at 10K, 25K, 50K+ accounts)
 • Authorization processing: Pass-through TSYS fees + Brim margin (disclosed)
 • Card production: Pass-through IDEMIA costs (approx. $3–5/card)
@@ -574,16 +581,16 @@ All references are willing to discuss technical and performance aspects of Brim'
       'Provide functional design map of the solution, including tenancy, security, and third-party vendors involved.',
       `Architecture Overview:
 
-Platform Type: Multi-tenant SaaS, hosted on LeaseWeb colocation infrastructure (primary data center: Montreal, Quebec, Canada — PCI DSS AOC Jan 2025, SOC 2 Type 2, ISO 27001)
+Platform Type: Multi-tenant SaaS, hosted on LeaseWeb colocation infrastructure (primary data center: Montreal, Quebec, Canada — PCI DSS Level 1 (AOC available), SOC 2 Type 2, ISO 27001)
 
 Tenancy Model: Logical multi-tenancy with hard data isolation. Each client FI (BSB and any agent bank sub-programs) has its own logically isolated data partition. A BSB admin sees consolidated program data; a sub-program FI sees only its own data. Row-level security enforced at the database layer.
 
 Core Architecture Components:
 • Application Layer: React/TypeScript frontend (admin portal) + native iOS/Android SDK (cardholder mobile app)
-• API Gateway: Kong-based, rate-limited, IP-whitelisted per client
+• API Gateway: Rate-limited, IP-whitelisted per client
 • Core Processing: TSYS TMS platform (authorization, posting, settlement)
 • Rules Engine: Brim proprietary (fraud rules, credit policy rules, rewards rules)
-• Data Layer: PostgreSQL (primary), Redis (caching/real-time), Kafka (event streaming)
+• Data Layer: Enterprise-grade relational database (primary), caching layer (real-time), event streaming
 • Card Personalization: IDEMIA (card production and fulfillment)
 • Bureau Integration: TransUnion / Equifax / Experian (underwriting, account monitoring)
 • Network: Mastercard (BIN sponsorship via Continental Bank for US programs)
@@ -640,7 +647,7 @@ Batch vs. Real-Time: Real-time reporting for authorization and account-level dat
 
 Fault Tolerance: The platform is architected for zero single points of failure at every layer:
 • Dual-facility LeaseWeb deployment (Montreal primary; secondary LeaseWeb DR facility)
-• Database: PostgreSQL with synchronous replication to DR facility; automated failover
+• Database: Synchronous replication to DR facility; automated failover
 • Authorization: TSYS has built-in redundancy across their data centers; Brim's gateway has automatic failover routing (< 30 seconds)
 • Load Balancing: Hardware load balancers within LeaseWeb environment with health checks; application tier auto-scales horizontally
 • CDN: Incapsula edge network for static assets and DDoS protection; not in critical transaction path
@@ -668,7 +675,7 @@ Improved service levels (RPO < 5 min, RTO < 1 hour) available at additional cost
     ...question(
       'Q10.1 — Scaling, Performance & Monitoring',
       'Describe scaling considerations, historical data limits, response times, monitoring tools, and benchmarking.',
-      `Scaling: The platform scales horizontally within Brim's LeaseWeb colocation environment. No pre-provisioning required for standard program growth. BSB's program can grow from 3,000 to 300,000 accounts without architecture changes. Pricing tiers reduce per-account costs as volume grows — volume thresholds and pricing automatically adjust per contract terms.
+      `Scaling: The platform scales horizontally within Brim's LeaseWeb colocation environment. No pre-provisioning required for standard program growth. BSB's program can grow from initial launch scale to a large institutional portfolio without architecture changes. Pricing tiers reduce per-account costs as volume grows — volume thresholds and pricing automatically adjust per contract terms.
 
 Historical Data: No practical limit on historical data online. 7 years of transactional data maintained within LeaseWeb. Older data archived and accessible within 24 hours on request. There is no data window truncation or forced purge.
 
@@ -676,11 +683,10 @@ Performance Baselines:
 • Authorization decisioning: avg 85ms end-to-end (TSYS + Brim rules)
 • Admin portal page loads: avg 1.2 seconds (P95 < 2.5s)
 • API response times: avg 120ms (P95 < 400ms) for account queries; real-time endpoints < 200ms
-• Largest implemented program: 200,000+ active accounts with no performance degradation
 
-Client Scale Experience: Programs range from 2,000 accounts (community CU) to 200,000+ accounts (large FI). Multi-program environments with 5+ FIs running concurrently on the same platform are operational today.
+Client Scale Experience: Programs range from community institutions at initial launch scale to large multi-product FI portfolios. Multiple programs run concurrently on the same platform today.
 
-Monitoring: Brim uses DataDog for full-stack observability — application performance, infrastructure health, authorization latency, error rates, and queue depths. Real-time alerting with PagerDuty integration. BSB receives a read-only dashboard view of program-specific metrics.
+Monitoring: Brim uses enterprise APM tooling for full-stack observability — application performance, infrastructure health, authorization latency, error rates, and queue depths. Real-time alerting and incident management is automated. BSB receives a read-only dashboard view of program-specific metrics.
 
 Benchmarking: Platform has been load-tested to 10x normal transaction volumes (Black Friday/holiday spike simulation). Results available upon request.`,
       'HIGH',
@@ -708,7 +714,7 @@ SOC 2 Type 2: Yes. Brim completed SOC 2 Type 2 audit in 2025, audited by Coalfir
 
 ISO 27001:2022: Certified. Certificate available upon request.
 
-PCI DSS v4.0.1: Certified Service Provider. AOC available upon request.
+PCI DSS: Certified Service Provider. AOC available upon request.
 
 SOX Controls: Brim is a private company and is not subject to Sarbanes-Oxley directly. However, Brim maintains financial and operational controls equivalent to SOX requirements as part of its enterprise risk management framework.
 
@@ -736,7 +742,7 @@ Password Policy: When not using SSO — minimum 14 characters, requiring upperca
 
 Data Encryption:
 • In transit: TLS 1.3 for all API and portal traffic; TLS 1.2 minimum enforced
-• At rest: AES-256 encryption for all data at rest (PostgreSQL encrypted volumes, encrypted storage within LeaseWeb environment)
+• At rest: AES-256 encryption for all data at rest within the LeaseWeb environment
 • PAN data: Tokenized via TSYS vaultless tokenization; Brim never stores full PANs in its own database
 • Encryption Keys: HSM-based key management within the LeaseWeb colocation environment; key rotation on 12-month cycle
 
@@ -805,7 +811,7 @@ Environmental Controls:
 
 Asset Dispersion: Brim's critical application components are distributed across both the primary LeaseWeb Montreal facility and the DR facility (geographically separate). Software master versions are maintained in multiple redundant Git repositories with cross-facility replication; build artifacts stored in a redundant artifact repository.
 
-LeaseWeb Montreal Certifications relevant to BSB: PCI DSS Level 1 (AOC available), SOC 2 Type 2 (audited by Coalfire), ISO 27001. Facility audit documentation available upon request under NDA.`,
+LeaseWeb Montreal Certifications relevant to BSB: PCI DSS Level 1 (AOC available), SOC 2 Type 2, ISO 27001. Facility audit documentation available upon request under NDA.`,
       'HIGH',
       'FULL',
       '10/10',
@@ -919,7 +925,7 @@ Transaction Types Supported: Application submission and decisioning, account ope
 API Security:
 • All API endpoints require OAuth 2.0 bearer token authentication
 • TLS 1.3 required for all API traffic; TLS 1.2 minimum enforced
-• IP whitelisting: BSB provides a set of IP addresses/CIDR ranges; Brim enforces at the API gateway (Kong) level — calls from non-whitelisted IPs are rejected
+• IP whitelisting: BSB provides a set of IP addresses/CIDR ranges; Brim enforces at the API gateway — calls from non-whitelisted IPs are rejected
 • Rate limiting: configurable per client to prevent abuse; default 10,000 requests/minute
 • API keys stored in a secrets management vault (not in code); rotated on 90-day schedule
 • API credentials managed via Brim's partner portal; BSB admins control which systems have API access
