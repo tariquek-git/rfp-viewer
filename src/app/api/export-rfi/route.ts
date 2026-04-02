@@ -153,8 +153,8 @@ export async function GET() {
 Headquarters: Toronto, Ontario, Canada (primary) | San Jose, California (US operations)
 Legal: Brim Financial Inc. — federally incorporated in Canada. Brim Financial Corp. — Delaware registered, operating in the US under sponsor bank partnership with Continental Bank (US-chartered bank, Mastercard Principal Member).
 
-Sales Contact: Jacquline White, EVP Growth and Customer Experience
-Email: jacquline.white@brimfinancial.com | Phone: Available on request
+Sales Contact: Jacqueline White, EVP Growth and Customer Experience
+Email: jacqueline.white@brimfinancial.com | Phone: Available on request
 
 Years in Business: Brim Financial was incorporated in 2015 and launched its first live credit card program in 2019. The company has operated continuously under the Brim Financial brand since incorporation.
 
@@ -239,9 +239,11 @@ Market Position: Brim is the only Canadian-headquartered, full-stack credit card
 Organizational Stability: No pending mergers, acquisitions, or structural changes. No public-to-private or private-to-public transition planned. No regulatory findings, enforcement actions, or material litigation in the past 5 years.
 
 Leadership Team:
-• Rasha Katabi — Founder & CEO. Founded Brim in 2017. Built the platform from the ground up as Canada's only full-stack credit card PaaS.
-• Jacquline White — EVP, Growth and Customer Experience. Leads sales, partnerships, and client experience across Brim's FI portfolio.
-• Abraham Tachjian — SVP, Office of the CEO & Chief Regulatory Affairs Officer. Former federally appointed open banking lead for the Department of Finance Canada (2022–2023); former director at PwC Canada. Joined Brim to lead regulatory strategy and compliance positioning as the platform scales into the US and as Canada's open banking framework matures.
+• Rasha Katabi — Founder & CEO. Founded Brim in 2017 and built Canada's only full-stack credit card PaaS from the ground up.
+• Jacqueline White — EVP, Growth and Customer Experience. Brings deep enterprise fintech leadership: former President at i2c Inc. (a global payment processor), President Americas at Temenos SA, and SVP Global FSI at DXC Technology. Her Temenos background is directly relevant to Brim's integration with CWB (a Temenos shop), and her i2c tenure gives her firsthand knowledge of the competitive landscape Brim operates in.
+• Prem Nair — CTO. Leads Brim's platform engineering and technology strategy, with a background in fraud, risk, and payments infrastructure.
+• Amer Sidhu — VP Product. Leads product strategy, roadmap, and platform feature development.
+• Abraham Tachjian — SVP, Office of the CEO & Chief Regulatory Affairs Officer. Former federally appointed open banking lead for the Department of Finance Canada (2022–2023) and former director at PwC Canada. Leads Brim's regulatory strategy as the platform scales in the US and Canada's open banking framework matures.
 
 D&B Report: Available upon request under NDA.`,
       'HIGH', 'FULL', '9/10', 'Company Background'
