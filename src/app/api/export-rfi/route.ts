@@ -560,7 +560,7 @@ Program Type: Consumer Visa — health-rewards program, full platform conversion
 Program Duration: Live 2025
 Description: MANULIFE BANK is a Schedule I federally chartered bank and wholly-owned subsidiary of The Manufacturers Life Insurance Company, serving 550,000+ clients through 55,000 financial advisors. MANULIFE BANK converted its consumer credit card program to Brim from FISERV — a full platform migration of an established card portfolio at a major regulated financial institution.
 
-The program features the Manulife Vitality Mastercard, where cardholder rewards are directly linked to health and wellness activity milestones through the Vitality program (fitness tracking, health screenings, wellness goals). Brim's real-time rewards engine handles earn accrual at the transaction level and integrates with the Vitality benefit platform. This demonstrates Brim's ability to support complex, multi-system loyalty integrations at enterprise scale.
+The program features the Manulife Vitality Visa, where cardholder rewards are directly linked to health and wellness activity milestones through the Vitality program (fitness tracking, health screenings, wellness goals). Brim's real-time rewards engine handles earn accrual at the transaction level and integrates with the Vitality benefit platform. This demonstrates Brim's ability to support complex, multi-system loyalty integrations at enterprise scale.
 
 Relevance to BSB: Demonstrates Brim's track record executing high-stakes platform conversions for regulated banks — maintaining portfolio integrity, managing cardholder communications, and delivering a modern digital experience while migrating from a legacy processor.
 Contact: Available upon request
