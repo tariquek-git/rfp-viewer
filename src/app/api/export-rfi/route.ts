@@ -158,7 +158,7 @@ Email: jacquline.white@brimfinancial.com | Phone: Available on request
 
 Years in Business: Brim Financial was incorporated in 2015 and launched its first live credit card program in 2019. The company has operated continuously under the Brim Financial brand since incorporation.
 
-Ownership Structure: Privately held. Backed by institutional investors including EDC Venture Fund (Export Development Canada), White Owl Capital, Vestara Capital, Zions Bank, goeasy Financial (TSX: GSY), and Desjardins Group. No public listing. No pending IPO or acquisition plans disclosed.
+Ownership Structure: Privately held. Backed by institutional investors including EDC (Export Development Canada), White Owl, Vestara, Zions Bank, goeasy Financial (TSX: GSY), and Desjardins Group. No public listing. No pending IPO or acquisition plans disclosed.
 
 Total Employees: ~200 globally, including engineers, implementation specialists, compliance/risk professionals, and client success teams.`,
       'HIGH', 'FULL', '10/10', 'Company Background'
@@ -180,9 +180,9 @@ CANADIAN WESTERN BANK (CWB) — Consumer (mass affluent, personal) and business/
 
 LAURENTIAN BANK — Consumer, SMB, and large corporate. Issued on LAURENTIAN BANK's own Visa BIN. Full end-to-end rewards. Replaced five legacy vendors. Issuance time cut from 25 days to instant. 90% reduction in manual processes.
 
-AIR FRANCE-KLM — Consumer, Mastercard. The only credit card in North America that earns Flying Blue miles directly. Earn accrues on the Brim platform at the transaction level; redemption and burn happen within the Flying Blue loyalty ecosystem. Brim's first airline/global brand partner. Launched June 2022. Demonstrates deep third-party loyalty integration: earn on Brim, burn on partner.
+AIR FRANCE-KLM — Consumer, Mastercard. A North American credit card that earns Flying Blue miles directly on the Brim platform. Earn accrues on the Brim platform at the transaction level; redemption and burn happen within the Flying Blue loyalty ecosystem. Brim's first airline/global brand partner. Launched June 2022. Demonstrates deep third-party loyalty integration: earn on Brim, burn on partner.
 
-MOMENTUM FINANCIAL / MONEY MART — Consumer secured and prepaid cards. Serving underbanked and credit-building segments. Launching 2025.
+MOMENTUM FINANCIAL / MONEY MART — Consumer secured and prepaid cards. Serving underbanked and credit-building segments. Launched 2025.
 
 ZOOMER / CARP — Consumer lifestyle-based rewards card for the 50+ segment. Targeted rewards tied to the CARP member ecosystem and lifestyle spending categories.
 
@@ -198,7 +198,8 @@ Brim has entered strategic partnerships (not acquisitions) with:
 • TSYS / Global Payments — Core processing and authorization
 • IDEMIA — Card personalization and fulfillment
 • TransUnion / Equifax / Experian — Bureau data for underwriting and fraud
-• Mastercard — Network and product certification
+• Mastercard — Network and product certification (Canada direct; US via Continental Bank sponsorship)
+• Visa — Network certification (issued via Laurentian Bank BIN)
 
 The solution is US-ready and currently deployed in the US market through the Zolve/Continental Bank program. The platform supports English and French (Canadian bilingual programs). Spanish-language support is on the roadmap for 2026.`,
       'HIGH', 'FULL', '9/10', 'Company Background'
@@ -460,7 +461,7 @@ Core Architecture Components:
 • Rules Engine: Brim proprietary (fraud rules, credit policy rules, rewards rules)
 • Data Layer: PostgreSQL (primary), Redis (caching/real-time), Kafka (event streaming)
 • Card Personalization: IDEMIA (card production and fulfillment)
-• Bureau Integration: Equifax + TransUnion (underwriting, account monitoring)
+• Bureau Integration: TransUnion / Equifax / Experian (underwriting, account monitoring)
 • Network: Mastercard (BIN sponsorship via Continental Bank for US programs)
 • Network Security: Triple-layered firewall — Incapsula (edge/DDoS) → LeaseWeb (perimeter) → local application firewall
 
@@ -488,7 +489,7 @@ In-House Support Model: BSB needs: 1 program administrator (config, rule managem
 
 Data Export: All reports exportable as CSV, PDF, or XLSX. API data access available for all data sets via authenticated REST calls. Export permissions are role-controlled — BSB admins define which users can export which data sets.
 
-Archiving: Data retained online for 7 years (regulatory minimum). Older data archived to S3 cold storage; accessible upon request within 24 hours. No purge of cardholder data without BSB authorization.
+Archiving: Data retained online for 7 years (regulatory minimum). Older data archived to cold object storage within the LeaseWeb environment; accessible upon request within 24 hours. No purge of cardholder data without BSB authorization.
 
 Maintenance Tables: BSB administrators have real-time access to maintenance tables for product codes, fee schedules, reward rates, interest rates, MCC restrictions, and user profiles via the admin portal. Changes take effect immediately (no batch window required).
 
