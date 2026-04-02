@@ -3,9 +3,9 @@
   "configurations": [
     {
       "name": "rfp-viewer",
-      "runtimeExecutable": "/Users/tarique/.fnm/node-versions/v22.22.1/installation/bin/node",
-      "runtimeArgs": ["/Users/tarique/.fnm/node-versions/v22.22.1/installation/bin/npm", "run", "dev", "--", "--port", "3000"],
-      "port": 3000
+      "runtimeExecutable": "/bin/bash",
+      "runtimeArgs": ["/Users/tarique/rfp-viewer/start-dev.sh"],
+      "port": 3002
     }
   ]
 }

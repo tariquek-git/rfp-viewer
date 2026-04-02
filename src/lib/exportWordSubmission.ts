@@ -523,7 +523,7 @@ export async function exportWordSubmission(data: RFPData, options?: SubmissionEx
             ],
           }),
         },
-        children: allBlocks as Paragraph[],
+        children: allBlocks as unknown as Paragraph[],
       },
     ],
   });

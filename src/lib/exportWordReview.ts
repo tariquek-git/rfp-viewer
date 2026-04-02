@@ -493,7 +493,7 @@ export async function exportWordReview(data: RFPData, options?: ReviewExportOpti
             ],
           }),
         },
-        children: sections as Paragraph[],
+        children: sections as unknown as Paragraph[],
       },
     ],
   });
