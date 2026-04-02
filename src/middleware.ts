@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 // Rate limiting: simple in-memory counter per IP
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
-const RATE_LIMIT = 30; // requests per window
+const RATE_LIMIT = 60; // requests per window
 const RATE_WINDOW = 60_000; // 1 minute
 
 function rateLimit(ip: string): boolean {
@@ -29,14 +29,13 @@ if (typeof setInterval !== 'undefined') {
   }, 60_000);
 }
 
-export function proxy(request: NextRequest) {
-  // === Password Protection ===
+export default function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Skip password check for the login page itself, API routes, and static assets
+  // Always allow: login page, auth endpoint, Next.js internals, favicon
   if (
     pathname === '/login' ||
-    pathname.startsWith('/api/') ||
+    pathname === '/api/auth' ||
     pathname.startsWith('/_next/') ||
     pathname === '/favicon.ico'
   ) {
@@ -47,19 +46,18 @@ export function proxy(request: NextRequest) {
 
   // Check for auth cookie
   const authCookie = request.cookies.get('rfp-auth');
-  if (!authCookie || authCookie.value !== 'authenticated') {
-    // Redirect to login page
-    const loginUrl = new URL('/login', request.url);
-    loginUrl.searchParams.set('redirect', pathname);
-    return NextResponse.redirect(loginUrl);
-  }
+  const authenticated = authCookie?.value === 'authenticated';
 
-  const response = NextResponse.next();
+  // API routes: return 401 JSON (not redirect) if unauthenticated
+  if (pathname.startsWith('/api/')) {
+    if (!authenticated) {
+      return NextResponse.json(
+        { error: 'Unauthorized. Please log in.' },
+        { status: 401 },
+      );
+    }
 
-  addSecurityHeaders(response);
-
-  // === Rate limiting on API routes ===
-  if (request.nextUrl.pathname.startsWith('/api/')) {
+    // Rate limit authenticated API calls
     const ip =
       request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
       request.headers.get('x-real-ip') ||
@@ -71,8 +69,31 @@ export function proxy(request: NextRequest) {
         { status: 429, headers: { 'Retry-After': '60' } },
       );
     }
+
+    const response = NextResponse.next();
+    addSecurityHeaders(response);
+    return response;
   }
 
+  // Protect rfp_data.json (static file with confidential data)
+  if (pathname === '/rfp_data.json') {
+    if (!authenticated) {
+      return NextResponse.redirect(new URL('/login', request.url));
+    }
+    const response = NextResponse.next();
+    addSecurityHeaders(response);
+    return response;
+  }
+
+  // All other pages: redirect to login if not authenticated
+  if (!authenticated) {
+    const loginUrl = new URL('/login', request.url);
+    loginUrl.searchParams.set('redirect', pathname);
+    return NextResponse.redirect(loginUrl);
+  }
+
+  const response = NextResponse.next();
+  addSecurityHeaders(response);
   return response;
 }
 
@@ -96,7 +117,7 @@ function addSecurityHeaders(response: NextResponse) {
 
 export const config = {
   matcher: [
-    // Apply to all routes except static files
+    // Apply to all routes except Next.js static files and images
     '/((?!_next/static|_next/image|favicon.ico).*)',
   ],
 };

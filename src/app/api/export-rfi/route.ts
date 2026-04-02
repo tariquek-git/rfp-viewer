@@ -276,7 +276,7 @@ MOMENTUM FINANCIAL / MONEY MART — Consumer secured and prepaid cards. Serving 
 
 ZOOMER / CARP — Consumer lifestyle-based rewards card for the 50+ segment. Targeted rewards tied to the CARP member ecosystem and lifestyle spending categories.
 
-Platform: 7+ years of live issuing operations. TSYS (TMS platform) as core processor. Both Mastercard and Visa networks — Brim operates programs on both (e.g., MANULIFE BANK on Visa; ZOLVE/CONTINENTAL BANK and AFFINITY CREDIT UNION on Mastercard). US programs enabled through sponsor bank partnerships with US-chartered issuing banks. Long-term client relationships across all program types.`,
+Platform: 7+ years of live issuing operations. TSYS (TMS platform) as core processor. Both Mastercard and Visa networks — Brim operates programs on both (e.g., MANULIFE BANK on Visa; AFFINITY CREDIT UNION and US programs on Mastercard). US programs enabled through sponsor bank partnerships with US-chartered issuing banks. Long-term client relationships across all program types.`,
       'HIGH',
       'FULL',
       '10/10',
@@ -413,7 +413,7 @@ Primary Features:
 
 Live Programs (Selected): MANULIFE BANK (consumer health-rewards, Visa), AFFINITY CREDIT UNION (consumer + business, community cooperative, Mastercard), ZOLVE (US — global citizen credit building, Mastercard), CANADIAN WESTERN BANK (consumer + commercial, Mastercard), LAURENTIAN BANK (consumer + SMB + corporate, Visa), AIR FRANCE-KLM (Flying Blue loyalty card), PAYFACTO (SMB merchant-linked rewards).
 
-One-to-Many Architecture: All programs run on the same platform instance. Each partner is a separate logical tenant — independently configured, branded, and operated via parameter-based setup. BSB's agent bank program would be provisioned the same way: its own configuration, credit policy, rewards structure, and BIN, operating on the same proven infrastructure that runs MANULIFE BANK and CONTINENTAL BANK today.
+One-to-Many Architecture: All programs run on the same platform instance. Each partner is a separate logical tenant — independently configured, branded, and operated via parameter-based setup. BSB's agent bank program would be provisioned the same way: its own configuration, credit policy, rewards structure, and BIN, operating on the same proven infrastructure that runs MANULIFE BANK, AFFINITY CREDIT UNION, and Brim's other live programs today.
 
 Deployment: SaaS only. Hosted on LeaseWeb colocation infrastructure (primary: Montreal, Quebec, Canada; DR: secondary LeaseWeb facility). No on-premise option. All clients run on the same multi-tenant platform with full logical data isolation. New versions release simultaneously to all clients on a scheduled basis. Brim Financial US Inc. (Delaware/San Francisco) has forward-looking plans for US-based hosting options to support US data residency requirements as the US program scales.`,
       'HIGH',

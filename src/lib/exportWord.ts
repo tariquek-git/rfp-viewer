@@ -945,13 +945,17 @@ export async function exportToWord(data: RFPData, options?: ExportOptions) {
           ],
         }),
         ...(() => {
-          const cleanBullet = (text: string) =>
-            text
+          const cleanBullet = (text: string) => {
+            const cleaned = text
               .split('\n')
               .filter((l) => !/^_{3,}$/.test(l.trim()))
               .filter((l) => !/^[A-Z0-9 /:()&-]{8,}$/.test(l.trim()))
               .join('\n');
-          return (q.paragraph || cleanBullet(q.bullet || '') || 'No response provided.')
+            return cleaned.trim();
+          };
+          const para = q.paragraph?.trim() || '';
+          const bullet = cleanBullet(q.bullet || '');
+          return (para || bullet || 'No response provided.')
             .split(/\n+/)
             .filter((line) => line.trim().length > 0);
         })().map(
