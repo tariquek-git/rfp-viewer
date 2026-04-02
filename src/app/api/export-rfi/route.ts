@@ -241,7 +241,9 @@ Organizational Stability: No pending mergers, acquisitions, or structural change
 Leadership Team:
 • Rasha Katabi — Founder & CEO. Founded Brim in 2017 and built Canada's only full-stack credit card PaaS from the ground up.
 • Jacqueline White — EVP, Growth and Customer Experience. Brings deep enterprise fintech leadership: former President at i2c Inc. (a global payment processor), President Americas at Temenos SA, and SVP Global FSI at DXC Technology. Her Temenos background is directly relevant to Brim's integration with CWB (a Temenos shop), and her i2c tenure gives her firsthand knowledge of the competitive landscape Brim operates in.
+• Arthur Zhao — CFO. Oversees Brim's financial operations, reporting, and capital structure.
 • Amer Sidhu — VP Product. Leads product strategy, roadmap, and platform feature development.
+• Thomas Patterson — VP Product. Co-leads product across Brim's platform and partner programs.
 • Abraham Tachjian — SVP, Office of the CEO & Chief Regulatory Affairs Officer. Former federally appointed open banking lead for the Department of Finance Canada (2022–2023) and former director at PwC Canada. Leads Brim's regulatory strategy as the platform scales in the US and Canada's open banking framework matures.
 
 D&B Report: Available upon request under NDA.`,
