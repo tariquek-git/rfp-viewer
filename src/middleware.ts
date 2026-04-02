@@ -51,10 +51,7 @@ export default function middleware(request: NextRequest) {
   // API routes: return 401 JSON (not redirect) if unauthenticated
   if (pathname.startsWith('/api/')) {
     if (!authenticated) {
-      return NextResponse.json(
-        { error: 'Unauthorized. Please log in.' },
-        { status: 401 },
-      );
+      return NextResponse.json({ error: 'Unauthorized. Please log in.' }, { status: 401 });
     }
 
     // Rate limit authenticated API calls
