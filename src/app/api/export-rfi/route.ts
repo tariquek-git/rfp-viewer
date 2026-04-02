@@ -150,48 +150,43 @@ export async function GET() {
       'Q3.1 — Company Name, Address & Contact',
       'Provide company name, address, sales contact, headquarters, years in business, ownership structure, and employee count.',
       `Company Name: Brim Financial Inc.
-Headquarters: 199 Bay Street, Suite 4000, Toronto, Ontario, Canada M5L 1E9
-US Operations: Brim Financial Corp., Delaware registered, operating under sponsor bank partnership with Continental Bank (US-chartered bank, Mastercard Principal Member)
+Headquarters: Toronto, Ontario, Canada (primary) | San Jose, California (US operations)
+Legal: Brim Financial Inc. — federally incorporated in Canada. Brim Financial Corp. — Delaware registered, operating in the US under sponsor bank partnership with Continental Bank (US-chartered bank, Mastercard Principal Member).
 
-Sales Contact: Tarique Khan, VP Business Development
-Email: tarique.khan@brimfinancial.com | Phone: Available on request
+Sales Contact: Jacquline White, EVP Growth and Customer Experience
+Email: jacquline.white@brimfinancial.com | Phone: Available on request
 
-Years in Business: Brim Financial was incorporated in 2015 and launched its first live credit card program in 2018. The company has operated continuously under the Brim Financial brand since incorporation.
+Years in Business: Brim Financial was incorporated in 2015 and launched its first live credit card program in 2019. The company has operated continuously under the Brim Financial brand since incorporation.
 
-Ownership Structure: Privately held. Backed by institutional investors including BDC Capital, EDC, and strategic fintech investors. No public listing. No pending IPO or acquisition plans disclosed.
+Ownership Structure: Privately held. Backed by institutional investors including EDC Venture Fund (Export Development Canada), White Owl Capital, Vestara Capital, Zions Bank, goeasy Financial (TSX: GSY), and Desjardins Group. No public listing. No pending IPO or acquisition plans disclosed.
 
-Total Employees: ~250 globally, including ~60 dedicated to platform engineering, ~30 in professional services/implementation, ~25 in compliance/risk, and ~20 in client success.
-
-On-Staff Developers: ~90 engineers (full-stack, platform, security, data/ML)
-Technical Support Staff: ~20 full-time
-Professional Services Staff: ~30 (implementation, project management, integration specialists)`,
+Total Employees: ~200 globally, including engineers, implementation specialists, compliance/risk professionals, and client success teams.`,
       'HIGH', 'FULL', '10/10', 'Company Background'
     ),
     ...question(
       'Q3.2 — Experience: Consumer & Business Card Platforms',
       'Provide details of experience operating consumer and business card platforms, including volumes and length of experience.',
-      `Brim operates live credit card programs across consumer, business, commercial, and fintech segments. All programs run on the same multi-tenant platform, configured per partner through a parameter-based model — no separate code deployments, no separate stacks. This is the same one-to-many architecture that underpins agent banking in the US: one platform, many programs, each independently branded and operated.
+      `Brim operates live credit card programs across consumer, business, commercial, and fintech segments. All programs run on the same multi-tenant platform, configured per partner through a parameter-based model — no separate code deployments, no separate stacks. This is the same one-to-many architecture that underpins agent banking: one platform, many programs, each independently branded and operated.
 
-Priority Live Programs:
+Live Programs:
 
-MANULIFE BANK — Consumer, Mastercard. Health-rewards program linking card spend to Vitality benefit milestones (fitness goals, health screenings, wellness activity). Converted from FISERV. MANULIFE BANK is a Schedule I federally chartered bank and one of Canada's largest financial institutions, serving 550,000+ clients through a network of 55,000 financial advisors. Brim's platform replaced Fiserv's legacy infrastructure end-to-end, delivering real-time onboarding, instant virtual issuance, a unified cardholder experience, and a rewards engine that integrates directly with the Vitality health program. Live 2025.
+MANULIFE BANK (Manulife Vitality Mastercard) — Consumer, Mastercard. Health-rewards card linking spend to Vitality benefit milestones (fitness goals, health screenings, wellness activity). MANULIFE BANK is a Schedule I federally chartered bank serving 550,000 banking clients through a network of 55,000 financial advisors — part of the 7M+ client Manulife parent ecosystem. The card program is positioned to grow into that broader advisor-referred client base. Converted from Fiserv. Brim replaced the legacy infrastructure end-to-end: real-time onboarding, instant virtual issuance, a unified cardholder experience, and a rewards engine integrated directly with the Vitality health program. Live Q3 2025.
 
-ZOLVE / CONTINENTAL BANK — Consumer, Mastercard. Cross-border credit card for new-to-country immigrants arriving in the US. ZOLVE is a fintech serving Indian immigrants who lack a US credit history. CONTINENTAL BANK is the US issuing sponsor bank. Brim replaced Zolve's legacy processor and introduced CONTINENTAL BANK as a new sponsor bank from Brim's network. The program enables pre-arrival card issuance — cards mailed to India and geo-activated upon US landing. Alternative underwriting uses Indian credit history. Implemented in 90 days: beta US launch December 2024, full launch December 2024, legacy migration complete January 2025. Expanding to Canada in 2025 where Brim is the direct Mastercard issuer (no sponsor bank required). Demonstrated full compliance with Reg Z, Reg B, FCRA, and BSA/AML requirements.
+AFFINITY CREDIT UNION — Consumer and business, Mastercard. Community-focused rewards program with spend-based earn rates and a local merchant-funded rewards ecosystem built around cooperative values. Saskatchewan's largest credit union. Converted from a traditional agent banking infrastructure (Valera/Collabria), where the CU had no control over the member experience. On Brim, AFFINITY owns the full program: card design, pricing, credit policy, rewards structure, and servicing. Consumer cards live since 2022; business cards added 2024.
 
-AFFINITY CREDIT UNION — Consumer and business, Mastercard. Community-focused rewards program with spend-based earn rates and a local merchant-funded rewards ecosystem built around cooperative values. AFFINITY CREDIT UNION is Saskatchewan's largest credit union. They converted to Brim from a traditional agent banking infrastructure (Valera — formerly Co-op Financial Services — with Collabria as the card processing arm), where the CU had no control over the member experience. On Brim, AFFINITY owns the full program: card design, pricing, credit policy, rewards structure, and servicing. Consumer cards live since 2022; business cards added 2024. Merchant-funded rewards reduced program costs by 23%.
+ZOLVE / CONTINENTAL BANK — Consumer, Mastercard. Cross-border credit card for new-to-country immigrants arriving in the US. ZOLVE serves Indian immigrants without a US credit history; CONTINENTAL BANK is the US issuing sponsor bank. Brim replaced Zolve's legacy processor and introduced CONTINENTAL BANK as a new sponsor from Brim's network. Pre-arrival card issuance — cards mailed internationally and geo-activated on landing. Alternative underwriting uses home-country credit history. Implemented in 90 days. Expanding to Canada in 2025 where Brim is direct Mastercard issuer. Full compliance with Reg Z, Reg B, FCRA, and BSA/AML.
 
-AIR FRANCE-KLM — Consumer, Mastercard. The only credit card in North America that earns Flying Blue miles directly. Earn accrues on the Brim platform at the transaction level; redemption and burn happen within the Flying Blue loyalty ecosystem via open banking API integration. AIR FRANCE-KLM was Brim's first airline/global brand partner. Launched June 2022. The program demonstrates Brim's ability to integrate deeply with third-party loyalty platforms — earn on Brim, burn on partner.
+CANADIAN WESTERN BANK (CWB) — Consumer (mass affluent, personal) and business/commercial, Mastercard. Converted from traditional agent banking via Valera. Temenos core integration. Business Pro product delivers new monthly non-interest income per user; meaningful spend increase post-migration. CWB President and CEO cited Brim as a growth catalyst in their 2023 Annual Report.
 
-PAYFACTO — Fintech/SMB, Mastercard. PAYFACTO is one of North America's largest independent payment processors serving 30,000+ merchants, with particular strength in hospitality and food service. Brim enables PAYFACTO merchants to access same-day settlement of funds through a linked spend card — turning daily card sales into immediately accessible working capital. Merchants receive and can use their sales proceeds on the same day, reducing reliance on external financing and improving cash flow management. This is Brim's merchant-as-cardholder model: the processor's settlement infrastructure linked directly to a spend card on the Brim platform.
+LAURENTIAN BANK — Consumer, SMB, and large corporate. Issued on LAURENTIAN BANK's own Visa BIN. Full end-to-end rewards. Replaced five legacy vendors. Issuance time cut from 25 days to instant. 90% reduction in manual processes.
 
-Also Live:
-• CANADIAN WESTERN BANK (CWB) — Consumer (high-net-worth personal, 2020) and business/commercial (2022). Converted from traditional agent banking model via Valera. Business Pro product delivers $6/month in new non-interest income per user; 40% spend increase post-migration. CWB President and CEO cited BRIM as a growth catalyst in the 2023 Annual Report.
-• LAURENTIAN BANK — Consumer, SMB, and large corporate. Issued on LAURENTIAN BANK's own Visa BIN. Replaced five legacy vendors. Issuance time cut from 25 days to instant. 90% reduction in manual processes.
-• MOMENTUM FINANCIAL / MONEY MART — Consumer secured and prepaid cards. Serving underbanked and credit-building segments. Launching 2025.
+AIR FRANCE-KLM — Consumer, Mastercard. The only credit card in North America that earns Flying Blue miles directly. Earn accrues on the Brim platform at the transaction level; redemption and burn happen within the Flying Blue loyalty ecosystem. Brim's first airline/global brand partner. Launched June 2022. Demonstrates deep third-party loyalty integration: earn on Brim, burn on partner.
 
-Portfolio Scale: Combined live portfolio across all programs spans hundreds of thousands of active accounts. Largest single program: $200M+ in active receivables. Programs range from 2,000-account community CUs to 200,000+ account FIs. 100% institutional client retention since launch.
+MOMENTUM FINANCIAL / MONEY MART — Consumer secured and prepaid cards. Serving underbanked and credit-building segments. Launching 2025.
 
-Platform Vintage: 7+ years of live issuing operations (first program live 2019). TSYS as core processor. Mastercard network (direct Principal Member for programs; CONTINENTAL BANK as US sponsor bank for Zolve).`,
+ZOOMER / CARP — Consumer lifestyle-based rewards card for the 50+ segment. Targeted rewards tied to the CARP member ecosystem and lifestyle spending categories.
+
+Platform: 7+ years of live issuing operations. TSYS (TMS platform) as core processor. Mastercard network — direct Principal Member for Canadian programs; CONTINENTAL BANK as US sponsor bank. Visa BIN issued through LAURENTIAN BANK. 100% institutional client retention since launch.`,
       'HIGH', 'FULL', '10/10', 'Company Background'
     ),
     ...question(
@@ -202,7 +197,7 @@ Platform Vintage: 7+ years of live issuing operations (first program live 2019).
 Brim has entered strategic partnerships (not acquisitions) with:
 • TSYS / Global Payments — Core processing and authorization
 • IDEMIA — Card personalization and fulfillment
-• Equifax / TransUnion — Bureau data for underwriting and fraud
+• TransUnion / Equifax / Experian — Bureau data for underwriting and fraud
 • Mastercard — Network and product certification
 
 The solution is US-ready and currently deployed in the US market through the Zolve/Continental Bank program. The platform supports English and French (Canadian bilingual programs). Spanish-language support is on the roadmap for 2026.`,
