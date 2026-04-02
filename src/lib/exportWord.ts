@@ -854,10 +854,17 @@ export async function exportToWord(data: RFPData, options?: ExportOptions) {
             }),
           ],
         }),
-        ...((q.paragraph || q.bullet || 'No response provided.')
-          .split(/\n+/)
-          .filter((line) => line.trim().length > 0)
-          .map((line, i, arr) => new Paragraph({
+        ...((() => {
+          const cleanBullet = (text: string) =>
+            text
+              .split('\n')
+              .filter((l) => !/^_{3,}$/.test(l.trim()))
+              .filter((l) => !/^[A-Z0-9 /:()&-]{8,}$/.test(l.trim()))
+              .join('\n');
+          return (q.paragraph || cleanBullet(q.bullet || '') || 'No response provided.')
+            .split(/\n+/)
+            .filter((line) => line.trim().length > 0);
+        })().map((line, i, arr) => new Paragraph({
             spacing: { before: i === 0 ? 40 : 80, after: i === arr.length - 1 ? 60 : 0 },
             shading: { type: ShadingType.SOLID, color: 'EFF6FF' },
             indent: { left: 160, right: 160 },
