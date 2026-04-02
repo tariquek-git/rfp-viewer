@@ -10,8 +10,11 @@ import {
   Minus,
   FileText,
   FileSpreadsheet,
+  MessageSquare,
+  ChevronDown,
+  ChevronUp,
 } from 'lucide-react';
-import type { Question, RFPData, KnowledgeBase, ValidationRule } from '@/types';
+import type { Question, RFPData, KnowledgeBase, ValidationRule, FeedbackItem } from '@/types';
 import { saveAs } from 'file-saver';
 import { exportToPDF } from '@/lib/exportPDF';
 
@@ -22,6 +25,9 @@ interface SubmissionViewProps {
   knowledgeBase?: KnowledgeBase;
   globalRules?: string[];
   validationRules?: ValidationRule[];
+  feedbackItems?: FeedbackItem[];
+  onAddFeedback?: (ref: string, field: string, comment: string) => void;
+  onResolveFeedback?: (ref: string, timestamp: number) => void;
 }
 
 type ExportMode = 'full' | 'responses-only' | 'executive';
@@ -65,11 +71,16 @@ export default function SubmissionView({
   knowledgeBase,
   globalRules,
   validationRules,
+  feedbackItems,
+  onAddFeedback,
+  onResolveFeedback,
 }: SubmissionViewProps) {
   const exportOpts = { knowledgeBase, globalRules, validationRules };
   const [mode, setMode] = useState<ExportMode>('full');
   const [showAdvisory, setShowAdvisory] = useState(true);
-  const [exporting, setExporting] = useState<'word' | 'pdf' | 'excel' | null>(null);
+  const [exporting, setExporting] = useState<'word' | 'word-review' | 'word-submission' | 'pdf' | 'excel' | null>(null);
+  const [showGlobalNotes, setShowGlobalNotes] = useState(false);
+  const [globalNoteText, setGlobalNoteText] = useState('');
 
   const handleWordExport = async () => {
     if (!data) return;
@@ -83,6 +94,42 @@ export default function SubmissionView({
       if (!res.ok) throw new Error('Export failed');
       const blob = await res.blob();
       saveAs(blob, 'BSB_RFP_Response_Brim_Financial.docx');
+    } catch (e) {
+      console.error(e);
+    }
+    setExporting(null);
+  };
+
+  const handleWordReviewExport = async () => {
+    if (!data) return;
+    setExporting('word-review' as typeof exporting);
+    try {
+      const res = await fetch('/api/export-word-review', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ data }),
+      });
+      if (!res.ok) throw new Error('Export failed');
+      const blob = await res.blob();
+      saveAs(blob, 'BSB_RFP_Working_Copy_Brim_Financial.docx');
+    } catch (e) {
+      console.error(e);
+    }
+    setExporting(null);
+  };
+
+  const handleWordSubmissionExport = async () => {
+    if (!data) return;
+    setExporting('word-submission' as typeof exporting);
+    try {
+      const res = await fetch('/api/export-word-submission', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ data }),
+      });
+      if (!res.ok) throw new Error('Export failed');
+      const blob = await res.blob();
+      saveAs(blob, 'BSB_RFP_Submission_Brim_Financial.docx');
     } catch (e) {
       console.error(e);
     }
@@ -240,15 +287,32 @@ h3{font-size:14px;margin-top:16px;color:#374151}
             <FileText size={13} /> {exporting === 'pdf' ? 'Exporting...' : 'PDF'}
           </button>
           <button
-            onClick={handleWordExport}
-            disabled={exporting === 'word'}
+            onClick={handleWordReviewExport}
+            disabled={!!exporting}
+            title="Working copy — paragraphs + feedback boxes for internal review"
+            className="flex items-center gap-1.5 bg-indigo-600 text-white px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-indigo-700 disabled:opacity-50"
+          >
+            <FileText size={13} /> {exporting === 'word-review' ? 'Exporting...' : 'Word Review'}
+          </button>
+          <button
+            onClick={handleWordSubmissionExport}
+            disabled={!!exporting}
+            title="Clean BSB submission document — paragraphs only, no internal notes"
             className="flex items-center gap-1.5 bg-blue-600 text-white px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-blue-700 disabled:opacity-50"
           >
-            <FileSpreadsheet size={13} /> {exporting === 'word' ? 'Exporting...' : 'Word (.docx)'}
+            <FileSpreadsheet size={13} /> {exporting === 'word-submission' ? 'Exporting...' : 'Word Submission'}
+          </button>
+          <button
+            onClick={handleWordExport}
+            disabled={!!exporting}
+            title="Full Word export with advisory notes and AI indicators"
+            className="flex items-center gap-1.5 bg-blue-500 text-white px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-blue-600 disabled:opacity-50"
+          >
+            <FileSpreadsheet size={13} /> {exporting === 'word' ? 'Exporting...' : 'Word Full'}
           </button>
           <button
             onClick={handleExcelExport}
-            disabled={exporting === 'excel'}
+            disabled={!!exporting}
             className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-white border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50 text-gray-700"
           >
             <FileSpreadsheet size={13} /> {exporting === 'excel' ? 'Exporting...' : 'Excel (.xlsx)'}
@@ -267,6 +331,85 @@ h3{font-size:14px;margin-top:16px;color:#374151}
           </button>
         </div>
       </div>
+
+      {/* Global Notes Panel */}
+      {onAddFeedback && (
+        <div className="print:hidden border-b border-amber-200 bg-amber-50 px-6 py-3">
+          <button
+            onClick={() => setShowGlobalNotes(!showGlobalNotes)}
+            className="flex items-center gap-2 text-sm font-medium text-amber-700 hover:text-amber-900"
+          >
+            <MessageSquare size={14} />
+            Global Notes
+            {(() => {
+              const count = (feedbackItems || []).filter((f) => f.ref === 'global' && !f.resolved).length;
+              return count > 0 ? <span className="text-xs bg-amber-200 text-amber-800 rounded-full px-1.5 py-0.5">{count}</span> : null;
+            })()}
+            {showGlobalNotes ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
+          </button>
+          {showGlobalNotes && (
+            <div className="mt-3 space-y-3">
+              {/* Existing global notes */}
+              {(feedbackItems || []).filter((f) => f.ref === 'global').length > 0 && (
+                <div className="space-y-2">
+                  {(feedbackItems || []).filter((f) => f.ref === 'global').map((f) => (
+                    <div
+                      key={f.timestamp}
+                      className={`flex items-start justify-between rounded px-3 py-2 text-sm border ${f.resolved ? 'bg-gray-50 border-gray-200 opacity-60' : 'bg-white border-amber-200'}`}
+                    >
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="text-xs text-gray-400">{new Date(f.timestamp).toLocaleDateString()}</span>
+                          {f.resolved && <span className="text-xs text-green-600">resolved</span>}
+                        </div>
+                        <p className="text-gray-700 text-xs leading-relaxed">{f.comment}</p>
+                      </div>
+                      {!f.resolved && onResolveFeedback && (
+                        <button
+                          onClick={() => onResolveFeedback(f.ref, f.timestamp)}
+                          className="ml-3 text-xs text-green-600 hover:underline flex-shrink-0"
+                        >
+                          resolve
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+              {/* Add new global note */}
+              <div className="flex gap-2">
+                <textarea
+                  value={globalNoteText}
+                  onChange={(e) => setGlobalNoteText(e.target.value)}
+                  placeholder="Add a global note for this submission (strategy, positioning, open items)..."
+                  rows={2}
+                  className="flex-1 border border-amber-200 rounded px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-amber-400 resize-none bg-white"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+                      e.preventDefault();
+                      if (globalNoteText.trim()) {
+                        onAddFeedback('global', 'general', globalNoteText.trim());
+                        setGlobalNoteText('');
+                      }
+                    }
+                  }}
+                />
+                <button
+                  onClick={() => {
+                    if (!globalNoteText.trim()) return;
+                    onAddFeedback('global', 'general', globalNoteText.trim());
+                    setGlobalNoteText('');
+                  }}
+                  disabled={!globalNoteText.trim()}
+                  className="bg-amber-500 text-white px-3 py-1.5 rounded text-xs font-medium hover:bg-amber-600 disabled:opacity-40 self-start"
+                >
+                  Save
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
 
       <div
         id="submission-content"

@@ -84,8 +84,10 @@ export async function POST(request: Request) {
     'Status',
     'AI Risk',
     'Compliance Notes',
+    'Feedback Notes',
   ];
-  const MAT_WIDTHS = [5, 22, 12, 22, 42, 42, 52, 16, 12, 12, 8, 12, 10, 42];
+  const MAT_WIDTHS = [5, 22, 12, 22, 42, 42, 52, 16, 12, 12, 8, 12, 10, 42, 44];
+  const FEEDBACK_FILL: ExcelJS.Fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFFDE7' } };
 
   // ── Sheet 1: Compliance Matrix ────────────────────────────────────────────
   const ws1 = wb.addWorksheet('Compliance Matrix');
@@ -94,7 +96,7 @@ export async function POST(request: Request) {
   ws1.autoFilter = { from: { row: 1, column: 1 }, to: { row: 1, column: MAT_HEADERS.length } };
 
   // 0-indexed: 0=#, 1=Category, 2=Ref, 3=Topic, 4=Requirement, 5=Bullet, 6=Paragraph,
-  //            7=Delivery, 8=Compliant, 9=Confidence, 10=Score, 11=Status, 12=AIRisk, 13=ComplianceNotes
+  //            7=Delivery, 8=Compliant, 9=Confidence, 10=Score, 11=Status, 12=AIRisk, 13=ComplianceNotes, 14=FeedbackNotes
   const TEXT_COLS = new Set([4, 5, 6, 13]); // wrap text, top-aligned
   const CENTER_COLS = new Set([0, 7, 8, 9, 10, 11, 12]); // center + middle, no wrap
 
@@ -121,6 +123,7 @@ export async function POST(request: Request) {
       q.status ?? '',
       aiRiskLabel,
       q.compliance_notes ?? '',
+      '',
     ]);
     row.height = 80;
     row.eachCell((cell, colNum) => {
@@ -138,6 +141,12 @@ export async function POST(request: Request) {
         cell.font = { size: 10, name: 'Calibri' };
       }
     });
+
+    // Feedback Notes column (col 15) — light yellow, wrap text
+    const feedbackCell1 = row.getCell(15);
+    feedbackCell1.fill = FEEDBACK_FILL;
+    feedbackCell1.alignment = { vertical: 'top', wrapText: true };
+    feedbackCell1.font = { size: 10, name: 'Calibri', italic: true, color: { argb: 'FF9E9E9E' } };
 
     // Compliant (col 9), Confidence (col 10), Score (col 11), AI Risk (col 13)
     const compliantCell = row.getCell(9);
@@ -248,6 +257,7 @@ export async function POST(request: Request) {
       q.status ?? '',
       aiRiskLabel3,
       q.compliance_notes ?? '',
+      '',
     ]);
     row.height = 80;
     row.eachCell((cell, colNum) => {
@@ -265,6 +275,11 @@ export async function POST(request: Request) {
         cell.font = { size: 10, name: 'Calibri' };
       }
     });
+    // Feedback Notes column (col 15) — light yellow
+    const feedbackCell3 = row.getCell(15);
+    feedbackCell3.fill = FEEDBACK_FILL;
+    feedbackCell3.alignment = { vertical: 'top', wrapText: true };
+    feedbackCell3.font = { size: 10, name: 'Calibri', italic: true, color: { argb: 'FF9E9E9E' } };
     row.getCell(9).fill = FILL[q.compliant as keyof typeof FILL] ?? FILL.PARTIAL;
     row.getCell(9).font = { size: 10, bold: true, name: 'Calibri' };
     row.getCell(10).fill =

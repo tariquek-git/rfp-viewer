@@ -1,7 +1,7 @@
 'use client';
 
-import type { RFPData } from '@/types';
-import { useMemo } from 'react';
+import type { RFPData, FeedbackItem } from '@/types';
+import { useMemo, useState } from 'react';
 import {
   FileText,
   Shield,
@@ -19,6 +19,9 @@ import {
   Package,
   ClipboardList,
   Target,
+  MessageSquare,
+  Plus,
+  X,
 } from 'lucide-react';
 
 function getCategoryIcon(category: string): React.ElementType {
@@ -40,6 +43,8 @@ interface ContextViewProps {
   data: RFPData;
   onNavigate?: (tab: string, filter?: { confidence?: string; category?: string }) => void;
   onBulkApproveGreen?: () => void;
+  feedbackItems?: FeedbackItem[];
+  onAddFeedback?: (ref: string, field: string, comment: string) => void;
 }
 
 function StatCard({
@@ -103,6 +108,8 @@ function SectionScoreCard({
   med,
   low,
   onClick,
+  sectionFeedback,
+  onAddFeedback,
 }: {
   name: string;
   score: number;
@@ -111,7 +118,12 @@ function SectionScoreCard({
   med: number;
   low: number;
   onClick?: () => void;
+  sectionFeedback?: FeedbackItem[];
+  onAddFeedback?: (ref: string, field: string, comment: string) => void;
 }) {
+  const [showNotes, setShowNotes] = useState(false);
+  const [noteText, setNoteText] = useState('');
+
   const grade = score >= 7.5 ? 'A' : score >= 6.5 ? 'B' : score >= 5.5 ? 'C' : 'D';
   const gradeColors: Record<string, string> = {
     A: 'bg-emerald-100 text-emerald-700 border-emerald-200',
@@ -121,51 +133,111 @@ function SectionScoreCard({
   };
   const total = high + med + low;
   const lowPct = total > 0 ? Math.round((low / total) * 100) : 0;
+  const openNotes = (sectionFeedback || []).filter((f) => !f.resolved);
+
+  const handleAddNote = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!noteText.trim() || !onAddFeedback) return;
+    onAddFeedback(`section:${name}`, 'general', noteText.trim());
+    setNoteText('');
+  };
 
   return (
-    <div
-      onClick={onClick}
-      className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-all hover:border-blue-300 cursor-pointer group"
-    >
-      <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center gap-2">
-          {(() => { const Icon = getCategoryIcon(name); return <Icon size={14} className="text-gray-400 flex-shrink-0" />; })()}
-          <h4 className="font-semibold text-sm text-gray-900 group-hover:text-blue-600 transition-colors">
-            {name}
-          </h4>
+    <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-all hover:border-blue-300 group">
+      <div
+        className="cursor-pointer"
+        onClick={onClick}
+      >
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
+            {(() => { const Icon = getCategoryIcon(name); return <Icon size={14} className="text-gray-400 flex-shrink-0" />; })()}
+            <h4 className="font-semibold text-sm text-gray-900 group-hover:text-blue-600 transition-colors">
+              {name}
+            </h4>
+          </div>
+          <div className="flex items-center gap-1.5">
+            {openNotes.length > 0 && (
+              <span className="text-[10px] bg-amber-100 text-amber-700 border border-amber-200 rounded-full px-1.5 py-0.5 font-semibold">
+                {openNotes.length} note{openNotes.length > 1 ? 's' : ''}
+              </span>
+            )}
+            <span
+              className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold border ${gradeColors[grade]}`}
+            >
+              {grade}
+            </span>
+          </div>
         </div>
-        <span
-          className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold border ${gradeColors[grade]}`}
-        >
-          {grade}
-        </span>
+        <div className="text-sm text-gray-500 mb-3">
+          <span className="font-bold text-gray-900 text-xl">{score.toFixed(1)}</span>
+          <span className="text-gray-400">/10</span>
+          <span className="text-gray-300 mx-1.5">·</span>
+          <span>{count} questions</span>
+        </div>
+        <div className="flex h-1.5 rounded-full overflow-hidden mb-2 bg-gray-100">
+          {high > 0 && (
+            <div className="bg-red-400 rounded-l" style={{ width: `${(high / total) * 100}%` }} />
+          )}
+          {med > 0 && <div className="bg-amber-400" style={{ width: `${(med / total) * 100}%` }} />}
+          {low > 0 && (
+            <div className="bg-emerald-400 rounded-r" style={{ width: `${(low / total) * 100}%` }} />
+          )}
+        </div>
+        <div className="flex justify-between text-[10px] text-gray-400 font-medium">
+          <span>{high} high</span>
+          <span>{med} med</span>
+          <span>{low} low</span>
+        </div>
+        <div className="text-[10px] text-gray-400 mt-1">{lowPct}% low risk</div>
       </div>
-      <div className="text-sm text-gray-500 mb-3">
-        <span className="font-bold text-gray-900 text-xl">{score.toFixed(1)}</span>
-        <span className="text-gray-400">/10</span>
-        <span className="text-gray-300 mx-1.5">·</span>
-        <span>{count} questions</span>
-      </div>
-      <div className="flex h-1.5 rounded-full overflow-hidden mb-2 bg-gray-100">
-        {high > 0 && (
-          <div className="bg-red-400 rounded-l" style={{ width: `${(high / total) * 100}%` }} />
-        )}
-        {med > 0 && <div className="bg-amber-400" style={{ width: `${(med / total) * 100}%` }} />}
-        {low > 0 && (
-          <div className="bg-emerald-400 rounded-r" style={{ width: `${(low / total) * 100}%` }} />
-        )}
-      </div>
-      <div className="flex justify-between text-[10px] text-gray-400 font-medium">
-        <span>{high} high</span>
-        <span>{med} med</span>
-        <span>{low} low</span>
-      </div>
-      <div className="text-[10px] text-gray-400 mt-1">{lowPct}% low risk</div>
+
+      {/* Section notes */}
+      {onAddFeedback && (
+        <div className="mt-3 pt-3 border-t border-gray-100">
+          {openNotes.length > 0 && (
+            <div className="space-y-1 mb-2">
+              {openNotes.slice(0, 2).map((f) => (
+                <div key={f.timestamp} className="text-[10px] text-amber-700 bg-amber-50 rounded px-2 py-1 leading-snug">
+                  {f.comment.slice(0, 100)}{f.comment.length > 100 ? '…' : ''}
+                </div>
+              ))}
+              {openNotes.length > 2 && (
+                <div className="text-[10px] text-gray-400">+{openNotes.length - 2} more</div>
+              )}
+            </div>
+          )}
+          <button
+            onClick={(e) => { e.stopPropagation(); setShowNotes(!showNotes); }}
+            className="flex items-center gap-1 text-[10px] text-gray-400 hover:text-blue-500 transition-colors"
+          >
+            <MessageSquare size={10} />
+            {showNotes ? 'Close' : 'Add section note'}
+          </button>
+          {showNotes && (
+            <div className="mt-2" onClick={(e) => e.stopPropagation()}>
+              <textarea
+                value={noteText}
+                onChange={(e) => setNoteText(e.target.value)}
+                placeholder={`Note for ${name}...`}
+                rows={2}
+                className="w-full border border-gray-200 rounded px-2 py-1.5 text-[11px] focus:outline-none focus:ring-1 focus:ring-blue-400 resize-none"
+              />
+              <button
+                onClick={handleAddNote}
+                disabled={!noteText.trim()}
+                className="mt-1 bg-blue-500 text-white text-[10px] px-2 py-1 rounded hover:bg-blue-600 disabled:opacity-40"
+              >
+                Save note
+              </button>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
 
-export default function ContextView({ data, onNavigate, onBulkApproveGreen }: ContextViewProps) {
+export default function ContextView({ data, onNavigate, onBulkApproveGreen, feedbackItems, onAddFeedback }: ContextViewProps) {
   const sectionStats = useMemo(() => {
     const sections: Record<
       string,
@@ -504,6 +576,8 @@ export default function ContextView({ data, onNavigate, onBulkApproveGreen }: Co
                 med={s.med}
                 low={s.low}
                 onClick={() => onNavigate?.('grid', { category: cat })}
+                sectionFeedback={(feedbackItems || []).filter((f) => f.ref === `section:${cat}`)}
+                onAddFeedback={onAddFeedback}
               />
             );
           })}

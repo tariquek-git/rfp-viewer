@@ -463,6 +463,8 @@ export default function Home() {
               <ContextView
                 data={state.data}
                 onNavigate={handleDashboardNavigate}
+                feedbackItems={state.feedbackItems}
+                onAddFeedback={state.handleAddFeedback}
                 onBulkApproveGreen={() => {
                   if (!state.data) return;
                   const toApprove = state.data.questions.filter(
@@ -522,6 +524,9 @@ export default function Home() {
                 knowledgeBase={state.knowledgeBase}
                 globalRules={state.globalRules}
                 validationRules={state.validationRules}
+                feedbackItems={state.feedbackItems}
+                onAddFeedback={state.handleAddFeedback}
+                onResolveFeedback={state.handleResolveFeedback}
               />
             )}
 
