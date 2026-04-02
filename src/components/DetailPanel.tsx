@@ -1,7 +1,31 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { ChevronDown } from 'lucide-react';
+import {
+  ChevronDown,
+  CheckCircle2,
+  XCircle,
+  MinusCircle,
+  Circle,
+  AlertTriangle,
+  AlertCircle,
+  Info,
+  Box,
+  Settings2,
+  Wrench,
+  Ban,
+  Target,
+  Shield,
+  Cpu,
+  Zap,
+  Gift,
+  Users,
+  FileText,
+  DollarSign,
+  Handshake,
+  Package,
+  ClipboardList,
+} from 'lucide-react';
 import type {
   Question,
   PendingDiff,
@@ -33,6 +57,21 @@ interface DetailPanelProps {
   onAcceptDiff: (key: string) => void;
   onRejectDiff: (key: string) => void;
   onAcceptEditedDiff: (key: string, text: string) => void;
+}
+
+function getCategoryIcon(category: string): React.ElementType {
+  const c = (category || '').toLowerCase();
+  if (c.includes('technology')) return Cpu;
+  if (c.includes('compliance')) return Shield;
+  if (c.includes('processing')) return Zap;
+  if (c.includes('loyalty')) return Gift;
+  if (c.includes('customer experience')) return Users;
+  if (c.includes('application')) return ClipboardList;
+  if (c.includes('accounting') || c.includes('finance')) return DollarSign;
+  if (c.includes('partner')) return Handshake;
+  if (c.includes('activation') || c.includes('fulfillment')) return Package;
+  if (c.includes('product operations')) return Target;
+  return FileText;
 }
 
 function CollapsibleSection({
@@ -347,11 +386,16 @@ export default function DetailPanel({
       className="absolute right-0 top-0 bottom-0 w-full sm:w-[560px] bg-white border-l shadow-xl z-30 flex flex-col panel-slide-in"
     >
       <div className="flex items-center justify-between px-6 py-4 border-b flex-shrink-0">
-        <div>
-          <h2 className="text-lg font-semibold text-gray-900">{q.ref}</h2>
-          <p className="text-sm text-gray-500">
-            {q.category} · {q.topic}
-          </p>
+        <div className="flex items-start gap-3">
+          <div className="mt-0.5 p-1.5 bg-gray-100 rounded-lg flex-shrink-0">
+            {(() => { const Icon = getCategoryIcon(q.category); return <Icon size={16} className="text-gray-500" />; })()}
+          </div>
+          <div>
+            <h2 className="text-lg font-semibold text-gray-900">{q.ref}</h2>
+            <p className="text-sm text-gray-500">
+              {q.category} · {q.topic}
+            </p>
+          </div>
         </div>
         <div className="flex items-center gap-2">
           {dirty && (
@@ -386,12 +430,19 @@ export default function DetailPanel({
       </div>
 
       <div className="px-6 py-3 border-b flex items-center gap-2 flex-shrink-0 flex-wrap">
-        <span className={`text-xs px-2 py-1 rounded border font-medium ${confClass}`}>
+        {/* Confidence */}
+        <span className={`inline-flex items-center gap-1 text-xs px-2 py-1 rounded border font-medium ${confClass}`}>
+          <Circle size={7} fill="currentColor" />
           {q.confidence}
         </span>
-        <span className="text-xs px-2 py-1 rounded border border-gray-200 font-medium">
-          Compliant: {q.compliant}
+        {/* Compliant */}
+        <span className={`inline-flex items-center gap-1 text-xs px-2 py-1 rounded border font-medium ${
+          q.compliant === 'Y' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : q.compliant === 'N' ? 'bg-red-50 text-red-700 border-red-200' : 'bg-amber-50 text-amber-700 border-amber-200'
+        }`}>
+          {q.compliant === 'Y' ? <CheckCircle2 size={12} /> : q.compliant === 'N' ? <XCircle size={12} /> : <MinusCircle size={12} />}
+          {q.compliant === 'Y' ? 'Compliant' : q.compliant === 'N' ? 'Non-compliant' : 'Partial'}
         </span>
+        {/* Status */}
         <span
           className={`text-xs px-2 py-1 rounded border font-medium capitalize ${
             q.status === 'approved'
@@ -405,33 +456,53 @@ export default function DetailPanel({
         >
           {q.status}
         </span>
+        {/* Delivery methods */}
         {q.a_oob && (
-          <span className="text-xs px-2 py-1 rounded bg-blue-100 text-blue-700 font-medium">
-            OOB
+          <span className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded bg-sky-100 text-sky-700 font-medium" title="Out-of-box">
+            <Box size={11} /> OOB
           </span>
         )}
         {q.b_config && (
-          <span className="text-xs px-2 py-1 rounded bg-purple-100 text-purple-700 font-medium">
-            CFG
+          <span className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded bg-purple-100 text-purple-700 font-medium" title="Configurable">
+            <Settings2 size={11} /> CFG
           </span>
         )}
         {q.c_custom && (
-          <span className="text-xs px-2 py-1 rounded bg-orange-100 text-orange-700 font-medium">
-            Custom
+          <span className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded bg-orange-100 text-orange-700 font-medium" title="Custom build">
+            <Wrench size={11} /> Custom
+          </span>
+        )}
+        {q.d_dnm && (
+          <span className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded bg-gray-100 text-gray-500 font-medium" title="Does not meet">
+            <Ban size={11} /> DNM
           </span>
         )}
         {q.strategic && (
-          <span className="text-xs px-2 py-1 rounded bg-indigo-100 text-indigo-700 font-medium">
-            Strategic
+          <span className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded bg-indigo-100 text-indigo-700 font-medium">
+            <Target size={11} /> Strategic
           </span>
         )}
         {q.reg_enable && (
-          <span className="text-xs px-2 py-1 rounded bg-teal-100 text-teal-700 font-medium">
-            Reg Enable
+          <span className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded bg-teal-100 text-teal-700 font-medium">
+            <Shield size={11} /> Reg Enable
           </span>
         )}
-        <span className="text-xs px-2 py-1 rounded bg-gray-100 text-gray-600 font-medium ml-auto">
-          Score: {q.committee_score}/10
+        {/* Risk badge */}
+        {q.committee_risk && (
+          <span className={`inline-flex items-center gap-1 text-xs px-2 py-1 rounded border font-bold ${
+            q.committee_risk.toUpperCase() === 'HIGH' ? 'bg-red-100 text-red-700 border-red-200' :
+            q.committee_risk.toUpperCase() === 'MEDIUM' ? 'bg-amber-100 text-amber-700 border-amber-200' :
+            'bg-blue-100 text-blue-600 border-blue-200'
+          }`}>
+            {q.committee_risk.toUpperCase() === 'HIGH' ? <AlertTriangle size={11} /> : q.committee_risk.toUpperCase() === 'MEDIUM' ? <AlertCircle size={11} /> : <Info size={11} />}
+            {q.committee_risk} RISK
+          </span>
+        )}
+        {/* Score */}
+        <span className={`ml-auto inline-flex items-center gap-1 text-xs px-2 py-1 rounded font-bold ${
+          q.committee_score >= 7 ? 'bg-emerald-100 text-emerald-700' : q.committee_score >= 5 ? 'bg-amber-100 text-amber-700' : 'bg-red-100 text-red-700'
+        }`}>
+          {q.committee_score}/10
         </span>
       </div>
 

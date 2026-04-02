@@ -10,7 +10,31 @@ import {
   Crosshair,
   Scale,
   TrendingUp,
+  Cpu,
+  Zap,
+  Gift,
+  Users,
+  DollarSign,
+  Handshake,
+  Package,
+  ClipboardList,
+  Target,
 } from 'lucide-react';
+
+function getCategoryIcon(category: string): React.ElementType {
+  const c = (category || '').toLowerCase();
+  if (c.includes('technology')) return Cpu;
+  if (c.includes('compliance')) return Shield;
+  if (c.includes('processing')) return Zap;
+  if (c.includes('loyalty')) return Gift;
+  if (c.includes('customer experience')) return Users;
+  if (c.includes('application')) return ClipboardList;
+  if (c.includes('accounting') || c.includes('finance')) return DollarSign;
+  if (c.includes('partner')) return Handshake;
+  if (c.includes('activation') || c.includes('fulfillment')) return Package;
+  if (c.includes('product operations')) return Target;
+  return FileText;
+}
 
 interface ContextViewProps {
   data: RFPData;
@@ -104,9 +128,12 @@ function SectionScoreCard({
       className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-all hover:border-blue-300 cursor-pointer group"
     >
       <div className="flex items-center justify-between mb-3">
-        <h4 className="font-semibold text-sm text-gray-900 group-hover:text-blue-600 transition-colors">
-          {name}
-        </h4>
+        <div className="flex items-center gap-2">
+          {(() => { const Icon = getCategoryIcon(name); return <Icon size={14} className="text-gray-400 flex-shrink-0" />; })()}
+          <h4 className="font-semibold text-sm text-gray-900 group-hover:text-blue-600 transition-colors">
+            {name}
+          </h4>
+        </div>
         <span
           className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold border ${gradeColors[grade]}`}
         >

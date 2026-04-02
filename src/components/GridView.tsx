@@ -12,6 +12,16 @@ import {
   ChevronDown,
   GitCompareArrows,
   AlignVerticalSpaceAround,
+  AlertTriangle,
+  AlertCircle,
+  Info,
+  CheckCircle2,
+  XCircle,
+  MinusCircle,
+  Box,
+  Settings2,
+  Wrench,
+  Ban,
 } from 'lucide-react';
 import type { Question, SortConfig, WorkflowStatus, FeedbackItem } from '@/types';
 import { countWords, getWordCountColor, getWordCountClasses } from '@/lib/wordCount';
@@ -443,8 +453,17 @@ function ConfidenceBadge({ value }: { value: string }) {
         : value === 'RED'
           ? 'bg-red-50 text-red-700 border-red-200'
           : 'bg-gray-50 text-gray-500 border-gray-200';
+  const dotColor =
+    value === 'GREEN'
+      ? 'text-emerald-500'
+      : value === 'YELLOW'
+        ? 'text-amber-400'
+        : value === 'RED'
+          ? 'text-red-500'
+          : 'text-gray-300';
   return (
-    <span className={`text-[10px] px-2 py-0.5 rounded-full border font-semibold ${cls}`}>
+    <span className={`inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full border font-semibold ${cls}`}>
+      <Circle size={6} fill="currentColor" className={dotColor} />
       {value}
     </span>
   );
@@ -457,8 +476,10 @@ function CompliantBadge({ value }: { value: string }) {
       : value === 'N'
         ? 'bg-red-50 text-red-700 border-red-200'
         : 'bg-amber-50 text-amber-700 border-amber-200';
+  const Icon = value === 'Y' ? CheckCircle2 : value === 'N' ? XCircle : MinusCircle;
   return (
-    <span className={`text-[10px] px-2 py-0.5 rounded-full border font-semibold ${cls}`}>
+    <span className={`inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full border font-semibold ${cls}`}>
+      <Icon size={10} />
       {value}
     </span>
   );
@@ -499,20 +520,21 @@ function ScoreCell({ value }: { value: number }) {
 }
 
 function DeliveryTags({ q }: { q: Question }) {
-  const tags: { label: string; cls: string }[] = [];
-  if (q.a_oob) tags.push({ label: 'OOB', cls: 'bg-sky-50 text-sky-700 border-sky-200' });
-  if (q.b_config)
-    tags.push({ label: 'CFG', cls: 'bg-violet-50 text-violet-700 border-violet-200' });
-  if (q.c_custom) tags.push({ label: 'CST', cls: 'bg-amber-50 text-amber-700 border-amber-200' });
-  if (q.d_dnm) tags.push({ label: 'DNM', cls: 'bg-gray-50 text-gray-500 border-gray-200' });
+  const tags: { label: string; cls: string; icon: React.ElementType; title: string }[] = [];
+  if (q.a_oob) tags.push({ label: 'OOB', cls: 'bg-sky-50 text-sky-700 border-sky-200', icon: Box, title: 'Out-of-box' });
+  if (q.b_config) tags.push({ label: 'CFG', cls: 'bg-violet-50 text-violet-700 border-violet-200', icon: Settings2, title: 'Configurable' });
+  if (q.c_custom) tags.push({ label: 'CST', cls: 'bg-amber-50 text-amber-700 border-amber-200', icon: Wrench, title: 'Custom build' });
+  if (q.d_dnm) tags.push({ label: 'DNM', cls: 'bg-gray-50 text-gray-400 border-gray-200', icon: Ban, title: 'Does not meet' });
   if (tags.length === 0) return <span className="text-gray-300">—</span>;
   return (
     <div className="flex gap-1 flex-wrap">
       {tags.map((t) => (
         <span
           key={t.label}
-          className={`text-[10px] px-1.5 py-0.5 rounded border font-semibold ${t.cls}`}
+          title={t.title}
+          className={`inline-flex items-center gap-0.5 text-[10px] px-1.5 py-0.5 rounded border font-semibold ${t.cls}`}
         >
+          <t.icon size={9} />
           {t.label}
         </span>
       ))}
@@ -786,6 +808,28 @@ export default function GridView({
         return <BoolCell value={q.reg_enable} />;
       case 'committee_score':
         return <ScoreCell value={q.committee_score} />;
+      case 'committee_risk': {
+        const risk = (q.committee_risk || '').toUpperCase().trim();
+        if (risk === 'HIGH')
+          return (
+            <span className="inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded font-bold bg-red-100 text-red-700 border border-red-200">
+              <AlertTriangle size={9} /> HIGH
+            </span>
+          );
+        if (risk === 'MEDIUM')
+          return (
+            <span className="inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded font-bold bg-amber-100 text-amber-700 border border-amber-200">
+              <AlertCircle size={9} /> MED
+            </span>
+          );
+        if (risk === 'LOW')
+          return (
+            <span className="inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded font-bold bg-blue-100 text-blue-600 border border-blue-200">
+              <Info size={9} /> LOW
+            </span>
+          );
+        return <span className="text-gray-300">—</span>;
+      }
       case 'feedback_count': {
         const fbItems = feedbackItems.filter((f) => f.ref === q.ref && !f.resolved);
         if (fbItems.length === 0) return <span className="text-gray-300">0</span>;
