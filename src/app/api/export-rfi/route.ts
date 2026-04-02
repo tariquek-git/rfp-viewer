@@ -238,7 +238,7 @@ export async function GET() {
       'Provide company name, address, sales contact, headquarters, years in business, ownership structure, and employee count.',
       `Company Name: Brim Financial Inc.
 Headquarters: Toronto, Ontario, Canada (primary) | San Jose, California (US operations)
-Legal: Brim Financial Inc. — federally incorporated in Canada. Brim Financial Corp. — Delaware registered, operating in the US under sponsor bank partnership with Continental Bank (US-chartered bank, Mastercard Principal Member).
+Legal: Brim Financial Inc. — federally incorporated in Canada. Brim Financial Corp. — Delaware registered, operating in the US through sponsor bank partnerships with US-chartered issuing banks.
 
 Sales Contact: Jacqueline White, EVP Growth and Customer Experience
 Email: jacqueline.white@brimfinancial.com | Phone: Available on request
@@ -264,7 +264,7 @@ MANULIFE BANK (Manulife Vitality Visa) — Consumer, Visa. Health-rewards card l
 
 AFFINITY CREDIT UNION — Consumer and business, Mastercard. Community-focused rewards program with spend-based earn rates and a local merchant-funded rewards ecosystem built around cooperative values. Saskatchewan's largest credit union. Converted from Valera (previously Co-op Financial Services, jointly owned with Collabria) — a traditional agent banking infrastructure where the credit union had no direct control over the member experience, card design, or credit policy. On Brim, AFFINITY owns the full program: card design, pricing, credit policy, rewards structure, and servicing. Consumer cards live since 2022; business cards added 2024.
 
-ZOLVE / CONTINENTAL BANK — Consumer, Mastercard. Cross-border credit card for global citizens building credit in a new country. ZOLVE serves newcomers arriving in the US without a local credit history; CONTINENTAL BANK is the US issuing sponsor bank. Brim replaced Zolve's legacy processor and introduced CONTINENTAL BANK as a new sponsor from Brim's network. Pre-arrival card issuance — cards issued before landing, geo-activated on arrival. Alternative underwriting uses home-country credit history. Implemented in 90 days. Canada expansion underway where Brim is direct Mastercard issuer. Full compliance with Reg Z, Reg B, FCRA, and BSA/AML.
+ZOLVE — Consumer, Mastercard. One of Brim's US programs. Cross-border credit card for global citizens building credit in a new country — serving newcomers arriving in the US without a local credit history. Pre-arrival card issuance, geo-activated on arrival, alternative underwriting using home-country credit history. Brim enables the full program stack; a US-chartered sponsor bank serves as the regulated issuer. Implemented in 90 days. Full compliance with Reg Z, Reg B, FCRA, and BSA/AML.
 
 CANADIAN WESTERN BANK (CWB) — Consumer (mass affluent, personal) and business/commercial, Mastercard. Converted from Valera (previously Co-op Financial Services, jointly owned with Collabria) — the same agent banking infrastructure Affinity converted from. Temenos core integration. Business Pro product delivers new monthly non-interest income per user; meaningful spend increase post-migration. CWB President and CEO cited Brim as a growth catalyst in their 2023 Annual Report.
 
@@ -276,7 +276,7 @@ MOMENTUM FINANCIAL / MONEY MART — Consumer secured and prepaid cards. Serving 
 
 ZOOMER / CARP — Consumer lifestyle-based rewards card for the 50+ segment. Targeted rewards tied to the CARP member ecosystem and lifestyle spending categories.
 
-Platform: 7+ years of live issuing operations. TSYS (TMS platform) as core processor. Both Mastercard and Visa networks — Brim operates programs on both (e.g., MANULIFE BANK on Visa; ZOLVE/CONTINENTAL BANK and AFFINITY CREDIT UNION on Mastercard). US programs via Continental Bank sponsorship. Long-term client relationships across all program types.`,
+Platform: 7+ years of live issuing operations. TSYS (TMS platform) as core processor. Both Mastercard and Visa networks — Brim operates programs on both (e.g., MANULIFE BANK on Visa; ZOLVE/CONTINENTAL BANK and AFFINITY CREDIT UNION on Mastercard). US programs enabled through sponsor bank partnerships with US-chartered issuing banks. Long-term client relationships across all program types.`,
       'HIGH',
       'FULL',
       '10/10',
@@ -291,7 +291,7 @@ Core platform partnerships:
 • TSYS / Global Payments — Core processing and authorization
 • IDEMIA — Card personalization and fulfillment
 • TransUnion / Equifax / Experian — Bureau data for underwriting and fraud
-• Mastercard — Network certification (Canada direct; US via Continental Bank sponsorship)
+• Mastercard — Network certification (Canada direct; US via sponsor bank partnerships)
 • Visa — Network certification (Laurentian Bank BIN)
 
 Third-party integrations in production: Brim's open API architecture supports deep integration with third-party systems across the live portfolio:
@@ -405,13 +405,13 @@ Primary Features:
 • 300+ RESTful APIs (full OpenAPI 3.0 spec + sandbox environment)
 • Fully white-labeled cardholder and admin portals
 • Configurable credit policy engine (no-code rule management for BSB administrators)
-• Mastercard and Visa network integration — both live in production (MANULIFE BANK on Visa; ZOLVE/CONTINENTAL BANK and AFFINITY CREDIT UNION on Mastercard)
+• Mastercard and Visa network integration — both live in production (MANULIFE BANK on Visa; AFFINITY CREDIT UNION and US programs on Mastercard)
 • Credit and debit card program support — credit is the platform's primary depth; debit issuance, PIN debit, and Reg E compliance are also supported
 • In-branch instant card issuance via third-party hardware integration, alongside digital-first virtual card issuance (card in mobile wallet within 60 seconds of approval)
 • Multi-program multi-FI architecture: BSB can manage its own program and any agent bank sub-programs from a single portal
 • PCI DSS certified Service Provider, SOC 2 Type 2, ISO 27001:2022
 
-Live Programs (Selected): ZOLVE / CONTINENTAL BANK (US — cross-border consumer), MANULIFE BANK (consumer health-rewards), AFFINITY CREDIT UNION (consumer + business, community cooperative), AIR FRANCE-KLM (Flying Blue loyalty card), PAYFACTO (SMB same-day merchant settlement), CANADIAN WESTERN BANK (consumer + commercial), LAURENTIAN BANK (consumer + SMB + corporate, Visa BIN).
+Live Programs (Selected): MANULIFE BANK (consumer health-rewards, Visa), AFFINITY CREDIT UNION (consumer + business, community cooperative, Mastercard), ZOLVE (US — global citizen credit building, Mastercard), CANADIAN WESTERN BANK (consumer + commercial, Mastercard), LAURENTIAN BANK (consumer + SMB + corporate, Visa), AIR FRANCE-KLM (Flying Blue loyalty card), PAYFACTO (SMB merchant-linked rewards).
 
 One-to-Many Architecture: All programs run on the same platform instance. Each partner is a separate logical tenant — independently configured, branded, and operated via parameter-based setup. BSB's agent bank program would be provisioned the same way: its own configuration, credit policy, rewards structure, and BIN, operating on the same proven infrastructure that runs MANULIFE BANK and CONTINENTAL BANK today.
 
@@ -525,14 +525,12 @@ On Brim's platform, AFFINITY CREDIT UNION owns and operates the full program end
 Key Results: 23% reduction in loyalty program costs via merchant-funded rewards. Activation rates 75–85% within 7 days. 60%+ wallet provisioning within 30 days.
 Contact: Available upon request (name and direct contact provided at demo stage)
 
-Reference 2 — CONTINENTAL BANK / ZOLVE (United States)
+Reference 2 — ZOLVE (United States)
 Program Type: Consumer Mastercard — agent banking / sponsor bank model, US market
 Program Duration: Live since December 2024 (US launch); Canada expansion mid-2025
-Description: CONTINENTAL BANK is the US issuing sponsor bank; ZOLVE is the fintech program manager serving global citizens building credit in a new country. Before Brim, ZOLVE's legacy processor and prior sponsor bank lacked the compliance infrastructure and technology flexibility needed to serve this customer base — resulting in restricted card issuance and blocked growth.
+Description: ZOLVE is a fintech serving global citizens building credit in a new country. Brim powers the full program stack — underwriting, issuance, servicing, compliance — while a US-chartered sponsor bank serves as the regulated issuer. The program went from contract to live in 90 days, with pre-arrival card issuance and home-country credit underwriting.
 
-Brim introduced CONTINENTAL BANK as a new sponsor bank from its network and replaced the legacy stack within 90 days: standing up new BINs, launching virtual cards, enabling geo-activated onboarding (cards issued pre-arrival, activated upon US landing), and deploying alternative underwriting using home-country credit history. The program is now live in both the US (via CONTINENTAL BANK sponsorship) and Canada (where Brim is the direct Mastercard issuer, no sponsor bank required).
-
-Relevance to BSB: This is the closest direct analog to BSB's proposed agent banking structure. CONTINENTAL BANK serves as the regulated issuer; BRIM provides the platform and all program operations. Demonstrated full compliance with Reg Z, Reg B, FCRA, and BSA/AML requirements in a live US program. BSB would operate in the same framework.
+Relevance to BSB: Demonstrates Brim's ability to operate a fully compliant US credit card program under the sponsor bank model — Reg Z, Reg B, FCRA, and BSA/AML all live in production. Brim enables the program; the regulated bank is the issuer. This is the same framework BSB would operate under.
 Contact: Available upon request
 
 Reference 3 — MANULIFE BANK
@@ -573,7 +571,7 @@ Core Architecture Components:
 • Data Layer: Enterprise-grade relational database (primary), caching layer (real-time), event streaming
 • Card Personalization: IDEMIA (card production and fulfillment)
 • Bureau Integration: TransUnion / Equifax / Experian (underwriting, account monitoring)
-• Network: Mastercard (BIN sponsorship via Continental Bank for US programs)
+• Network: Mastercard (direct in Canada; via sponsor bank partnerships for US programs)
 • Network Security: Triple-layered firewall — Incapsula (edge/DDoS) → LeaseWeb (perimeter) → local application firewall
 
 Third-Party Vendors:
