@@ -405,7 +405,9 @@ Primary Features:
 • 300+ RESTful APIs (full OpenAPI 3.0 spec + sandbox environment)
 • Fully white-labeled cardholder and admin portals
 • Configurable credit policy engine (no-code rule management for BSB administrators)
-• Native Mastercard network integration (US programs via Continental Bank sponsorship)
+• Mastercard and Visa network integration — both live in production (MANULIFE BANK on Visa; ZOLVE/CONTINENTAL BANK and AFFINITY CREDIT UNION on Mastercard)
+• Credit and debit card program support — credit is the platform's primary depth; debit issuance, PIN debit, and Reg E compliance are also supported
+• In-branch instant card issuance via third-party hardware integration, alongside digital-first virtual card issuance (card in mobile wallet within 60 seconds of approval)
 • Multi-program multi-FI architecture: BSB can manage its own program and any agent bank sub-programs from a single portal
 • PCI DSS certified Service Provider, SOC 2 Type 2, ISO 27001:2022
 
