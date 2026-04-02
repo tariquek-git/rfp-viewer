@@ -170,7 +170,7 @@ Total Employees: ~200 globally, including engineers, implementation specialists,
 
 Live Programs:
 
-MANULIFE BANK (Manulife Vitality Mastercard) — Consumer, Mastercard. Health-rewards card linking spend to Vitality benefit milestones (fitness goals, health screenings, wellness activity). MANULIFE BANK is a Schedule I federally chartered bank serving 550,000 banking clients through a network of 55,000 financial advisors — part of the 7M+ client Manulife parent ecosystem. The card program is positioned to grow into that broader advisor-referred client base. Converted from Fiserv. Brim replaced the legacy infrastructure end-to-end: real-time onboarding, instant virtual issuance, a unified cardholder experience, and a rewards engine integrated directly with the Vitality health program. Live Q3 2025.
+MANULIFE BANK (Manulife Vitality Mastercard / Visa) — Consumer, Mastercard and Visa. Health-rewards card linking spend to Vitality benefit milestones (fitness goals, health screenings, wellness activity). MANULIFE BANK is a Schedule I federally chartered bank serving 550,000 banking clients through a network of 55,000 financial advisors — part of the 7M+ client Manulife parent ecosystem. The card program is positioned to grow into that broader advisor-referred client base. Converted from Fiserv. Brim replaced the legacy infrastructure end-to-end: real-time onboarding, instant virtual issuance, a unified cardholder experience, and a rewards engine integrated directly with the Vitality health program. Live Q3 2025.
 
 AFFINITY CREDIT UNION — Consumer and business, Mastercard. Community-focused rewards program with spend-based earn rates and a local merchant-funded rewards ecosystem built around cooperative values. Saskatchewan's largest credit union. Converted from a traditional agent banking infrastructure (Valera/Collabria), where the CU had no control over the member experience. On Brim, AFFINITY owns the full program: card design, pricing, credit policy, rewards structure, and servicing. Consumer cards live since 2022; business cards added 2024.
 
@@ -232,9 +232,7 @@ Recent Major Technology Developments:
       'Specify ownership, financial information, revenue/profit history, market share, and organizational stability.',
       `Ownership: Privately held. Brim Financial Inc. is a Canadian federally incorporated company. Brim Financial Corp. is its US subsidiary.
 
-Financial Information: As a private company, Brim does not publish public financial statements. However, Brim will provide a confidential financial summary, including revenue growth trajectory and key financial ratios, under NDA upon request. Brim has been operationally cash-flow positive since 2022.
-
-Revenue & Growth (3-Year Trend): Brim has achieved consistent year-over-year revenue growth exceeding 40% annually for the past three years, driven by new program launches and organic portfolio growth across existing clients. Revenue sources: platform fees (per-account, per-transaction), implementation services, and value-added services.
+Financial Information: As a private company, Brim does not publish public financial statements. Brim will provide a confidential financial summary, including revenue growth trajectory and key financial ratios, under NDA upon request. The company has demonstrated consistent growth driven by new program launches and organic portfolio expansion. Revenue sources: platform fees (per-account, per-transaction), implementation services, and value-added services.
 
 Market Position: Brim is the only Canadian-headquartered, full-stack credit card Platform-as-a-Service vendor operating live programs in both Canada and the US. In the community bank and credit union agent banking segment, Brim competes with FIS, Jack Henry (Zelle-integrated), and legacy processors. Brim differentiates on configurability, speed-to-market, and commercial model transparency.
 
@@ -280,8 +278,8 @@ All roadmap items are developed in-house by Brim's engineering team. There are n
       'Q5.1 — Product Name, Version & Features',
       'Describe the recommended solution including product name, features, current version, next release, and 3–5 year technology roadmap.',
       `Product Name: Brim Credit Card Platform-as-a-Service (PaaS)
-Current Version: Platform v4.2 (released Q1 2026)
-Next Scheduled Release: v4.3 (Q3 2026) — AI credit limit management, enhanced BaaS connectors, CFPB 1033 readiness
+Current Release: Production release Q1 2026
+Next Scheduled Release: Q3 2026 — AI credit limit management, enhanced BaaS connectors, CFPB 1033 readiness
 
 Primary Features:
 • End-to-end credit card lifecycle: application, underwriting, card issuance, authorization, posting, servicing, rewards, collections, and reporting — all in a single platform
@@ -428,7 +426,7 @@ Relevance to BSB: This is the closest direct analog to BSB's proposed agent bank
 Contact: Available upon request
 
 Reference 3 — MANULIFE BANK
-Program Type: Consumer Mastercard — health-rewards program, full platform conversion from legacy processor
+Program Type: Consumer Mastercard and Visa — health-rewards program, full platform conversion from legacy processor
 Program Duration: Live 2025
 Description: MANULIFE BANK is a Schedule I federally chartered bank and wholly-owned subsidiary of The Manufacturers Life Insurance Company, serving 550,000+ clients through 55,000 financial advisors. MANULIFE BANK converted its consumer credit card program to Brim from FISERV — a full platform migration of an established card portfolio at a major regulated financial institution.
 
@@ -489,7 +487,7 @@ In-House Support Model: BSB needs: 1 program administrator (config, rule managem
 
 Data Export: All reports exportable as CSV, PDF, or XLSX. API data access available for all data sets via authenticated REST calls. Export permissions are role-controlled — BSB admins define which users can export which data sets.
 
-Archiving: Data retained online for 7 years (regulatory minimum). Older data archived to cold object storage within the LeaseWeb environment; accessible upon request within 24 hours. No purge of cardholder data without BSB authorization.
+Archiving: Data retained online for 7 years (regulatory minimum). Older data archived within the LeaseWeb environment and accessible upon request within 24 hours. No purge of cardholder data without BSB authorization.
 
 Maintenance Tables: BSB administrators have real-time access to maintenance tables for product codes, fee schedules, reward rates, interest rates, MCC restrictions, and user profiles via the admin portal. Changes take effect immediately (no batch window required).
 
@@ -515,7 +513,7 @@ Fault Tolerance: The platform is architected for zero single points of failure a
 • Load Balancing: Hardware load balancers within LeaseWeb environment with health checks; application tier auto-scales horizontally
 • CDN: Incapsula edge network for static assets and DDoS protection; not in critical transaction path
 
-Known Issues/Defects: No known production-impacting bugs in current release (v4.2). Full release notes and known issue register available upon request.
+Known Issues/Defects: No known production-impacting bugs in the current release. Full release notes and known issue register available upon request.
 
 Service Levels:
 • Authorization platform: 99.9% uptime SLA (contractual); 99.97% historical
@@ -537,7 +535,7 @@ Improved service levels (RPO < 5 min, RTO < 1 hour) available at additional cost
       'Describe scaling considerations, historical data limits, response times, monitoring tools, and benchmarking.',
       `Scaling: The platform scales horizontally within Brim's LeaseWeb colocation environment. No pre-provisioning required for standard program growth. BSB's program can grow from 3,000 to 300,000 accounts without architecture changes. Pricing tiers reduce per-account costs as volume grows — volume thresholds and pricing automatically adjust per contract terms.
 
-Historical Data: No practical limit on historical data online. 7 years of transactional data maintained in hot storage within LeaseWeb. Older data archived to cold storage and accessible within 24 hours on request. There is no data window truncation or forced purge.
+Historical Data: No practical limit on historical data online. 7 years of transactional data maintained within LeaseWeb. Older data archived and accessible within 24 hours on request. There is no data window truncation or forced purge.
 
 Performance Baselines:
 • Authorization decisioning: avg 85ms end-to-end (TSYS + Brim rules)
@@ -614,7 +612,7 @@ Security Incident Response Plan: Active, last updated Q1 2026. Tabletop exercise
     ...question(
       'Q13.1 — DR Plan, Redundancy, Backups & Continuity',
       'Describe disaster recovery plan, redundancies, backup policies, continuity during maintenance, and hardware management.',
-      `Disaster Recovery Plan: Brim maintains a formal Disaster Recovery Plan (DRP) covering application, data, network, and personnel. The DRP is reviewed and updated quarterly. Full DR test conducted annually; last DR test: Q4 2025. Results: full platform failover to DR facility achieved in 3.2 hours (within 4-hour RTO target). RPO achieved: 8 minutes (within 15-minute target).
+      `Disaster Recovery Plan: Brim maintains a formal Disaster Recovery Plan (DRP) covering application, data, network, and personnel. The DRP is reviewed and updated quarterly. Full DR test conducted annually; last DR test: Q4 2025. Results confirmed the platform met its contractual RTO and RPO targets.
 
 Redundancies:
 • Geographic: Active-passive dual-facility deployment (LeaseWeb Montreal primary; LeaseWeb secondary DR facility)
@@ -626,7 +624,7 @@ Redundancies:
 Backup Policies:
 • Database: Continuous streaming replication to DR facility + daily snapshots retained 35 days
 • Transaction data: Real-time replication to DR; point-in-time recovery available up to 35 days
-• File/document storage: Cross-facility replication with versioning enabled (WORM-compliant storage)
+• File/document storage: Cross-facility replication with versioning enabled (tamper-evident storage)
 • Offsite replication: Encrypted replication to LeaseWeb secondary facility; geographically separated
 
 Maintenance Windows: Monthly (3rd Sunday of each month, 2am–6am ET). BSB notified 14 days in advance. Processing continues during maintenance via TSYS (authorization is not Brim-dependent during window). Admin portal may experience brief interruption; cardholder-facing functions unaffected.
@@ -703,9 +701,9 @@ Internal Process Flows: Available to BSB's technical team and auditors under NDA
       `Release Cycle: Brim follows a quarterly major release cycle, with monthly patch releases for bug fixes and security patches.
 
 Recent Release History:
-• v4.0 (Q2 2025): Real-time notifications engine, enhanced fraud ML model, CFPB reporting module
-• v4.1 (Q3 2025): Open API v3 GA, 3DS 2.x upgrade, Manulife program launch features
-• v4.2 (Q1 2026): AI credit limit optimization (beta), enhanced BaaS connectors, performance improvements
+• Q2 2025 release: Real-time notifications engine, enhanced fraud ML model, CFPB reporting module
+• Q3 2025 release: Open API v3 GA, 3DS 2.x upgrade, Manulife program launch features
+• Q1 2026 release: AI credit limit optimization (beta), enhanced BaaS connectors, performance improvements
 
 Documentation: Every release includes release notes (plain-language feature summary), technical change log, API changelog (breaking vs. non-breaking changes flagged), and migration guide (if configuration changes required).
 
