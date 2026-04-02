@@ -338,7 +338,7 @@ Recent Major Technology Developments:
       'Specify ownership, financial information, revenue/profit history, market share, and organizational stability.',
       `Ownership: Privately held. Brim Financial Inc. is a Canadian federally incorporated company. Brim Financial Corp. is its US subsidiary.
 
-Financial Information: As a private company, Brim does not publish public financial statements. Brim will provide a confidential financial summary, including revenue growth trajectory and key financial ratios, under NDA upon request. The company has demonstrated consistent growth driven by new program launches and organic portfolio expansion. Revenue sources: platform fees (per-account, per-transaction), implementation services, and value-added services.
+Financial Information: As a private company, Brim does not publish public financial statements. Brim will provide a confidential financial summary, including revenue growth trajectory and key financial ratios, at the appropriate stage of evaluation. The company has demonstrated consistent growth driven by new program launches and organic portfolio expansion. Revenue sources: platform fees (per-account, per-transaction), implementation services, and value-added services.
 
 Market Position: Brim is the only Canadian-headquartered, full-stack credit card Platform-as-a-Service vendor operating live programs in both Canada and the US. In the community bank and credit union agent banking segment, Brim competes with FIS, Jack Henry (Zelle-integrated), and legacy processors. Brim differentiates on configurability, speed-to-market, and commercial model transparency.
 
@@ -352,7 +352,7 @@ Leadership Team:
 • Thomas Patterson — VP Product. Co-leads product across Brim's platform and partner programs.
 • Abraham Tachjian — SVP, Office of the CEO & Chief Regulatory Affairs Officer. Former federally appointed open banking lead for the Department of Finance Canada (2022–2023) and former director at PwC Canada. Leads Brim's regulatory strategy as the platform scales in the US and Canada's open banking framework matures.
 
-D&B Report: Available upon request under NDA.`,
+D&B Report: Available upon request at the appropriate stage of evaluation.`,
       'HIGH',
       'FULL',
       '9/10',
@@ -688,7 +688,7 @@ Log Retention: 7 years. Logs stored in WORM-compliant object storage within the 
 
 Auditor Role: Yes. BSB can define an "Auditor" role in the admin portal that has read-only access to all logs, reports, and configuration tables, but cannot make any changes.
 
-SOC 2 Type 2: Yes. Brim completed SOC 2 Type 2 audit in 2025, audited by Coalfire. Covers Security, Availability, and Confidentiality trust service criteria. Report available under NDA upon request. Next audit scheduled Q3 2026.
+SOC 2 Type 2: Yes. Brim completed SOC 2 Type 2 audit in 2025, audited by Coalfire. Covers Security, Availability, and Confidentiality trust service criteria. Report available upon request. Next audit scheduled Q3 2026.
 
 ISO 27001:2022: Certified. Certificate available upon request.
 
@@ -789,7 +789,7 @@ Environmental Controls:
 
 Asset Dispersion: Brim's critical application components are distributed across both the primary LeaseWeb Montreal facility and the DR facility (geographically separate). Software master versions are maintained in multiple redundant Git repositories with cross-facility replication; build artifacts stored in a redundant artifact repository.
 
-LeaseWeb Montreal Certifications relevant to BSB: PCI DSS Level 1 (AOC available), SOC 2 Type 2, ISO 27001. Facility audit documentation available upon request under NDA.`,
+LeaseWeb Montreal Certifications relevant to BSB: PCI DSS Level 1 (AOC available), SOC 2 Type 2, ISO 27001. Facility audit documentation available upon request.`,
       'HIGH',
       'FULL',
       '10/10',
@@ -821,7 +821,7 @@ Source Code: Brim maintains source code in Git-based version control with redund
 
 Business Workflows: Documented as swimlane diagrams in Confluence (shared with BSB during implementation). Covers application-to-account, card lifecycle, dispute lifecycle, collections workflow, and reporting workflows.
 
-Internal Process Flows: Available to BSB's technical team and auditors under NDA. Calculation methodologies (interest, fees, rewards) documented in the Business Rules Specification, provided during implementation.`,
+Internal Process Flows: Available to BSB's technical team and auditors upon request. Calculation methodologies (interest, fees, rewards) documented in the Business Rules Specification, provided during implementation.`,
       'HIGH',
       'FULL',
       '9/10',
