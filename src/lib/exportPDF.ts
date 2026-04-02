@@ -32,7 +32,6 @@ function confC(c: string): { text: RGB; bg: RGB } {
   return { text: C.gray, bg: C.headerBg };
 }
 
-
 export async function exportToPDF(data: RFPData, options?: ExportOptions) {
   const kb = options?.knowledgeBase;
   const globalRules = options?.globalRules || [];
@@ -45,17 +44,19 @@ export async function exportToPDF(data: RFPData, options?: ExportOptions) {
 
   const qs = data.questions;
   const cats = data.categories;
-  const green = qs.filter(q => q.confidence === 'GREEN').length;
-  const yellow = qs.filter(q => q.confidence === 'YELLOW').length;
-  const red = qs.filter(q => q.confidence === 'RED').length;
+  const green = qs.filter((q) => q.confidence === 'GREEN').length;
+  const yellow = qs.filter((q) => q.confidence === 'YELLOW').length;
+  const red = qs.filter((q) => q.confidence === 'RED').length;
   const avg = (qs.reduce((s, q) => s + (q.committee_score || 0), 0) / qs.length).toFixed(1);
-  const compY = qs.filter(q => q.compliant === 'Y').length;
+  const compY = qs.filter((q) => q.compliant === 'Y').length;
 
   // Helper: add header/footer to every page
   const addPageMeta = () => {
     doc.setFontSize(7);
     doc.setTextColor(...C.lightGray);
-    doc.text('BSB Credit Card RFP Response — Brim Financial — Confidential', W / 2, 8, { align: 'center' });
+    doc.text('BSB Credit Card RFP Response — Brim Financial — Confidential', W / 2, 8, {
+      align: 'center',
+    });
     doc.text(`Page ${doc.getNumberOfPages()}`, W - M, H - 5, { align: 'right' });
   };
 
@@ -83,8 +84,15 @@ export async function exportToPDF(data: RFPData, options?: ExportOptions) {
 
   doc.setFontSize(11);
   doc.setTextColor(...C.gray);
-  doc.text(new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }), W / 2, 132, { align: 'center' });
-  doc.text(`${qs.length} Requirements · ${cats.length} Categories`, W / 2, 140, { align: 'center' });
+  doc.text(
+    new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
+    W / 2,
+    132,
+    { align: 'center' },
+  );
+  doc.text(`${qs.length} Requirements · ${cats.length} Categories`, W / 2, 140, {
+    align: 'center',
+  });
 
   // ========== EXECUTIVE OVERVIEW ==========
   doc.addPage();
@@ -102,8 +110,16 @@ export async function exportToPDF(data: RFPData, options?: ExportOptions) {
     startY: 30,
     margin: { left: M, right: M },
     head: [['GREEN (Strong)', 'YELLOW (Strengthen)', 'RED (Gap/Risk)', 'Avg Score']],
-    body: [[`${green} (${Math.round(green / qs.length * 100)}%)`, `${yellow}`, `${red}`, `${avg}/10`]],
-    headStyles: { fillColor: C.headerBg, textColor: C.dark, fontSize: 8, fontStyle: 'bold', halign: 'center' },
+    body: [
+      [`${green} (${Math.round((green / qs.length) * 100)}%)`, `${yellow}`, `${red}`, `${avg}/10`],
+    ],
+    headStyles: {
+      fillColor: C.headerBg,
+      textColor: C.dark,
+      fontSize: 8,
+      fontStyle: 'bold',
+      halign: 'center',
+    },
     bodyStyles: { fontSize: 12, fontStyle: 'bold', halign: 'center' },
     columnStyles: {
       0: { textColor: C.green },
@@ -116,7 +132,11 @@ export async function exportToPDF(data: RFPData, options?: ExportOptions) {
   let y = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 6;
   doc.setFontSize(9);
   doc.setTextColor(...C.dark);
-  doc.text(`${compY} of ${qs.length} requirements (${Math.round(compY / qs.length * 100)}%) fully compliant.`, M, y);
+  doc.text(
+    `${compY} of ${qs.length} requirements (${Math.round((compY / qs.length) * 100)}%) fully compliant.`,
+    M,
+    y,
+  );
 
   // Category scorecard
   y += 8;
@@ -128,18 +148,28 @@ export async function exportToPDF(data: RFPData, options?: ExportOptions) {
     startY: y + 3,
     margin: { left: M, right: M },
     head: [['Category', 'Qs', 'Avg', 'G', 'Y', 'R', 'Compliant']],
-    body: cats.map(cat => {
-      const cqs = qs.filter(q => q.category === cat);
+    body: cats.map((cat) => {
+      const cqs = qs.filter((q) => q.category === cat);
       const cavg = cqs.reduce((s, q) => s + (q.committee_score || 0), 0) / (cqs.length || 1);
-      return [cat, `${cqs.length}`, cavg.toFixed(1),
-        `${cqs.filter(q => q.confidence === 'GREEN').length}`,
-        `${cqs.filter(q => q.confidence === 'YELLOW').length}`,
-        `${cqs.filter(q => q.confidence === 'RED').length}`,
-        `${cqs.filter(q => q.compliant === 'Y').length}/${cqs.length}`];
+      return [
+        cat,
+        `${cqs.length}`,
+        cavg.toFixed(1),
+        `${cqs.filter((q) => q.confidence === 'GREEN').length}`,
+        `${cqs.filter((q) => q.confidence === 'YELLOW').length}`,
+        `${cqs.filter((q) => q.confidence === 'RED').length}`,
+        `${cqs.filter((q) => q.compliant === 'Y').length}/${cqs.length}`,
+      ];
     }),
     headStyles: { fillColor: C.headerBg, textColor: C.dark, fontSize: 7, fontStyle: 'bold' },
     bodyStyles: { fontSize: 7, textColor: C.dark },
-    columnStyles: { 0: { cellWidth: 50 }, 2: { fontStyle: 'bold' }, 3: { textColor: C.green }, 4: { textColor: C.yellow }, 5: { textColor: C.red } },
+    columnStyles: {
+      0: { cellWidth: 50 },
+      2: { fontStyle: 'bold' },
+      3: { textColor: C.green },
+      4: { textColor: C.yellow },
+      5: { textColor: C.red },
+    },
   });
 
   // ========== CLAUDE CPO ANALYSIS ==========
@@ -155,17 +185,39 @@ export async function exportToPDF(data: RFPData, options?: ExportOptions) {
     bodyStyles: { fillColor: C.white, textColor: C.gray, fontSize: 7, fontStyle: 'italic' },
   });
 
-  const aiHigh = qs.filter(q => detectAIWriting(q.bullet + ' ' + q.paragraph).level === 'high').length;
-  const aiMed = qs.filter(q => detectAIWriting(q.bullet + ' ' + q.paragraph).level === 'medium').length;
+  const aiHigh = qs.filter(
+    (q) => detectAIWriting(q.bullet + ' ' + q.paragraph).level === 'high',
+  ).length;
+  const aiMed = qs.filter(
+    (q) => detectAIWriting(q.bullet + ' ' + q.paragraph).level === 'medium',
+  ).length;
 
   autoTable(doc, {
     startY: (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 3,
     margin: { left: M, right: M },
     body: [
-      [{ content: 'AI Detection', styles: { fontStyle: 'bold', textColor: C.purple, fontSize: 9 } }, `${aiHigh} High risk, ${aiMed} Medium. Main triggers: em-dashes, filler words, long sentences.`],
-      [{ content: 'STRENGTHS', styles: { fontStyle: 'bold', textColor: C.green, fontSize: 9 } }, `${Math.round(green / qs.length * 100)}% GREEN confidence. ${compY} compliant. Strong in Loyalty, Processing, Customer Experience. Named FI references add credibility.`],
-      [{ content: 'WEAKNESSES', styles: { fontStyle: 'bold', textColor: C.red, fontSize: 9 } }, `${red} critical gaps: Visa/STAR/NYCE network (Tech 6), data architecture (Tech 24, 28), in-branch printing (A&F 15), settlement (Proc 26), debit (ProdOps 45-46). Capability gaps, not response quality.`],
-      [{ content: 'RECOMMENDATIONS', styles: { fontStyle: 'bold', textColor: C.blue, fontSize: 9 } }, `1) Position non-compliant as credit-first strategy. 2) Present concrete Visa partnership timeline. 3) Humanize ${aiHigh} high-risk responses. 4) Debit = out of scope with transition plan.`],
+      [
+        {
+          content: 'AI Detection',
+          styles: { fontStyle: 'bold', textColor: C.purple, fontSize: 9 },
+        },
+        `${aiHigh} High risk, ${aiMed} Medium. Main triggers: em-dashes, filler words, long sentences.`,
+      ],
+      [
+        { content: 'STRENGTHS', styles: { fontStyle: 'bold', textColor: C.green, fontSize: 9 } },
+        `${Math.round((green / qs.length) * 100)}% GREEN confidence. ${compY} compliant. Strong in Loyalty, Processing, Customer Experience. Named FI references add credibility.`,
+      ],
+      [
+        { content: 'WEAKNESSES', styles: { fontStyle: 'bold', textColor: C.red, fontSize: 9 } },
+        `${red} critical gaps: Visa/STAR/NYCE network (Tech 6), data architecture (Tech 24, 28), in-branch printing (A&F 15), settlement (Proc 26), debit (ProdOps 45-46). Capability gaps, not response quality.`,
+      ],
+      [
+        {
+          content: 'RECOMMENDATIONS',
+          styles: { fontStyle: 'bold', textColor: C.blue, fontSize: 9 },
+        },
+        `1) Position non-compliant as credit-first strategy. 2) Present concrete Visa partnership timeline. 3) Humanize ${aiHigh} high-risk responses. 4) Debit = out of scope with transition plan.`,
+      ],
     ],
     columnStyles: { 0: { cellWidth: 35 }, 1: { cellWidth: CW - 35 } },
     bodyStyles: { fontSize: 8, textColor: C.dark, cellPadding: 4 },
@@ -173,13 +225,18 @@ export async function exportToPDF(data: RFPData, options?: ExportOptions) {
   });
 
   // RED questions table
-  const redQs = qs.filter(q => q.confidence === 'RED');
+  const redQs = qs.filter((q) => q.confidence === 'RED');
   if (redQs.length > 0) {
     autoTable(doc, {
       startY: (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 5,
       margin: { left: M, right: M },
       head: [['Ref', 'Topic', 'Score', 'Issue']],
-      body: redQs.map(q => [q.ref, q.topic, `${q.committee_score}/10`, q.compliant === 'N' ? 'Non-compliant' : 'Partial']),
+      body: redQs.map((q) => [
+        q.ref,
+        q.topic,
+        `${q.committee_score}/10`,
+        q.compliant === 'N' ? 'Non-compliant' : 'Partial',
+      ]),
       headStyles: { fillColor: C.redBg, textColor: C.red, fontSize: 8, fontStyle: 'bold' },
       bodyStyles: { fontSize: 7, textColor: C.dark },
       columnStyles: { 2: { textColor: C.red, fontStyle: 'bold' } },
@@ -198,28 +255,37 @@ export async function exportToPDF(data: RFPData, options?: ExportOptions) {
     if (kb.companyFacts) kbRows.push(['Company Facts', kb.companyFacts]);
     if (kb.keyMetrics) kbRows.push(['Key Metrics', kb.keyMetrics]);
     if (kb.differentiators) kbRows.push(['Differentiators', kb.differentiators]);
-    if (kb.competitivePositioning) kbRows.push(['Competitive Positioning', kb.competitivePositioning]);
+    if (kb.competitivePositioning)
+      kbRows.push(['Competitive Positioning', kb.competitivePositioning]);
 
     autoTable(doc, {
       startY: 27,
       margin: { left: M, right: M },
       body: kbRows,
-      columnStyles: { 0: { cellWidth: 35, fontStyle: 'bold', textColor: C.blue }, 1: { cellWidth: CW - 35 } },
+      columnStyles: {
+        0: { cellWidth: 35, fontStyle: 'bold', textColor: C.blue },
+        1: { cellWidth: CW - 35 },
+      },
       bodyStyles: { fontSize: 8, textColor: C.dark, cellPadding: 4 },
       alternateRowStyles: { fillColor: C.blueBg },
     });
   }
 
   if (globalRules.length > 0 || validationRules.length > 0) {
-    const rulesY = kb ? (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 10 : 27;
-    if (!kb) { doc.addPage(); addPageMeta(); }
+    const rulesY = kb
+      ? (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 10
+      : 27;
+    if (!kb) {
+      doc.addPage();
+      addPageMeta();
+    }
     doc.setFontSize(14);
     doc.setTextColor(...C.dark);
     doc.text('Writing Rules', M, rulesY);
 
     const ruleRows = [
       ...globalRules.map((r, i) => [`${i + 1}. ${r}`, 'Global']),
-      ...validationRules.map(r => [r.text, 'Validation']),
+      ...validationRules.map((r) => [r.text, 'Validation']),
     ];
     if (ruleRows.length > 0) {
       autoTable(doc, {
@@ -236,7 +302,7 @@ export async function exportToPDF(data: RFPData, options?: ExportOptions) {
 
   // ========== RESPONSES BY CATEGORY ==========
   for (const cat of cats) {
-    const catQs = qs.filter(q => q.category === cat);
+    const catQs = qs.filter((q) => q.category === cat);
     if (catQs.length === 0) continue;
 
     doc.addPage();
@@ -253,7 +319,11 @@ export async function exportToPDF(data: RFPData, options?: ExportOptions) {
     const catAvg = catQs.reduce((s, q) => s + (q.committee_score || 0), 0) / catQs.length;
     doc.setFontSize(8);
     doc.setTextColor(...C.gray);
-    doc.text(`${catQs.length} questions · Avg Score: ${catAvg.toFixed(1)}/10 · ${catQs.filter(q => q.confidence === 'GREEN').length}G ${catQs.filter(q => q.confidence === 'YELLOW').length}Y ${catQs.filter(q => q.confidence === 'RED').length}R`, M, 30);
+    doc.text(
+      `${catQs.length} questions · Avg Score: ${catAvg.toFixed(1)}/10 · ${catQs.filter((q) => q.confidence === 'GREEN').length}G ${catQs.filter((q) => q.confidence === 'YELLOW').length}Y ${catQs.filter((q) => q.confidence === 'RED').length}R`,
+      M,
+      30,
+    );
 
     // Each question as a table
     for (const q of catQs) {
@@ -268,28 +338,48 @@ export async function exportToPDF(data: RFPData, options?: ExportOptions) {
 
       // Status row
       rows.push([
-        { content: `${q.ref}  ·  ${q.topic}`, styles: { fontStyle: 'bold', textColor: C.blue, fontSize: 9 } },
-        { content: `${q.confidence} | ${q.compliant === 'Y' ? 'Compliant' : q.compliant === 'N' ? 'Non-Compliant' : 'Partial'} | Score: ${q.committee_score}/10 | AI: ${aiDetectLabel(ai.level)}${delivery.length ? ' | ' + delivery.join(',') : ''}`,
-          styles: { fontSize: 7, textColor: cc.text } },
+        {
+          content: `${q.ref}  ·  ${q.topic}`,
+          styles: { fontStyle: 'bold', textColor: C.blue, fontSize: 9 },
+        },
+        {
+          content: `${q.confidence} | ${q.compliant === 'Y' ? 'Compliant' : q.compliant === 'N' ? 'Non-Compliant' : 'Partial'} | Score: ${q.committee_score}/10 | AI: ${aiDetectLabel(ai.level)}${delivery.length ? ' | ' + delivery.join(',') : ''}`,
+          styles: { fontSize: 7, textColor: cc.text },
+        },
       ]);
 
       // BSB Requirement
       rows.push([
-        { content: 'BSB REQUIREMENT', styles: { fontStyle: 'bold', fontSize: 6, textColor: C.lightGray } },
-        { content: q.requirement, styles: { fontSize: 7, textColor: C.gray, fillColor: C.headerBg } },
+        {
+          content: 'BSB REQUIREMENT',
+          styles: { fontStyle: 'bold', fontSize: 6, textColor: C.lightGray },
+        },
+        {
+          content: q.requirement,
+          styles: { fontSize: 7, textColor: C.gray, fillColor: C.headerBg },
+        },
       ]);
 
       // Brim Response
       rows.push([
         { content: 'BRIM RESPONSE', styles: { fontStyle: 'bold', fontSize: 6, textColor: C.blue } },
-        { content: q.paragraph || q.bullet || 'No response.', styles: { fontSize: 8, textColor: C.dark } },
+        {
+          content: q.paragraph || q.bullet || 'No response.',
+          styles: { fontSize: 8, textColor: C.dark },
+        },
       ]);
 
       // Score reasoning
       if (q.committee_review) {
         rows.push([
-          { content: 'SCORE REASONING', styles: { fontStyle: 'bold', fontSize: 6, textColor: cc.text } },
-          { content: q.committee_review, styles: { fontSize: 7, textColor: cc.text, fillColor: cc.bg } },
+          {
+            content: 'SCORE REASONING',
+            styles: { fontStyle: 'bold', fontSize: 6, textColor: cc.text },
+          },
+          {
+            content: q.committee_review,
+            styles: { fontSize: 7, textColor: cc.text, fillColor: cc.bg },
+          },
         ]);
       }
 
@@ -297,14 +387,20 @@ export async function exportToPDF(data: RFPData, options?: ExportOptions) {
       if (q.rationale) {
         rows.push([
           { content: 'SOURCE', styles: { fontStyle: 'bold', fontSize: 6, textColor: C.lightGray } },
-          { content: q.rationale.slice(0, 300), styles: { fontSize: 6, textColor: C.gray, fontStyle: 'italic' } },
+          {
+            content: q.rationale.slice(0, 300),
+            styles: { fontSize: 6, textColor: C.gray, fontStyle: 'italic' },
+          },
         ]);
       }
 
       // Pricing
       if (q.pricing) {
         rows.push([
-          { content: 'PRICING', styles: { fontStyle: 'bold', fontSize: 6, textColor: C.lightGray } },
+          {
+            content: 'PRICING',
+            styles: { fontStyle: 'bold', fontSize: 6, textColor: C.lightGray },
+          },
           { content: q.pricing, styles: { fontSize: 7, textColor: C.gray } },
         ]);
       }
@@ -312,20 +408,36 @@ export async function exportToPDF(data: RFPData, options?: ExportOptions) {
       // Claude note for flagged items
       if (ai.level !== 'low') {
         rows.push([
-          { content: 'CLAUDE NOTE', styles: { fontStyle: 'bold', fontSize: 6, textColor: C.purple } },
-          { content: `AI score ${ai.score} (${aiDetectLabel(ai.level)}). ${ai.triggers.slice(0, 3).join(', ')}. ${ai.suggestion.slice(0, 150)}`,
-            styles: { fontSize: 6, textColor: C.purple, fillColor: C.purpleBg } },
+          {
+            content: 'CLAUDE NOTE',
+            styles: { fontStyle: 'bold', fontSize: 6, textColor: C.purple },
+          },
+          {
+            content: `AI score ${ai.score} (${aiDetectLabel(ai.level)}). ${ai.triggers.slice(0, 3).join(', ')}. ${ai.suggestion.slice(0, 150)}`,
+            styles: { fontSize: 6, textColor: C.purple, fillColor: C.purpleBg },
+          },
         ]);
       }
 
       // Claude recommendation for RED
       if (q.confidence === 'RED') {
         rows.push([
-          { content: 'CLAUDE REC', styles: { fontStyle: 'bold', fontSize: 6, textColor: C.purple } },
-          { content: q.compliant === 'N'
-            ? 'Capability gap. Position as credit-first focus. Present partnership/roadmap timeline.'
-            : 'Partial compliance. Separate what IS covered vs config/partnership needs. Prepare for Q&A.',
-            styles: { fontSize: 7, textColor: C.purple, fillColor: C.purpleBg, fontStyle: 'italic' } },
+          {
+            content: 'CLAUDE REC',
+            styles: { fontStyle: 'bold', fontSize: 6, textColor: C.purple },
+          },
+          {
+            content:
+              q.compliant === 'N'
+                ? 'Capability gap. Position as credit-first focus. Present partnership/roadmap timeline.'
+                : 'Partial compliance. Separate what IS covered vs config/partnership needs. Prepare for Q&A.',
+            styles: {
+              fontSize: 7,
+              textColor: C.purple,
+              fillColor: C.purpleBg,
+              fontStyle: 'italic',
+            },
+          },
         ]);
       }
 
@@ -347,7 +459,9 @@ export async function exportToPDF(data: RFPData, options?: ExportOptions) {
   addPageMeta();
   doc.setFontSize(12);
   doc.setTextColor(...C.gray);
-  doc.text('This document is confidential and prepared solely', W / 2, H / 2 - 10, { align: 'center' });
+  doc.text('This document is confidential and prepared solely', W / 2, H / 2 - 10, {
+    align: 'center',
+  });
   doc.text('for Bangor Savings Bank.', W / 2, H / 2 - 3, { align: 'center' });
   doc.setFontSize(10);
   doc.text(`Brim Financial · ${new Date().getFullYear()}`, W / 2, H / 2 + 8, { align: 'center' });

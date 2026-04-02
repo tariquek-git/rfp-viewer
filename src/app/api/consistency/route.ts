@@ -45,7 +45,7 @@ export async function POST(req: NextRequest) {
       const message = await client.messages.create({
         model: process.env.CLAUDE_MODEL || 'claude-sonnet-4-20250514',
         temperature: 0.4,
-      max_tokens: 2000,
+        max_tokens: 2000,
         messages: [
           {
             role: 'user',

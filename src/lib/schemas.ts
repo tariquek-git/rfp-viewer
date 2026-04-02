@@ -127,9 +127,7 @@ export function parseBody<T>(
 ): { data: T; error: null } | { data: null; error: NextResponse } {
   const result = schema.safeParse(body);
   if (!result.success) {
-    const message = result.error.issues
-      .map((i) => `${i.path.join('.')}: ${i.message}`)
-      .join('; ');
+    const message = result.error.issues.map((i) => `${i.path.join('.')}: ${i.message}`).join('; ');
     return {
       data: null,
       error: NextResponse.json({ error: `Invalid request: ${message}` }, { status: 400 }),

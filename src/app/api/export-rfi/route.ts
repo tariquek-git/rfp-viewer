@@ -1,75 +1,150 @@
 import { NextResponse } from 'next/server';
 import {
-  Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell,
-  WidthType, AlignmentType, ShadingType, BorderStyle, HeadingLevel,
-  PageBreak, TableLayoutType, VerticalAlign,
+  Document,
+  Packer,
+  Paragraph,
+  TextRun,
+  Table,
+  TableRow,
+  TableCell,
+  WidthType,
+  AlignmentType,
+  ShadingType,
+  BorderStyle,
+  HeadingLevel,
+  PageBreak,
+  TableLayoutType,
+  VerticalAlign,
 } from 'docx';
 
 // ─── Colour palette (matches Excel/Word exports) ──────────────────────────────
 const C = {
-  NAVY:    '1e3a5f',
-  WHITE:   'FFFFFF',
-  GREEN_BG:'d1fae5', GREEN_TEXT: '065f46',
-  YELLOW_BG:'fef3c7', YELLOW_TEXT: '92400e',
-  RED_BG:  'fee2e2', RED_TEXT:   '991b1b',
+  NAVY: '1e3a5f',
+  WHITE: 'FFFFFF',
+  GREEN_BG: 'd1fae5',
+  GREEN_TEXT: '065f46',
+  YELLOW_BG: 'fef3c7',
+  YELLOW_TEXT: '92400e',
+  RED_BG: 'fee2e2',
+  RED_TEXT: '991b1b',
   BLUE_BG: 'eff6ff',
   GRAY_BG: 'f3f4f6',
-  DARK:    '1f2937',
-  MID:     '374151',
-  LIGHT:   '6b7280',
+  DARK: '1f2937',
+  MID: '374151',
+  LIGHT: '6b7280',
   DIVIDER: 'e5e7eb',
 };
 
 type StatusLevel = 'HIGH' | 'MEDIUM' | 'LOW' | 'INFO';
 
 function statusColors(level: StatusLevel): { bg: string; text: string; label: string } {
-  if (level === 'HIGH')   return { bg: C.GREEN_BG,  text: C.GREEN_TEXT,  label: 'STRONG FIT' };
+  if (level === 'HIGH') return { bg: C.GREEN_BG, text: C.GREEN_TEXT, label: 'STRONG FIT' };
   if (level === 'MEDIUM') return { bg: C.YELLOW_BG, text: C.YELLOW_TEXT, label: 'PARTIAL FIT' };
-  if (level === 'LOW')    return { bg: C.RED_BG,    text: C.RED_TEXT,    label: 'NEEDS DISCUSSION' };
+  if (level === 'LOW') return { bg: C.RED_BG, text: C.RED_TEXT, label: 'NEEDS DISCUSSION' };
   return { bg: C.BLUE_BG, text: C.NAVY, label: 'INFO' };
 }
 
 function cell(
   text: string,
-  opts: { bg?: string; color?: string; bold?: boolean; size?: number; width?: number; align?: string; italics?: boolean }
+  opts: {
+    bg?: string;
+    color?: string;
+    bold?: boolean;
+    size?: number;
+    width?: number;
+    align?: string;
+    italics?: boolean;
+  },
 ): TableCell {
-  const { bg = C.WHITE, color = C.DARK, bold = false, size = 20, width = 2000, align = AlignmentType.LEFT, italics = false } = opts;
+  const {
+    bg = C.WHITE,
+    color = C.DARK,
+    bold = false,
+    size = 20,
+    width = 2000,
+    align = AlignmentType.LEFT,
+    italics = false,
+  } = opts;
   return new TableCell({
     shading: { type: ShadingType.SOLID, color: bg },
     width: { size: width, type: WidthType.DXA },
     verticalAlign: VerticalAlign.CENTER,
     margins: { top: 80, bottom: 80, left: 140, right: 140 },
-    children: [new Paragraph({
-      alignment: align as typeof AlignmentType[keyof typeof AlignmentType],
-      children: [new TextRun({ text, bold, color, size, italics, font: 'Calibri' })],
-    })],
+    children: [
+      new Paragraph({
+        alignment: align as (typeof AlignmentType)[keyof typeof AlignmentType],
+        children: [new TextRun({ text, bold, color, size, italics, font: 'Calibri' })],
+      }),
+    ],
   });
 }
 
 function statusRow(
-  compliant: string, confidence: StatusLevel, category: string, score: string
+  compliant: string,
+  confidence: StatusLevel,
+  category: string,
+  score: string,
 ): Table {
   const conf = statusColors(confidence);
   return new Table({
     width: { size: 9360, type: WidthType.DXA },
     layout: TableLayoutType.FIXED,
     rows: [
-      new TableRow({ children: [
-        cell('COMPLIANCE', { bg: C.NAVY, color: C.WHITE, bold: true, size: 16, width: 2340 }),
-        cell('CONFIDENCE', { bg: C.NAVY, color: C.WHITE, bold: true, size: 16, width: 2340 }),
-        cell('CATEGORY',   { bg: C.NAVY, color: C.WHITE, bold: true, size: 16, width: 2340 }),
-        cell('SCORE',      { bg: C.NAVY, color: C.WHITE, bold: true, size: 16, width: 2340 }),
-      ]}),
-      new TableRow({ children: [
-        cell(compliant,  { bg: compliant === 'FULL' ? C.GREEN_BG : compliant === 'PARTIAL' ? C.YELLOW_BG : C.RED_BG,
-                           color: compliant === 'FULL' ? C.GREEN_TEXT : compliant === 'PARTIAL' ? C.YELLOW_TEXT : C.RED_TEXT,
-                           bold: true, size: 20, width: 2340, align: AlignmentType.CENTER }),
-        cell(conf.label, { bg: conf.bg, color: conf.text, bold: true, size: 20, width: 2340, align: AlignmentType.CENTER }),
-        cell(category,   { bg: C.GRAY_BG, color: C.MID, size: 18, width: 2340, align: AlignmentType.CENTER }),
-        cell(score,      { bg: confidence === 'HIGH' ? C.GREEN_BG : confidence === 'MEDIUM' ? C.YELLOW_BG : C.RED_BG,
-                           color: confidence === 'HIGH' ? C.GREEN_TEXT : confidence === 'MEDIUM' ? C.YELLOW_TEXT : C.RED_TEXT,
-                           bold: true, size: 20, width: 2340, align: AlignmentType.CENTER }),
-      ]}),
+      new TableRow({
+        children: [
+          cell('COMPLIANCE', { bg: C.NAVY, color: C.WHITE, bold: true, size: 16, width: 2340 }),
+          cell('CONFIDENCE', { bg: C.NAVY, color: C.WHITE, bold: true, size: 16, width: 2340 }),
+          cell('CATEGORY', { bg: C.NAVY, color: C.WHITE, bold: true, size: 16, width: 2340 }),
+          cell('SCORE', { bg: C.NAVY, color: C.WHITE, bold: true, size: 16, width: 2340 }),
+        ],
+      }),
+      new TableRow({
+        children: [
+          cell(compliant, {
+            bg:
+              compliant === 'FULL' ? C.GREEN_BG : compliant === 'PARTIAL' ? C.YELLOW_BG : C.RED_BG,
+            color:
+              compliant === 'FULL'
+                ? C.GREEN_TEXT
+                : compliant === 'PARTIAL'
+                  ? C.YELLOW_TEXT
+                  : C.RED_TEXT,
+            bold: true,
+            size: 20,
+            width: 2340,
+            align: AlignmentType.CENTER,
+          }),
+          cell(conf.label, {
+            bg: conf.bg,
+            color: conf.text,
+            bold: true,
+            size: 20,
+            width: 2340,
+            align: AlignmentType.CENTER,
+          }),
+          cell(category, {
+            bg: C.GRAY_BG,
+            color: C.MID,
+            size: 18,
+            width: 2340,
+            align: AlignmentType.CENTER,
+          }),
+          cell(score, {
+            bg:
+              confidence === 'HIGH' ? C.GREEN_BG : confidence === 'MEDIUM' ? C.YELLOW_BG : C.RED_BG,
+            color:
+              confidence === 'HIGH'
+                ? C.GREEN_TEXT
+                : confidence === 'MEDIUM'
+                  ? C.YELLOW_TEXT
+                  : C.RED_TEXT,
+            bold: true,
+            size: 20,
+            width: 2340,
+            align: AlignmentType.CENTER,
+          }),
+        ],
+      }),
     ],
   });
 }
@@ -80,7 +155,13 @@ function sectionHeader(num: string, title: string): Paragraph {
     spacing: { before: 360, after: 120 },
     shading: { type: ShadingType.SOLID, color: C.NAVY },
     children: [
-      new TextRun({ text: `SECTION ${num}: ${title}`, bold: true, color: C.WHITE, size: 28, font: 'Calibri' }),
+      new TextRun({
+        text: `SECTION ${num}: ${title}`,
+        bold: true,
+        color: C.WHITE,
+        size: 28,
+        font: 'Calibri',
+      }),
     ],
   });
 }
@@ -89,9 +170,7 @@ function subHeader(title: string): Paragraph {
   return new Paragraph({
     spacing: { before: 240, after: 80 },
     shading: { type: ShadingType.SOLID, color: C.BLUE_BG },
-    children: [
-      new TextRun({ text: title, bold: true, color: C.NAVY, size: 22, font: 'Calibri' }),
-    ],
+    children: [new TextRun({ text: title, bold: true, color: C.NAVY, size: 22, font: 'Calibri' })],
   });
 }
 
@@ -104,14 +183,18 @@ function bodyPara(text: string, indent = false): Paragraph {
 }
 
 function responsePara(text: string): Paragraph[] {
-  return text.split(/\n+/).filter(l => l.trim()).map((line, i, arr) =>
-    new Paragraph({
-      spacing: { before: i === 0 ? 40 : 80, after: i === arr.length - 1 ? 60 : 0 },
-      shading: { type: ShadingType.SOLID, color: C.BLUE_BG },
-      indent: { left: 160, right: 160 },
-      children: [new TextRun({ text: line.trim(), size: 20, color: C.DARK, font: 'Calibri' })],
-    })
-  );
+  return text
+    .split(/\n+/)
+    .filter((l) => l.trim())
+    .map(
+      (line, i, arr) =>
+        new Paragraph({
+          spacing: { before: i === 0 ? 40 : 80, after: i === arr.length - 1 ? 60 : 0 },
+          shading: { type: ShadingType.SOLID, color: C.BLUE_BG },
+          indent: { left: 160, right: 160 },
+          children: [new TextRun({ text: line.trim(), size: 20, color: C.DARK, font: 'Calibri' })],
+        }),
+    );
 }
 
 function question(
@@ -121,18 +204,22 @@ function question(
   confidence: StatusLevel = 'HIGH',
   compliant = 'FULL',
   score = '10/10',
-  category = 'Company Background'
+  category = 'Company Background',
 ): (Paragraph | Table)[] {
   return [
     new Paragraph({
       spacing: { before: 200, after: 60 },
-      children: [new TextRun({ text: qLabel, bold: true, size: 20, color: C.NAVY, font: 'Calibri' })],
+      children: [
+        new TextRun({ text: qLabel, bold: true, size: 20, color: C.NAVY, font: 'Calibri' }),
+      ],
     }),
     new Paragraph({
       spacing: { before: 0, after: 80 },
       shading: { type: ShadingType.SOLID, color: C.GRAY_BG },
       indent: { left: 160 },
-      children: [new TextRun({ text: qText, size: 18, color: C.MID, italics: true, font: 'Calibri' })],
+      children: [
+        new TextRun({ text: qText, size: 18, color: C.MID, italics: true, font: 'Calibri' }),
+      ],
     }),
     ...responsePara(answer),
     new Paragraph({ spacing: { before: 80, after: 80 }, children: [] }),
@@ -161,7 +248,10 @@ Years in Business: Brim Financial was incorporated in 2015 and launched its firs
 Ownership Structure: Privately held. Backed by institutional investors including EDC Investments (Export Development Canada), White Owl Group, Vestara, Zions Bank, goeasy Financial (TSX: GSY), and Desjardins Group. No public listing. No pending IPO or acquisition plans disclosed.
 
 Total Employees: ~200 globally, including engineers, implementation specialists, compliance/risk professionals, and client success teams.`,
-      'HIGH', 'FULL', '10/10', 'Company Background'
+      'HIGH',
+      'FULL',
+      '10/10',
+      'Company Background',
     ),
     ...question(
       'Q3.2 — Experience: Consumer & Business Card Platforms',
@@ -187,7 +277,10 @@ MOMENTUM FINANCIAL / MONEY MART — Consumer secured and prepaid cards. Serving 
 ZOOMER / CARP — Consumer lifestyle-based rewards card for the 50+ segment. Targeted rewards tied to the CARP member ecosystem and lifestyle spending categories.
 
 Platform: 7+ years of live issuing operations. TSYS (TMS platform) as core processor. Both Mastercard and Visa networks — Brim operates programs on both (e.g., MANULIFE BANK on Visa; ZOLVE/CONTINENTAL BANK and AFFINITY CREDIT UNION on Mastercard). US programs via Continental Bank sponsorship. 100% institutional client retention since launch.`,
-      'HIGH', 'FULL', '10/10', 'Company Background'
+      'HIGH',
+      'FULL',
+      '10/10',
+      'Company Background',
     ),
     ...question(
       'Q3.3 — Product Acquisitions (Last 5 Years)',
@@ -202,7 +295,10 @@ Brim has entered strategic partnerships (not acquisitions) with:
 • Visa — Network certification (issued via Laurentian Bank BIN)
 
 The solution is US-ready and currently deployed in the US market through the Zolve/Continental Bank program. The platform supports English and French (Canadian bilingual programs). Spanish-language support is on the roadmap for 2026.`,
-      'HIGH', 'FULL', '9/10', 'Company Background'
+      'HIGH',
+      'FULL',
+      '9/10',
+      'Company Background',
     ),
     ...question(
       'Q3.4 — Market Competitiveness, R&D Investment & Technology Development',
@@ -225,7 +321,10 @@ Recent Major Technology Developments:
 • Enhanced BNPL products (installment plans, split pay)
 • Expanded US market compliance coverage (CFPB open banking/1033 readiness)
 • Expanded language support (Spanish, Mandarin)`,
-      'HIGH', 'FULL', '10/10', 'Company Background'
+      'HIGH',
+      'FULL',
+      '10/10',
+      'Company Background',
     ),
     ...question(
       'Q3.5 — Financial Performance & Stability',
@@ -247,7 +346,10 @@ Leadership Team:
 • Abraham Tachjian — SVP, Office of the CEO & Chief Regulatory Affairs Officer. Former federally appointed open banking lead for the Department of Finance Canada (2022–2023) and former director at PwC Canada. Leads Brim's regulatory strategy as the platform scales in the US and Canada's open banking framework matures.
 
 D&B Report: Available upon request under NDA.`,
-      'HIGH', 'FULL', '9/10', 'Company Background'
+      'HIGH',
+      'FULL',
+      '9/10',
+      'Company Background',
     ),
     ...question(
       'Q3.6 — Product & Services Roadmap (Next 3 Years)',
@@ -272,7 +374,10 @@ D&B Report: Available upon request under NDA.`,
 • Embedded banking product expansion (deposit-linked credit lines)
 
 All roadmap items are developed in-house by Brim's engineering team. There are no third-party product dependency risks for core roadmap items.`,
-      'HIGH', 'FULL', '10/10', 'Company Background'
+      'HIGH',
+      'FULL',
+      '10/10',
+      'Company Background',
     ),
   ];
 
@@ -302,7 +407,10 @@ Live Programs (Selected): ZOLVE / CONTINENTAL BANK (US — cross-border consumer
 One-to-Many Architecture: All programs run on the same platform instance. Each partner is a separate logical tenant — independently configured, branded, and operated via parameter-based setup. BSB's agent bank program would be provisioned the same way: its own configuration, credit policy, rewards structure, and BIN, operating on the same proven infrastructure that runs MANULIFE BANK and CONTINENTAL BANK today.
 
 Deployment: SaaS only. Hosted on LeaseWeb colocation infrastructure (primary: Montreal, Quebec, Canada; DR: secondary LeaseWeb facility). No on-premise option. All clients run on the same multi-tenant platform with full logical data isolation. New versions release simultaneously to all clients on a scheduled basis. Brim Financial US Inc. (Delaware/San Francisco) has forward-looking plans for US-based hosting options to support US data residency requirements as the US program scales.`,
-      'HIGH', 'FULL', '10/10', 'Solution Architecture'
+      'HIGH',
+      'FULL',
+      '10/10',
+      'Solution Architecture',
     ),
     subHeader('Solution Pricing Estimate'),
     ...question(
@@ -334,7 +442,10 @@ ANNUAL COST INCREASES: Average 3–5% per year (CPI-indexed). No surprise increa
 5-YEAR TCO ESTIMATE: For a BSB program launching with 3,000 accounts and scaling to 15,000 accounts by Year 5, estimated 5-year TCO: $2.8M – $4.2M (inclusive of implementation, platform fees, processing, and card production). Detailed TCO model provided upon request.
 
 API Access: Included in platform fee. No per-call API charges. Sandbox environment: Included.`,
-      'HIGH', 'FULL', '9/10', 'Solution Pricing'
+      'HIGH',
+      'FULL',
+      '9/10',
+      'Solution Pricing',
     ),
     ...question(
       'Q5.3 — Total Cost of Ownership',
@@ -363,7 +474,10 @@ Revenue Offset (Illustrative): At Year 5 with 18,000 accounts at $3,500 avg bala
 • Total revenue Year 5: ~$3.2M–$4.3M — delivering positive program ROI by Year 3
 
 A fully customized financial model using BSB's actual assumptions will be provided during vendor demos.`,
-      'HIGH', 'FULL', '10/10', 'Solution Pricing'
+      'HIGH',
+      'FULL',
+      '10/10',
+      'Solution Pricing',
     ),
   ];
 
@@ -401,7 +515,10 @@ SLA Summary (full SLA provided in appendix upon request):
 • P4 (Enhancement): Queued for sprint planning
 
 Bug Fixes & Enhancement Requests: Submitted via ticketing system (Jira-based portal). Bugs prioritized by severity. Customer-requested enhancements enter the product roadmap process; BSB's PSM advocates for BSB-specific items during quarterly roadmap reviews.`,
-      'HIGH', 'FULL', '10/10', 'Customer Support'
+      'HIGH',
+      'FULL',
+      '10/10',
+      'Customer Support',
     ),
   ];
 
@@ -442,7 +559,10 @@ Relevance to BSB: Demonstrates Brim's track record executing high-stakes platfor
 Contact: Available upon request
 
 All references are willing to discuss technical and performance aspects of Brim's platform and are open to in-person reference visits by Bangor Savings Bank.`,
-      'HIGH', 'FULL', '10/10', 'References'
+      'HIGH',
+      'FULL',
+      '10/10',
+      'References',
     ),
   ];
 
@@ -484,7 +604,10 @@ Browser Support: Chrome, Edge, Firefox, Safari (current versions). No plugins or
 Mobile: iOS 15+ and Android 10+ for cardholder app SDK. Admin portal is fully responsive.
 
 In-House Support Model: BSB needs: 1 program administrator (config, rule management, reporting), 1 IT contact (SSO/API integration maintenance), 1 compliance officer (regulatory reporting). Brim provides all underlying operational support.`,
-      'HIGH', 'FULL', '10/10', 'Solution Architecture'
+      'HIGH',
+      'FULL',
+      '10/10',
+      'Solution Architecture',
     ),
     ...question(
       'Q8.2 — Reporting, Data Export & Maintenance',
@@ -500,7 +623,10 @@ Maintenance Tables: BSB administrators have real-time access to maintenance tabl
 Remote Access: Full portal access via any browser over HTTPS. MFA required. Mobile device support via responsive web. Two-factor authentication is mandatory for all sessions.
 
 Batch vs. Real-Time: Real-time reporting for authorization and account-level data. Settlement and regulatory reports are generated on a scheduled basis (end-of-day, monthly).`,
-      'HIGH', 'FULL', '10/10', 'Solution Architecture'
+      'HIGH',
+      'FULL',
+      '10/10',
+      'Solution Architecture',
     ),
   ];
 
@@ -529,7 +655,10 @@ Service Levels:
 • Recovery Time Objective (RTO): 4 hours (full platform failover to DR region)
 
 Improved service levels (RPO < 5 min, RTO < 1 hour) available at additional cost for enterprise programs.`,
-      'HIGH', 'FULL', '10/10', 'Reliability'
+      'HIGH',
+      'FULL',
+      '10/10',
+      'Reliability',
     ),
   ];
 
@@ -554,7 +683,10 @@ Client Scale Experience: Programs range from 2,000 accounts (community CU) to 20
 Monitoring: Brim uses DataDog for full-stack observability — application performance, infrastructure health, authorization latency, error rates, and queue depths. Real-time alerting with PagerDuty integration. BSB receives a read-only dashboard view of program-specific metrics.
 
 Benchmarking: Platform has been load-tested to 10x normal transaction volumes (Black Friday/holiday spike simulation). Results available upon request.`,
-      'HIGH', 'FULL', '10/10', 'Scalability'
+      'HIGH',
+      'FULL',
+      '10/10',
+      'Scalability',
     ),
   ];
 
@@ -581,7 +713,10 @@ PCI DSS v4.0.1: Certified Service Provider. AOC available upon request.
 SOX Controls: Brim is a private company and is not subject to Sarbanes-Oxley directly. However, Brim maintains financial and operational controls equivalent to SOX requirements as part of its enterprise risk management framework.
 
 Admin Password Management: Admin passwords rotated every 90 days (configurable). BSB is notified when Brim admin credentials with access to BSB-scoped data are changed. External contractors: Brim does use contractors for non-production work only; production access is restricted to full-time Brim employees. BSB is notified when contractor access is granted.`,
-      'HIGH', 'FULL', '10/10', 'Security'
+      'HIGH',
+      'FULL',
+      '10/10',
+      'Security',
     ),
   ];
 
@@ -608,7 +743,10 @@ Data Encryption:
 PII Compliance: CCPA, PIPEDA compliant. US programs: GLBA, FCRA compliant. SSNs stored in encrypted vault with access restricted to underwriting engine and authorized personnel only. Bank account information (for ACH payments) tokenized. Data residency: Canadian program data stored at LeaseWeb Montreal. US program data stored in Brim's US-entity infrastructure; forward-looking plan for dedicated US-based colocation as the US program scales (no cross-border data transfers).
 
 Security Incident Response Plan: Active, last updated Q1 2026. Tabletop exercise conducted annually. Plan includes ransomware-specific response playbook. BSB is notified within 72 hours of any confirmed breach affecting BSB data (meets GLBA and state breach notification requirements).`,
-      'HIGH', 'FULL', '10/10', 'Security'
+      'HIGH',
+      'FULL',
+      '10/10',
+      'Security',
     ),
   ];
 
@@ -636,7 +774,10 @@ Backup Policies:
 Maintenance Windows: Monthly (3rd Sunday of each month, 2am–6am ET). BSB notified 14 days in advance. Processing continues during maintenance via TSYS (authorization is not Brim-dependent during window). Admin portal may experience brief interruption; cardholder-facing functions unaffected.
 
 Hardware Management: Brim operates within LeaseWeb's managed colocation environment. LeaseWeb handles hardware lifecycle management, decommissioning, and secure media destruction per their ISO 27001 certified and PCI DSS audited processes. Media destruction certificates available upon request from LeaseWeb.`,
-      'HIGH', 'FULL', '10/10', 'Disaster Recovery'
+      'HIGH',
+      'FULL',
+      '10/10',
+      'Disaster Recovery',
     ),
   ];
 
@@ -665,7 +806,10 @@ Environmental Controls:
 Asset Dispersion: Brim's critical application components are distributed across both the primary LeaseWeb Montreal facility and the DR facility (geographically separate). Software master versions are maintained in multiple redundant Git repositories with cross-facility replication; build artifacts stored in a redundant artifact repository.
 
 LeaseWeb Montreal Certifications relevant to BSB: PCI DSS Level 1 (AOC available), SOC 2 Type 2 (audited by Coalfire), ISO 27001. Facility audit documentation available upon request under NDA.`,
-      'HIGH', 'FULL', '10/10', 'Physical Security'
+      'HIGH',
+      'FULL',
+      '10/10',
+      'Physical Security',
     ),
   ];
 
@@ -694,7 +838,10 @@ Source Code: Brim maintains source code in Git-based version control with redund
 Business Workflows: Documented as swimlane diagrams in Confluence (shared with BSB during implementation). Covers application-to-account, card lifecycle, dispute lifecycle, collections workflow, and reporting workflows.
 
 Internal Process Flows: Available to BSB's technical team and auditors under NDA. Calculation methodologies (interest, fees, rewards) documented in the Business Rules Specification, provided during implementation.`,
-      'HIGH', 'FULL', '9/10', 'Documentation'
+      'HIGH',
+      'FULL',
+      '9/10',
+      'Documentation',
     ),
   ];
 
@@ -722,7 +869,10 @@ Technology Currency: Brim reviews underlying technology stack annually and upgra
 Beta Programs: BSB can opt in to beta features (e.g., AI credit limit management is currently in beta for interested clients). Opt-in is per-feature; no risk of untested code in production unless BSB explicitly enables beta features. BSB can opt out of any feature within the platform configuration.
 
 Security Vulnerability Disclosure: Brim discloses security-relevant patches to clients 48–72 hours before deployment, with severity classification and impact description. Critical patches deployed immediately with client notification; no waiting for scheduled window.`,
-      'HIGH', 'FULL', '10/10', 'Upgrade Cycle'
+      'HIGH',
+      'FULL',
+      '10/10',
+      'Upgrade Cycle',
     ),
   ];
 
@@ -749,7 +899,10 @@ Open API: Yes. Brim's 300+ RESTful APIs are available to BSB for building custom
 Modification Warranty: Customizations developed by Brim are covered under the standard warranty. BSB-built customizations using the open API are BSB's responsibility.
 
 Maintenance Tables: Yes — extensive set of BSB-configurable maintenance tables covering product codes, fee structures, rate schedules, reward earning rules, MCC restrictions, and user profile attributes.`,
-      'HIGH', 'FULL', '10/10', 'Modification Process'
+      'HIGH',
+      'FULL',
+      '10/10',
+      'Modification Process',
     ),
   ];
 
@@ -776,7 +929,10 @@ Data Ownership: All data entered into the platform by or on behalf of BSB's prog
 Contract Language (Sample): "All data processed or stored by Brim Financial on behalf of Client, including all cardholder data, transaction records, application data, and derived analytics, is the exclusive property of Client. Brim Financial shall have no right to sell, transfer, or otherwise commercialize Client data. Upon termination of this Agreement, Brim Financial shall provide Client a complete data export within 30 days and shall securely delete all Client data within 60 days of export completion."
 
 Known API Limitations: Bulk operations (>10,000 records) are subject to rate limiting and must use the batch API endpoints. Real-time authorization data is available via webhook (push) or polling (pull); websocket not currently supported (roadmap: 2026).`,
-      'HIGH', 'FULL', '10/10', 'API & Data Ownership'
+      'HIGH',
+      'FULL',
+      '10/10',
+      'API & Data Ownership',
     ),
   ];
 
@@ -833,7 +989,10 @@ BSB Resource Requirements: 1 project lead (10–15 hrs/week during implementatio
 Performance Bond: Brim provides a service level guarantee backed by contractual SLAs with financial remedies. Full performance bond details and contract language provided upon request.
 
 Post-Conversion Support: Dedicated PSM + TAM assigned. Knowledge base (Confluence) shared with BSB team. Weekly communication cadences for first 90 days. 24/7 P1 incident support from day one.`,
-      'HIGH', 'FULL', '10/10', 'Implementation'
+      'HIGH',
+      'FULL',
+      '10/10',
+      'Implementation',
     ),
   ];
 
@@ -868,7 +1027,10 @@ Annual Refresher Training: Annual platform update briefing provided to all BSB u
 Ad Hoc Training: Available upon request with 5-business-day scheduling lead time. Billed at professional services rate ($175–225/hour) for custom training beyond standard modules.
 
 Executive Onboarding: Dedicated 90-minute executive briefing available for new BSB leadership joining mid-program. Covers program performance, strategic roadmap, and partnership framework.`,
-      'HIGH', 'FULL', '10/10', 'Training'
+      'HIGH',
+      'FULL',
+      '10/10',
+      'Training',
     ),
   ];
 
@@ -878,12 +1040,27 @@ Executive Onboarding: Dedicated 90-minute executive briefing available for new B
       spacing: { before: 2000, after: 200 },
       alignment: AlignmentType.CENTER,
       shading: { type: ShadingType.SOLID, color: C.NAVY },
-      children: [new TextRun({ text: 'BRIM FINANCIAL', bold: true, color: C.WHITE, size: 48, font: 'Calibri' })],
+      children: [
+        new TextRun({
+          text: 'BRIM FINANCIAL',
+          bold: true,
+          color: C.WHITE,
+          size: 48,
+          font: 'Calibri',
+        }),
+      ],
     }),
     new Paragraph({
       alignment: AlignmentType.CENTER,
       shading: { type: ShadingType.SOLID, color: C.NAVY },
-      children: [new TextRun({ text: 'Response to Request for Information', color: C.WHITE, size: 28, font: 'Calibri' })],
+      children: [
+        new TextRun({
+          text: 'Response to Request for Information',
+          color: C.WHITE,
+          size: 28,
+          font: 'Calibri',
+        }),
+      ],
     }),
     new Paragraph({
       spacing: { after: 80 },
@@ -894,30 +1071,69 @@ Executive Onboarding: Dedicated 90-minute executive briefing available for new B
     new Paragraph({
       spacing: { before: 400, after: 120 },
       alignment: AlignmentType.CENTER,
-      children: [new TextRun({ text: 'Bangor Savings Bank', bold: true, color: C.NAVY, size: 32, font: 'Calibri' })],
+      children: [
+        new TextRun({
+          text: 'Bangor Savings Bank',
+          bold: true,
+          color: C.NAVY,
+          size: 32,
+          font: 'Calibri',
+        }),
+      ],
     }),
     new Paragraph({
       alignment: AlignmentType.CENTER,
-      children: [new TextRun({ text: 'Credit Card Vendor Selection', color: C.MID, size: 24, font: 'Calibri' })],
+      children: [
+        new TextRun({
+          text: 'Credit Card Vendor Selection',
+          color: C.MID,
+          size: 24,
+          font: 'Calibri',
+        }),
+      ],
     }),
     new Paragraph({
       spacing: { before: 200, after: 80 },
       alignment: AlignmentType.CENTER,
-      children: [new TextRun({ text: 'April 10, 2026', color: C.LIGHT, size: 22, font: 'Calibri' })],
+      children: [
+        new TextRun({ text: 'April 10, 2026', color: C.LIGHT, size: 22, font: 'Calibri' }),
+      ],
     }),
     new Paragraph({
       spacing: { before: 80, after: 80 },
       alignment: AlignmentType.CENTER,
-      children: [new TextRun({ text: 'Submitted in response to the RFI issued March 9, 2026', color: C.LIGHT, size: 20, italics: true, font: 'Calibri' })],
+      children: [
+        new TextRun({
+          text: 'Submitted in response to the RFI issued March 9, 2026',
+          color: C.LIGHT,
+          size: 20,
+          italics: true,
+          font: 'Calibri',
+        }),
+      ],
     }),
     new Paragraph({
       spacing: { before: 200, after: 80 },
       alignment: AlignmentType.CENTER,
-      children: [new TextRun({ text: 'Submitted to: James Ecker, Project Management Office', color: C.MID, size: 20, font: 'Calibri' })],
+      children: [
+        new TextRun({
+          text: 'Submitted to: James Ecker, Project Management Office',
+          color: C.MID,
+          size: 20,
+          font: 'Calibri',
+        }),
+      ],
     }),
     new Paragraph({
       alignment: AlignmentType.CENTER,
-      children: [new TextRun({ text: 'james.ecker@bangor.com | 207-974-4188', color: C.MID, size: 20, font: 'Calibri' })],
+      children: [
+        new TextRun({
+          text: 'james.ecker@bangor.com | 207-974-4188',
+          color: C.MID,
+          size: 20,
+          font: 'Calibri',
+        }),
+      ],
     }),
     new Paragraph({
       spacing: { before: 400 },
@@ -929,41 +1145,122 @@ Executive Onboarding: Dedicated 90-minute executive briefing available for new B
   const legend = [
     new Paragraph({
       spacing: { before: 200, after: 120 },
-      children: [new TextRun({ text: 'HOW TO READ THIS DOCUMENT', bold: true, size: 28, color: C.NAVY, font: 'Calibri' })],
+      children: [
+        new TextRun({
+          text: 'HOW TO READ THIS DOCUMENT',
+          bold: true,
+          size: 28,
+          color: C.NAVY,
+          font: 'Calibri',
+        }),
+      ],
     }),
-    bodyPara('Each section of this RFI response includes a color-coded status indicator table following Brim\'s response. These indicators use the same visual language as the accompanying compliance matrix workbook:'),
+    bodyPara(
+      "Each section of this RFI response includes a color-coded status indicator table following Brim's response. These indicators use the same visual language as the accompanying compliance matrix workbook:",
+    ),
     new Paragraph({ spacing: { before: 120, after: 80 }, children: [] }),
     new Table({
       width: { size: 9360, type: WidthType.DXA },
       rows: [
-        new TableRow({ children: [
-          cell('INDICATOR', { bg: C.NAVY, color: C.WHITE, bold: true, size: 18, width: 2000 }),
-          cell('MEANING', { bg: C.NAVY, color: C.WHITE, bold: true, size: 18, width: 7360 }),
-        ]}),
-        new TableRow({ children: [
-          cell('COMPLIANCE: FULL', { bg: C.GREEN_BG, color: C.GREEN_TEXT, bold: true, size: 18, width: 2000 }),
-          cell('Brim meets this requirement fully, out of the box or with standard configuration', { bg: C.WHITE, size: 18, width: 7360 }),
-        ]}),
-        new TableRow({ children: [
-          cell('COMPLIANCE: PARTIAL', { bg: C.YELLOW_BG, color: C.YELLOW_TEXT, bold: true, size: 18, width: 2000 }),
-          cell('Brim meets this requirement with some configuration or custom development needed', { bg: C.WHITE, size: 18, width: 7360 }),
-        ]}),
-        new TableRow({ children: [
-          cell('COMPLIANCE: GAP', { bg: C.RED_BG, color: C.RED_TEXT, bold: true, size: 18, width: 2000 }),
-          cell('This area requires further discussion; not covered in the standard platform', { bg: C.WHITE, size: 18, width: 7360 }),
-        ]}),
-        new TableRow({ children: [
-          cell('CONFIDENCE: STRONG FIT', { bg: C.GREEN_BG, color: C.GREEN_TEXT, bold: true, size: 18, width: 2000 }),
-          cell('Brim has deep, proven experience in this area with live production evidence', { bg: C.WHITE, size: 18, width: 7360 }),
-        ]}),
-        new TableRow({ children: [
-          cell('CONFIDENCE: PARTIAL FIT', { bg: C.YELLOW_BG, color: C.YELLOW_TEXT, bold: true, size: 18, width: 2000 }),
-          cell('Brim can meet this need; some solution design or discussion recommended', { bg: C.WHITE, size: 18, width: 7360 }),
-        ]}),
-        new TableRow({ children: [
-          cell('CONFIDENCE: NEEDS DISCUSSION', { bg: C.RED_BG, color: C.RED_TEXT, bold: true, size: 18, width: 2000 }),
-          cell('Brim recommends a live discussion before finalizing approach for this requirement', { bg: C.WHITE, size: 18, width: 7360 }),
-        ]}),
+        new TableRow({
+          children: [
+            cell('INDICATOR', { bg: C.NAVY, color: C.WHITE, bold: true, size: 18, width: 2000 }),
+            cell('MEANING', { bg: C.NAVY, color: C.WHITE, bold: true, size: 18, width: 7360 }),
+          ],
+        }),
+        new TableRow({
+          children: [
+            cell('COMPLIANCE: FULL', {
+              bg: C.GREEN_BG,
+              color: C.GREEN_TEXT,
+              bold: true,
+              size: 18,
+              width: 2000,
+            }),
+            cell(
+              'Brim meets this requirement fully, out of the box or with standard configuration',
+              { bg: C.WHITE, size: 18, width: 7360 },
+            ),
+          ],
+        }),
+        new TableRow({
+          children: [
+            cell('COMPLIANCE: PARTIAL', {
+              bg: C.YELLOW_BG,
+              color: C.YELLOW_TEXT,
+              bold: true,
+              size: 18,
+              width: 2000,
+            }),
+            cell(
+              'Brim meets this requirement with some configuration or custom development needed',
+              { bg: C.WHITE, size: 18, width: 7360 },
+            ),
+          ],
+        }),
+        new TableRow({
+          children: [
+            cell('COMPLIANCE: GAP', {
+              bg: C.RED_BG,
+              color: C.RED_TEXT,
+              bold: true,
+              size: 18,
+              width: 2000,
+            }),
+            cell('This area requires further discussion; not covered in the standard platform', {
+              bg: C.WHITE,
+              size: 18,
+              width: 7360,
+            }),
+          ],
+        }),
+        new TableRow({
+          children: [
+            cell('CONFIDENCE: STRONG FIT', {
+              bg: C.GREEN_BG,
+              color: C.GREEN_TEXT,
+              bold: true,
+              size: 18,
+              width: 2000,
+            }),
+            cell('Brim has deep, proven experience in this area with live production evidence', {
+              bg: C.WHITE,
+              size: 18,
+              width: 7360,
+            }),
+          ],
+        }),
+        new TableRow({
+          children: [
+            cell('CONFIDENCE: PARTIAL FIT', {
+              bg: C.YELLOW_BG,
+              color: C.YELLOW_TEXT,
+              bold: true,
+              size: 18,
+              width: 2000,
+            }),
+            cell('Brim can meet this need; some solution design or discussion recommended', {
+              bg: C.WHITE,
+              size: 18,
+              width: 7360,
+            }),
+          ],
+        }),
+        new TableRow({
+          children: [
+            cell('CONFIDENCE: NEEDS DISCUSSION', {
+              bg: C.RED_BG,
+              color: C.RED_TEXT,
+              bold: true,
+              size: 18,
+              width: 2000,
+            }),
+            cell(
+              'Brim recommends a live discussion before finalizing approach for this requirement',
+              { bg: C.WHITE, size: 18, width: 7360 },
+            ),
+          ],
+        }),
       ],
     }),
     new Paragraph({
@@ -975,7 +1272,9 @@ Executive Onboarding: Dedicated 90-minute executive briefing available for new B
   // ─── Section 4 note ────────────────────────────────────────────────────────
   const sec4 = [
     sectionHeader('4', 'FUNCTIONALITY REQUIREMENTS'),
-    bodyPara('Brim\'s responses to the detailed Bangor Savings Bank Credit Card Vendor Selection Requirements matrix are provided in the accompanying Excel workbook: "BSB_RFP_Compliance_Matrix_Brim_Financial.xlsx". That document contains Brim\'s response to each of the 383 functional requirements, including compliance status (Y / Partial / N), delivery method (Out of Box / Configuration / Custom / Do Not Meet), confidence rating (GREEN / YELLOW / RED), committee score, and detailed narrative responses.'),
+    bodyPara(
+      'Brim\'s responses to the detailed Bangor Savings Bank Credit Card Vendor Selection Requirements matrix are provided in the accompanying Excel workbook: "BSB_RFP_Compliance_Matrix_Brim_Financial.xlsx". That document contains Brim\'s response to each of the 383 functional requirements, including compliance status (Y / Partial / N), delivery method (Out of Box / Configuration / Custom / Do Not Meet), confidence rating (GREEN / YELLOW / RED), committee score, and detailed narrative responses.',
+    ),
     new Paragraph({
       spacing: { before: 200, after: 0 },
       children: [new PageBreak()],
@@ -990,53 +1289,58 @@ Executive Onboarding: Dedicated 90-minute executive briefing available for new B
         },
       },
     },
-    sections: [{
-      properties: {
-        page: { margin: { top: 720, bottom: 720, left: 900, right: 900 } },
+    sections: [
+      {
+        properties: {
+          page: { margin: { top: 720, bottom: 720, left: 900, right: 900 } },
+        },
+        children: [
+          ...cover,
+          ...legend,
+          ...sec3,
+          new Paragraph({ spacing: { before: 200 }, children: [new PageBreak()] }),
+          ...sec4,
+          ...sec5,
+          new Paragraph({ spacing: { before: 200 }, children: [new PageBreak()] }),
+          ...sec6,
+          new Paragraph({ spacing: { before: 200 }, children: [new PageBreak()] }),
+          ...sec7,
+          new Paragraph({ spacing: { before: 200 }, children: [new PageBreak()] }),
+          ...sec8,
+          new Paragraph({ spacing: { before: 200 }, children: [new PageBreak()] }),
+          ...sec9,
+          new Paragraph({ spacing: { before: 200 }, children: [new PageBreak()] }),
+          ...sec10,
+          new Paragraph({ spacing: { before: 200 }, children: [new PageBreak()] }),
+          ...sec11,
+          new Paragraph({ spacing: { before: 200 }, children: [new PageBreak()] }),
+          ...sec12,
+          new Paragraph({ spacing: { before: 200 }, children: [new PageBreak()] }),
+          ...sec13,
+          new Paragraph({ spacing: { before: 200 }, children: [new PageBreak()] }),
+          ...sec14,
+          new Paragraph({ spacing: { before: 200 }, children: [new PageBreak()] }),
+          ...sec15,
+          new Paragraph({ spacing: { before: 200 }, children: [new PageBreak()] }),
+          ...sec16,
+          new Paragraph({ spacing: { before: 200 }, children: [new PageBreak()] }),
+          ...sec17,
+          new Paragraph({ spacing: { before: 200 }, children: [new PageBreak()] }),
+          ...sec18,
+          new Paragraph({ spacing: { before: 200 }, children: [new PageBreak()] }),
+          ...sec19,
+          new Paragraph({ spacing: { before: 200 }, children: [new PageBreak()] }),
+          ...sec20,
+        ],
       },
-      children: [
-        ...cover,
-        ...legend,
-        ...sec3,
-        new Paragraph({ spacing: { before: 200 }, children: [new PageBreak()] }),
-        ...sec4,
-        ...sec5,
-        new Paragraph({ spacing: { before: 200 }, children: [new PageBreak()] }),
-        ...sec6,
-        new Paragraph({ spacing: { before: 200 }, children: [new PageBreak()] }),
-        ...sec7,
-        new Paragraph({ spacing: { before: 200 }, children: [new PageBreak()] }),
-        ...sec8,
-        new Paragraph({ spacing: { before: 200 }, children: [new PageBreak()] }),
-        ...sec9,
-        new Paragraph({ spacing: { before: 200 }, children: [new PageBreak()] }),
-        ...sec10,
-        new Paragraph({ spacing: { before: 200 }, children: [new PageBreak()] }),
-        ...sec11,
-        new Paragraph({ spacing: { before: 200 }, children: [new PageBreak()] }),
-        ...sec12,
-        new Paragraph({ spacing: { before: 200 }, children: [new PageBreak()] }),
-        ...sec13,
-        new Paragraph({ spacing: { before: 200 }, children: [new PageBreak()] }),
-        ...sec14,
-        new Paragraph({ spacing: { before: 200 }, children: [new PageBreak()] }),
-        ...sec15,
-        new Paragraph({ spacing: { before: 200 }, children: [new PageBreak()] }),
-        ...sec16,
-        new Paragraph({ spacing: { before: 200 }, children: [new PageBreak()] }),
-        ...sec17,
-        new Paragraph({ spacing: { before: 200 }, children: [new PageBreak()] }),
-        ...sec18,
-        new Paragraph({ spacing: { before: 200 }, children: [new PageBreak()] }),
-        ...sec19,
-        new Paragraph({ spacing: { before: 200 }, children: [new PageBreak()] }),
-        ...sec20,
-      ],
-    }],
+    ],
   });
 
   const buffer = await Packer.toBuffer(doc);
-  const arrayBuffer = buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength) as ArrayBuffer;
+  const arrayBuffer = buffer.buffer.slice(
+    buffer.byteOffset,
+    buffer.byteOffset + buffer.byteLength,
+  ) as ArrayBuffer;
 
   return new NextResponse(arrayBuffer, {
     status: 200,

@@ -174,7 +174,11 @@ const GridToolbar = memo(function GridToolbar({
             onClick={onPushToCloud}
             aria-label="Push to Supabase cloud"
             className={`flex items-center gap-1 border px-2 py-1.5 rounded-lg text-xs font-medium transition-colors ${isSupabaseConfigured() ? 'border-gray-200 text-gray-600 hover:bg-gray-50' : 'border-dashed border-gray-200 text-gray-300 cursor-not-allowed'}`}
-            title={isSupabaseConfigured() ? 'Push to Supabase' : 'Supabase not configured — add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY'}
+            title={
+              isSupabaseConfigured()
+                ? 'Push to Supabase'
+                : 'Supabase not configured — add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY'
+            }
           >
             <CloudUpload size={11} /> Push
           </button>
@@ -182,7 +186,11 @@ const GridToolbar = memo(function GridToolbar({
             onClick={onPullFromCloud}
             aria-label="Pull from Supabase cloud"
             className={`flex items-center gap-1 border px-2 py-1.5 rounded-lg text-xs font-medium transition-colors ${isSupabaseConfigured() ? 'border-gray-200 text-gray-600 hover:bg-gray-50' : 'border-dashed border-gray-200 text-gray-300 cursor-not-allowed'}`}
-            title={isSupabaseConfigured() ? 'Pull from Supabase' : 'Supabase not configured — add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY'}
+            title={
+              isSupabaseConfigured()
+                ? 'Pull from Supabase'
+                : 'Supabase not configured — add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY'
+            }
           >
             <CloudDownload size={11} /> Pull
           </button>
@@ -254,7 +262,10 @@ const GridToolbar = memo(function GridToolbar({
                   <option key={o}>{o}</option>
                 ))}
               </select>
-              <ChevronDown size={11} className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+              <ChevronDown
+                size={11}
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
+              />
             </div>
           ))}
           <div className="relative">
@@ -269,7 +280,10 @@ const GridToolbar = memo(function GridToolbar({
               <option value="approved">Approved</option>
               <option value="flagged">Flagged</option>
             </select>
-            <ChevronDown size={11} className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+            <ChevronDown
+              size={11}
+              className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
+            />
           </div>
           <button
             data-reset-filters

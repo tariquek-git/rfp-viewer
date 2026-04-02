@@ -55,7 +55,11 @@ Return ONLY valid JSON.`,
     });
 
     const content = message.content[0].type === 'text' ? message.content[0].text : '{}';
-    const result = parseAIJson(content, { committee_score: 5, committee_review: '', committee_risk: '' }, 'score');
+    const result = parseAIJson(
+      content,
+      { committee_score: 5, committee_review: '', committee_risk: '' },
+      'score',
+    );
 
     return NextResponse.json(result);
   } catch (error) {

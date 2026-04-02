@@ -4,7 +4,7 @@ import type { KnowledgeBase, ValidationRule } from '@/types';
 import { exportToWord } from '@/lib/exportWord';
 
 export async function POST(request: Request) {
-  const body = await request.json() as {
+  const body = (await request.json()) as {
     data: RFPData;
     knowledgeBase?: KnowledgeBase;
     globalRules?: string[];
@@ -19,7 +19,10 @@ export async function POST(request: Request) {
   });
 
   const buf = buffer as Buffer;
-  const arrayBuffer = buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength) as ArrayBuffer;
+  const arrayBuffer = buf.buffer.slice(
+    buf.byteOffset,
+    buf.byteOffset + buf.byteLength,
+  ) as ArrayBuffer;
   const blob = new Blob([arrayBuffer], {
     type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
   });

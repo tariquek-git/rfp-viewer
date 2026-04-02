@@ -49,10 +49,7 @@ export function handleAnthropicError(error: unknown, route: string): NextRespons
         { status: 503 },
       );
     }
-    return NextResponse.json(
-      { error: `Anthropic API error (${error.status})` },
-      { status: 502 },
-    );
+    return NextResponse.json({ error: `Anthropic API error (${error.status})` }, { status: 502 });
   }
   console.error(`[${route}] Unexpected error:`, error);
   return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

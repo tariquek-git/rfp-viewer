@@ -72,14 +72,18 @@ Return ONLY valid JSON.`,
     });
 
     const content = message.content[0].type === 'text' ? message.content[0].text : '{}';
-    const result = parseAIJson(content, {
-      overallScore: 5,
-      voiceConsistency: 'Unable to assess',
-      themeAlignment: [],
-      genericLanguage: [],
-      storyBreaks: [],
-      recommendation: 'Unable to generate',
-    }, 'narrative-audit');
+    const result = parseAIJson(
+      content,
+      {
+        overallScore: 5,
+        voiceConsistency: 'Unable to assess',
+        themeAlignment: [],
+        genericLanguage: [],
+        storyBreaks: [],
+        recommendation: 'Unable to generate',
+      },
+      'narrative-audit',
+    );
 
     return NextResponse.json(result);
   } catch (error) {

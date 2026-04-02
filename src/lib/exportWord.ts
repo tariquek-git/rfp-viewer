@@ -772,17 +772,31 @@ export async function exportToWord(data: RFPData, options?: ExportOptions) {
 
       const aiDetect = detectAIWriting(q.bullet + ' ' + q.paragraph);
       const aiLevel = aiDetect.level;
-      const aiRiskBg = aiLevel === 'high' ? COLORS.redBg : aiLevel === 'medium' ? COLORS.yellowBg : COLORS.greenBg;
-      const aiRiskText = aiLevel === 'high' ? COLORS.redText : aiLevel === 'medium' ? COLORS.yellowText : COLORS.greenText;
+      const aiRiskBg =
+        aiLevel === 'high' ? COLORS.redBg : aiLevel === 'medium' ? COLORS.yellowBg : COLORS.greenBg;
+      const aiRiskText =
+        aiLevel === 'high'
+          ? COLORS.redText
+          : aiLevel === 'medium'
+            ? COLORS.yellowText
+            : COLORS.greenText;
       const aiRiskLabel = aiLevel === 'high' ? 'HIGH' : aiLevel === 'medium' ? 'MEDIUM' : 'LOW';
 
-      const compliantBg = q.compliant === 'Y' ? COLORS.greenBg : q.compliant === 'N' ? COLORS.redBg : COLORS.yellowBg;
-      const compliantText = q.compliant === 'Y' ? COLORS.greenText : q.compliant === 'N' ? COLORS.redText : COLORS.yellowText;
-      const compliantLabel = q.compliant === 'Y' ? 'Compliant' : q.compliant === 'N' ? 'Non-Compliant' : 'Partial';
+      const compliantBg =
+        q.compliant === 'Y' ? COLORS.greenBg : q.compliant === 'N' ? COLORS.redBg : COLORS.yellowBg;
+      const compliantText =
+        q.compliant === 'Y'
+          ? COLORS.greenText
+          : q.compliant === 'N'
+            ? COLORS.redText
+            : COLORS.yellowText;
+      const compliantLabel =
+        q.compliant === 'Y' ? 'Compliant' : q.compliant === 'N' ? 'Non-Compliant' : 'Partial';
 
       const score = q.committee_score ?? 0;
       const scoreBg = score >= 8 ? COLORS.greenBg : score >= 6 ? COLORS.yellowBg : COLORS.redBg;
-      const scoreText = score >= 8 ? COLORS.greenText : score >= 6 ? COLORS.yellowText : COLORS.redText;
+      const scoreText =
+        score >= 8 ? COLORS.greenText : score >= 6 ? COLORS.yellowText : COLORS.redText;
 
       sections.push(
         new Table({
@@ -791,23 +805,99 @@ export async function exportToWord(data: RFPData, options?: ExportOptions) {
             // Label row
             new TableRow({
               children: [
-                makeCell('CONFIDENCE', { bold: true, bg: '1e3a5f', color: 'FFFFFF', width: 20, size: 16 }),
-                makeCell('COMPLIANT', { bold: true, bg: '1e3a5f', color: 'FFFFFF', width: 18, size: 16 }),
-                makeCell('SCORE', { bold: true, bg: '1e3a5f', color: 'FFFFFF', width: 12, alignment: AlignmentType.CENTER, size: 16 }),
-                makeCell('DELIVERY', { bold: true, bg: '1e3a5f', color: 'FFFFFF', width: 25, size: 16 }),
-                makeCell('AI RISK', { bold: true, bg: '1e3a5f', color: 'FFFFFF', width: 15, alignment: AlignmentType.CENTER, size: 16 }),
-                makeCell('STATUS', { bold: true, bg: '1e3a5f', color: 'FFFFFF', width: 10, alignment: AlignmentType.CENTER, size: 16 }),
+                makeCell('CONFIDENCE', {
+                  bold: true,
+                  bg: '1e3a5f',
+                  color: 'FFFFFF',
+                  width: 20,
+                  size: 16,
+                }),
+                makeCell('COMPLIANT', {
+                  bold: true,
+                  bg: '1e3a5f',
+                  color: 'FFFFFF',
+                  width: 18,
+                  size: 16,
+                }),
+                makeCell('SCORE', {
+                  bold: true,
+                  bg: '1e3a5f',
+                  color: 'FFFFFF',
+                  width: 12,
+                  alignment: AlignmentType.CENTER,
+                  size: 16,
+                }),
+                makeCell('DELIVERY', {
+                  bold: true,
+                  bg: '1e3a5f',
+                  color: 'FFFFFF',
+                  width: 25,
+                  size: 16,
+                }),
+                makeCell('AI RISK', {
+                  bold: true,
+                  bg: '1e3a5f',
+                  color: 'FFFFFF',
+                  width: 15,
+                  alignment: AlignmentType.CENTER,
+                  size: 16,
+                }),
+                makeCell('STATUS', {
+                  bold: true,
+                  bg: '1e3a5f',
+                  color: 'FFFFFF',
+                  width: 10,
+                  alignment: AlignmentType.CENTER,
+                  size: 16,
+                }),
               ],
             }),
             // Values row
             new TableRow({
               children: [
-                makeCell(conf.label, { bold: true, bg: conf.bg, color: conf.text, width: 20, size: 18 }),
-                makeCell(compliantLabel, { bold: true, bg: compliantBg, color: compliantText, width: 18, size: 18 }),
-                makeCell(`${score}/10`, { bold: true, bg: scoreBg, color: scoreText, width: 12, alignment: AlignmentType.CENTER, size: 18 }),
-                makeCell(deliveryLabel, { bg: COLORS.grayBg, color: COLORS.medium, width: 25, size: 18 }),
-                makeCell(aiRiskLabel, { bold: true, bg: aiRiskBg, color: aiRiskText, width: 15, alignment: AlignmentType.CENTER, size: 18 }),
-                makeCell(q.status ?? 'draft', { bg: COLORS.grayBg, color: COLORS.gray, width: 10, alignment: AlignmentType.CENTER, size: 18 }),
+                makeCell(conf.label, {
+                  bold: true,
+                  bg: conf.bg,
+                  color: conf.text,
+                  width: 20,
+                  size: 18,
+                }),
+                makeCell(compliantLabel, {
+                  bold: true,
+                  bg: compliantBg,
+                  color: compliantText,
+                  width: 18,
+                  size: 18,
+                }),
+                makeCell(`${score}/10`, {
+                  bold: true,
+                  bg: scoreBg,
+                  color: scoreText,
+                  width: 12,
+                  alignment: AlignmentType.CENTER,
+                  size: 18,
+                }),
+                makeCell(deliveryLabel, {
+                  bg: COLORS.grayBg,
+                  color: COLORS.medium,
+                  width: 25,
+                  size: 18,
+                }),
+                makeCell(aiRiskLabel, {
+                  bold: true,
+                  bg: aiRiskBg,
+                  color: aiRiskText,
+                  width: 15,
+                  alignment: AlignmentType.CENTER,
+                  size: 18,
+                }),
+                makeCell(q.status ?? 'draft', {
+                  bg: COLORS.grayBg,
+                  color: COLORS.gray,
+                  width: 10,
+                  alignment: AlignmentType.CENTER,
+                  size: 18,
+                }),
               ],
             }),
           ],
@@ -854,7 +944,7 @@ export async function exportToWord(data: RFPData, options?: ExportOptions) {
             }),
           ],
         }),
-        ...((() => {
+        ...(() => {
           const cleanBullet = (text: string) =>
             text
               .split('\n')
@@ -864,19 +954,22 @@ export async function exportToWord(data: RFPData, options?: ExportOptions) {
           return (q.paragraph || cleanBullet(q.bullet || '') || 'No response provided.')
             .split(/\n+/)
             .filter((line) => line.trim().length > 0);
-        })().map((line, i, arr) => new Paragraph({
-            spacing: { before: i === 0 ? 40 : 80, after: i === arr.length - 1 ? 60 : 0 },
-            shading: { type: ShadingType.SOLID, color: 'EFF6FF' },
-            indent: { left: 160, right: 160 },
-            children: [
-              new TextRun({
-                text: line.trim(),
-                size: 20,
-                color: COLORS.dark,
-                font: 'Calibri',
-              }),
-            ],
-          }))),
+        })().map(
+          (line, i, arr) =>
+            new Paragraph({
+              spacing: { before: i === 0 ? 40 : 80, after: i === arr.length - 1 ? 60 : 0 },
+              shading: { type: ShadingType.SOLID, color: 'EFF6FF' },
+              indent: { left: 160, right: 160 },
+              children: [
+                new TextRun({
+                  text: line.trim(),
+                  size: 20,
+                  color: COLORS.dark,
+                  font: 'Calibri',
+                }),
+              ],
+            }),
+        ),
       );
 
       // Score reasoning
@@ -922,13 +1015,18 @@ export async function exportToWord(data: RFPData, options?: ExportOptions) {
         sections.push(
           new Paragraph({
             children: [
-              new TextRun({ text: 'Compliance Rationale: ', bold: true, color: '374151', size: 18 }),
+              new TextRun({
+                text: 'Compliance Rationale: ',
+                bold: true,
+                color: '374151',
+                size: 18,
+              }),
               new TextRun({ text: q.compliance_notes, color: '374151', size: 18 }),
             ],
             shading: { type: ShadingType.SOLID, color: 'F3F4F6' },
             spacing: { before: 80, after: 80 },
             indent: { left: 200, right: 200 },
-          })
+          }),
         );
       }
 
@@ -1154,7 +1252,12 @@ export async function exportToWord(data: RFPData, options?: ExportOptions) {
 
   const buffer = await Packer.toBuffer(doc);
   if (options?.returnBuffer) return buffer;
-  const arrayBuffer = buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength) as ArrayBuffer;
-  const blob = new Blob([arrayBuffer], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+  const arrayBuffer = buffer.buffer.slice(
+    buffer.byteOffset,
+    buffer.byteOffset + buffer.byteLength,
+  ) as ArrayBuffer;
+  const blob = new Blob([arrayBuffer], {
+    type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  });
   saveAs(blob, 'BSB_RFP_Response_Brim_Financial.docx');
 }

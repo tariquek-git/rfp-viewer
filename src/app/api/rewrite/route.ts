@@ -22,7 +22,13 @@ export async function POST(req: NextRequest) {
     const raw = await req.json();
     const parsed = parseBody(RewriteRequestSchema, raw);
     if (parsed.error) return parsed.error;
-    const { field: rawField, globalRules: rawRules, rowRules: rawRowRules, feedback, knowledgeBase } = parsed.data;
+    const {
+      field: rawField,
+      globalRules: rawRules,
+      rowRules: rawRowRules,
+      feedback,
+      knowledgeBase,
+    } = parsed.data;
     const question = sanitizeQuestionForAI(parsed.data.question);
     const field = validateField(rawField);
     if (!field) return NextResponse.json({ error: 'Invalid field' }, { status: 400 });
@@ -55,14 +61,15 @@ Competitive Positioning: ${knowledgeBase.competitivePositioning}`
       : '';
 
     const timeout = AbortSignal.timeout(30_000);
-    const message = await client.messages.create({
-      model: process.env.CLAUDE_MODEL || 'claude-sonnet-4-20250514',
-      temperature: 0.4,
-      max_tokens: 2000,
-      messages: [
-        {
-          role: 'user',
-          content: `You are helping Brim Financial write a winning RFP response for Bangor Savings Bank's credit card program.
+    const message = await client.messages.create(
+      {
+        model: process.env.CLAUDE_MODEL || 'claude-sonnet-4-20250514',
+        temperature: 0.4,
+        max_tokens: 2000,
+        messages: [
+          {
+            role: 'user',
+            content: `You are helping Brim Financial write a winning RFP response for Bangor Savings Bank's credit card program.
 
 <question_context>
 <category>${question.category}</category>
@@ -93,24 +100,37 @@ RULES:
 - Sound confident without being vague${kbSection}${globalRulesSection}${rowRulesSection}${feedbackSection}
 
 Rewrite the response. Output ONLY the rewritten response text, no preamble or explanation.`,
-        },
-      ],
-    }, { signal: timeout });
+          },
+        ],
+      },
+      { signal: timeout },
+    );
 
     const text = message.content[0].type === 'text' ? message.content[0].text : '';
 
     // Output validation
     if (text.length < 50) {
-      return NextResponse.json({ error: 'AI output too short — may be incomplete. Try again.' }, { status: 422 });
+      return NextResponse.json(
+        { error: 'AI output too short — may be incomplete. Try again.' },
+        { status: 422 },
+      );
     }
     if (text.length > 10000) {
-      return NextResponse.json({ text: text.slice(0, 10000), model: message.model, usage: message.usage, warning: 'Output truncated to 10K chars' });
+      return NextResponse.json({
+        text: text.slice(0, 10000),
+        model: message.model,
+        usage: message.usage,
+        warning: 'Output truncated to 10K chars',
+      });
     }
 
     return NextResponse.json({ text, model: message.model, usage: message.usage });
   } catch (error) {
     if (error instanceof Error && error.name === 'TimeoutError') {
-      return NextResponse.json({ error: 'AI request timed out after 30s — try again' }, { status: 504 });
+      return NextResponse.json(
+        { error: 'AI request timed out after 30s — try again' },
+        { status: 504 },
+      );
     }
     return handleAnthropicError(error, 'rewrite');
   }

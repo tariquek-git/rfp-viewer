@@ -231,8 +231,16 @@ export function useRFPState() {
       addToast('success', 'Changes saved locally');
       // Mirror to IndexedDB as secondary local backup (async, non-blocking)
       idbMirrorState({
-        data, cellHistory, globalRules, validationRules, feedbackItems,
-        knowledgeBase, pricingModel, winThemes, milestones, slaCommitments,
+        data,
+        cellHistory,
+        globalRules,
+        validationRules,
+        feedbackItems,
+        knowledgeBase,
+        pricingModel,
+        winThemes,
+        milestones,
+        slaCommitments,
       });
     } catch (err) {
       const isQuota =
@@ -241,10 +249,21 @@ export function useRFPState() {
       if (isQuota) {
         // localStorage full — still mirror to IDB so data isn't lost
         idbMirrorState({
-          data, cellHistory, globalRules, validationRules, feedbackItems,
-          knowledgeBase, pricingModel, winThemes, milestones, slaCommitments,
+          data,
+          cellHistory,
+          globalRules,
+          validationRules,
+          feedbackItems,
+          knowledgeBase,
+          pricingModel,
+          winThemes,
+          milestones,
+          slaCommitments,
         });
-        addToast('error', 'Local storage full — data backed up to browser DB. Delete old versions to free space.');
+        addToast(
+          'error',
+          'Local storage full — data backed up to browser DB. Delete old versions to free space.',
+        );
       } else {
         addToast('error', 'Save failed — check browser permissions');
       }
@@ -323,16 +342,21 @@ export function useRFPState() {
   }, [hasUnsaved]);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      if (hasUnsavedRef.current) {
-        saveToLocal();
-        saveVersion('Auto-save');
-      }
-    }, 5 * 60 * 1000); // 5 minutes
+    const interval = setInterval(
+      () => {
+        if (hasUnsavedRef.current) {
+          saveToLocal();
+          saveVersion('Auto-save');
+        }
+      },
+      5 * 60 * 1000,
+    ); // 5 minutes
     return () => clearInterval(interval);
   }, [saveToLocal, saveVersion]);
 
-  const [cloudSyncStatus, setCloudSyncStatus] = useState<'idle' | 'syncing' | 'synced' | 'error'>('idle');
+  const [cloudSyncStatus, setCloudSyncStatus] = useState<'idle' | 'syncing' | 'synced' | 'error'>(
+    'idle',
+  );
 
   const handleSave = useCallback(async () => {
     saveToLocal();
@@ -356,11 +380,7 @@ export function useRFPState() {
         });
         if (result.success) {
           // Also save a version snapshot to cloud
-          await pushVersion(
-            `Auto-save ${new Date().toLocaleTimeString()}`,
-            data,
-            'auto',
-          );
+          await pushVersion(`Auto-save ${new Date().toLocaleTimeString()}`, data, 'auto');
           setCloudSyncStatus('synced');
           addToast('success', 'Saved locally + synced to cloud');
         } else {
@@ -372,7 +392,21 @@ export function useRFPState() {
         addToast('warning', 'Local saved, cloud sync failed');
       }
     }
-  }, [saveToLocal, saveVersion, data, globalRules, validationRules, feedbackItems, knowledgeBase, pricingModel, winThemes, milestones, slaCommitments, versions, addToast]);
+  }, [
+    saveToLocal,
+    saveVersion,
+    data,
+    globalRules,
+    validationRules,
+    feedbackItems,
+    knowledgeBase,
+    pricingModel,
+    winThemes,
+    milestones,
+    slaCommitments,
+    versions,
+    addToast,
+  ]);
 
   // === Cell History ===
   const addCellHistory = useCallback(

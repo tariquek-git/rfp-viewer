@@ -176,7 +176,12 @@ export default function ContextView({ data, onNavigate, onBulkApproveGreen }: Co
 
   // Compute live stats from questions array so they stay accurate after edits
   const liveStats = useMemo(() => {
-    let green = 0, yellow = 0, red = 0, with_strategic = 0, with_reg_enable = 0, compliant_y = 0;
+    let green = 0,
+      yellow = 0,
+      red = 0,
+      with_strategic = 0,
+      with_reg_enable = 0,
+      compliant_y = 0;
     for (const q of data.questions) {
       const c = (q.confidence || '').trim().toUpperCase();
       if (c === 'GREEN') green++;
@@ -186,7 +191,15 @@ export default function ContextView({ data, onNavigate, onBulkApproveGreen }: Co
       if (q.reg_enable) with_reg_enable++;
       if (q.compliant === 'Y') compliant_y++;
     }
-    return { total: data.questions.length, green, yellow, red, with_strategic, with_reg_enable, compliant_y };
+    return {
+      total: data.questions.length,
+      green,
+      yellow,
+      red,
+      with_strategic,
+      with_reg_enable,
+      compliant_y,
+    };
   }, [data]);
 
   const greenPct = Math.round((liveStats.green / liveStats.total) * 100);
@@ -194,8 +207,7 @@ export default function ContextView({ data, onNavigate, onBulkApproveGreen }: Co
   const readinessScore = useMemo(() => {
     if (liveStats.total === 0) return 0;
     return Math.round(
-      (liveStats.green / liveStats.total) * 50 +
-      (liveStats.compliant_y / liveStats.total) * 50,
+      (liveStats.green / liveStats.total) * 50 + (liveStats.compliant_y / liveStats.total) * 50,
     );
   }, [liveStats]);
 
@@ -307,8 +319,8 @@ export default function ContextView({ data, onNavigate, onBulkApproveGreen }: Co
             readinessScore >= 80
               ? 'border-emerald-300 bg-emerald-50/40'
               : readinessScore >= 60
-              ? 'border-amber-300 bg-amber-50/40'
-              : 'border-red-300 bg-red-50/40'
+                ? 'border-amber-300 bg-amber-50/40'
+                : 'border-red-300 bg-red-50/40'
           }`}
         >
           <div>
@@ -323,8 +335,8 @@ export default function ContextView({ data, onNavigate, onBulkApproveGreen }: Co
                 readinessScore >= 80
                   ? 'text-emerald-600'
                   : readinessScore >= 60
-                  ? 'text-amber-600'
-                  : 'text-red-600'
+                    ? 'text-amber-600'
+                    : 'text-red-600'
               }`}
             >
               {readinessScore}
@@ -335,11 +347,15 @@ export default function ContextView({ data, onNavigate, onBulkApproveGreen }: Co
                 readinessScore >= 80
                   ? 'bg-emerald-100 text-emerald-700'
                   : readinessScore >= 60
-                  ? 'bg-amber-100 text-amber-700'
-                  : 'bg-red-100 text-red-700'
+                    ? 'bg-amber-100 text-amber-700'
+                    : 'bg-red-100 text-red-700'
               }`}
             >
-              {readinessScore >= 80 ? 'Ready' : readinessScore >= 60 ? 'Nearly Ready' : 'Needs Work'}
+              {readinessScore >= 80
+                ? 'Ready'
+                : readinessScore >= 60
+                  ? 'Nearly Ready'
+                  : 'Needs Work'}
             </span>
           </div>
         </div>
@@ -353,13 +369,20 @@ export default function ContextView({ data, onNavigate, onBulkApproveGreen }: Co
           </div>
           <div className="flex items-center gap-3">
             <span className="text-xs text-gray-500">
-              {data.questions.filter((q) => q.confidence === 'GREEN' && q.status !== 'approved').length} GREEN questions pending approval
+              {
+                data.questions.filter((q) => q.confidence === 'GREEN' && q.status !== 'approved')
+                  .length
+              }{' '}
+              GREEN questions pending approval
             </span>
             {onBulkApproveGreen && (
               <button
                 onClick={onBulkApproveGreen}
                 className="ml-auto text-xs bg-emerald-600 text-white px-3 py-1.5 rounded-lg hover:bg-emerald-700 font-medium disabled:opacity-50"
-                disabled={data.questions.filter((q) => q.confidence === 'GREEN' && q.status !== 'approved').length === 0}
+                disabled={
+                  data.questions.filter((q) => q.confidence === 'GREEN' && q.status !== 'approved')
+                    .length === 0
+                }
               >
                 Approve All GREEN
               </button>

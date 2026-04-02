@@ -7,7 +7,7 @@ interface TourStep {
   title: string;
   body: string;
   target?: string; // data-tour attribute value
-  tab?: string;    // switch to this tab before showing
+  tab?: string; // switch to this tab before showing
   position?: 'top' | 'bottom' | 'center';
 }
 
@@ -19,7 +19,7 @@ const STEPS: TourStep[] = [
   },
   {
     title: 'Response Grid — Your Main Workspace',
-    body: 'All 383 BSB requirements in a scrollable grid. Each row is one question with Brim\'s drafted response. Edit cells inline, change workflow status, flag for review, or click a REF link to open the full editing panel.',
+    body: "All 383 BSB requirements in a scrollable grid. Each row is one question with Brim's drafted response. Edit cells inline, change workflow status, flag for review, or click a REF link to open the full editing panel.",
     target: 'tour-grid-tab',
     tab: 'grid',
     position: 'bottom',
@@ -60,25 +60,30 @@ const STEPS: TourStep[] = [
   },
   {
     title: 'Export & Submit',
-    body: 'Generate the final submission document when you\'re ready. Export as PDF, Word (.docx), HTML, or print — formatted as a professional proposal with an executive summary, compliance matrix, and all 383 responses.',
+    body: "Generate the final submission document when you're ready. Export as PDF, Word (.docx), HTML, or print — formatted as a professional proposal with an executive summary, compliance matrix, and all 383 responses.",
     target: 'tour-export-tab',
     tab: 'submission',
     position: 'bottom',
   },
   {
     title: 'Settings & Knowledge Base',
-    body: "Configure your company facts, key metrics, pricing model, implementation timeline, and SLA commitments. This context is automatically injected into every AI Rewrite, making responses accurate, specific, and on-brand.",
+    body: 'Configure your company facts, key metrics, pricing model, implementation timeline, and SLA commitments. This context is automatically injected into every AI Rewrite, making responses accurate, specific, and on-brand.',
     target: 'tour-settings-btn',
     position: 'bottom',
   },
   {
     title: "You're All Set!",
-    body: "Open any question in the Response Grid, then use AI Critique to identify weaknesses and AI Rewrite to strengthen the response. Prioritise the 7 RED questions and 2 HIGH RISK committee scores first. Good luck with the submission!",
+    body: 'Open any question in the Response Grid, then use AI Critique to identify weaknesses and AI Rewrite to strengthen the response. Prioritise the 7 RED questions and 2 HIGH RISK committee scores first. Good luck with the submission!',
     position: 'center',
   },
 ];
 
-interface Rect { x: number; y: number; width: number; height: number }
+interface Rect {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
 
 const PADDING = 10;
 const TOOLTIP_W = 380;
@@ -96,9 +101,15 @@ export default function TourOverlay({
   const current = STEPS[step];
 
   const measure = useCallback(() => {
-    if (!current.target) { setRect(null); return; }
+    if (!current.target) {
+      setRect(null);
+      return;
+    }
     const el = document.querySelector<HTMLElement>(`[data-tour="${current.target}"]`);
-    if (!el) { setRect(null); return; }
+    if (!el) {
+      setRect(null);
+      return;
+    }
     const r = el.getBoundingClientRect();
     setRect({ x: r.left, y: r.top, width: r.width, height: r.height });
   }, [current.target]);
@@ -121,11 +132,11 @@ export default function TourOverlay({
   }, [onClose]);
 
   const next = () => {
-    if (step < STEPS.length - 1) setStep(s => s + 1);
+    if (step < STEPS.length - 1) setStep((s) => s + 1);
     else finish();
   };
 
-  const prev = () => setStep(s => Math.max(0, s - 1));
+  const prev = () => setStep((s) => Math.max(0, s - 1));
 
   // Tooltip position
   const tooltipStyle = (): React.CSSProperties => {
@@ -214,10 +225,7 @@ export default function TourOverlay({
       />
 
       {/* Tooltip card */}
-      <div
-        style={tooltipStyle()}
-        className="bg-white rounded-2xl shadow-2xl overflow-hidden"
-      >
+      <div style={tooltipStyle()} className="bg-white rounded-2xl shadow-2xl overflow-hidden">
         {/* Top accent bar */}
         <div className="h-1 bg-gradient-to-r from-blue-500 via-indigo-500 to-violet-500" />
 
@@ -233,8 +241,8 @@ export default function TourOverlay({
                     i === step
                       ? 'w-5 h-2 bg-blue-600'
                       : i < step
-                      ? 'w-2 h-2 bg-blue-300'
-                      : 'w-2 h-2 bg-gray-200'
+                        ? 'w-2 h-2 bg-blue-300'
+                        : 'w-2 h-2 bg-gray-200'
                   }`}
                 />
               ))}

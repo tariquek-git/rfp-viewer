@@ -409,10 +409,6 @@ export async function pullVersions(): Promise<CloudVersion[]> {
 
 export async function loadCloudVersion(id: string): Promise<RFPData | null> {
   if (!isSupabaseConfigured() || !supabase) return null;
-  const { data } = await supabase
-    .from('versions')
-    .select('snapshot')
-    .eq('id', id)
-    .single();
+  const { data } = await supabase.from('versions').select('snapshot').eq('id', id).single();
   return data?.snapshot as RFPData | null;
 }

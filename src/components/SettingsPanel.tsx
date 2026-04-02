@@ -188,9 +188,7 @@ function RulesTab({
         <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
           Global Writing Rules
         </h3>
-        <p className="text-xs text-gray-400 mb-3">
-          Applied to all AI rewrites as style guidance.
-        </p>
+        <p className="text-xs text-gray-400 mb-3">Applied to all AI rewrites as style guidance.</p>
         {globalRules.length === 0 ? (
           <div className="border-2 border-dashed border-gray-200 rounded-lg p-5 text-center mb-3">
             <p className="text-xs text-gray-400">No rules yet. Add one below.</p>
@@ -198,7 +196,10 @@ function RulesTab({
         ) : (
           <div className="space-y-2 mb-3">
             {globalRules.map((rule, i) => (
-              <div key={i} className="flex items-start justify-between gap-2 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 group">
+              <div
+                key={i}
+                className="flex items-start justify-between gap-2 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 group"
+              >
                 <p className="text-xs text-gray-700 flex-1">{rule}</p>
                 <button
                   onClick={() => onUpdateRules(globalRules.filter((_, j) => j !== i))}
@@ -214,7 +215,12 @@ function RulesTab({
         <textarea
           value={newRule}
           onChange={(e) => setNewRule(e.target.value)}
-          onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); addRule(); } }}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+              e.preventDefault();
+              addRule();
+            }
+          }}
           placeholder="Add a writing rule…"
           rows={2}
           className="w-full border border-gray-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 resize-none mb-2"
@@ -233,9 +239,7 @@ function RulesTab({
         <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
           Validation Rules
         </h3>
-        <p className="text-xs text-gray-400 mb-3">
-          Checked after each AI rewrite for pass/fail.
-        </p>
+        <p className="text-xs text-gray-400 mb-3">Checked after each AI rewrite for pass/fail.</p>
         {validationRules.length === 0 ? (
           <div className="border-2 border-dashed border-amber-200 rounded-lg p-5 text-center mb-3">
             <ShieldCheck size={20} className="mx-auto text-amber-300 mb-1.5" />
@@ -244,10 +248,15 @@ function RulesTab({
         ) : (
           <div className="space-y-2 mb-3">
             {validationRules.map((rule) => (
-              <div key={rule.id} className="flex items-start justify-between gap-2 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 group">
+              <div
+                key={rule.id}
+                className="flex items-start justify-between gap-2 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 group"
+              >
                 <p className="text-xs text-gray-700 flex-1">{rule.text}</p>
                 <button
-                  onClick={() => onUpdateValidationRules(validationRules.filter((r) => r.id !== rule.id))}
+                  onClick={() =>
+                    onUpdateValidationRules(validationRules.filter((r) => r.id !== rule.id))
+                  }
                   aria-label="Remove validation rule"
                   className="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500 flex-shrink-0 mt-0.5"
                 >
@@ -260,7 +269,12 @@ function RulesTab({
         <textarea
           value={newValidation}
           onChange={(e) => setNewValidation(e.target.value)}
-          onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); addValidation(); } }}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+              e.preventDefault();
+              addValidation();
+            }
+          }}
           placeholder="Add a validation rule…"
           rows={2}
           className="w-full border border-amber-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-400 resize-none mb-2"
@@ -316,11 +330,21 @@ function PricingTab({
         <table className="w-full text-xs border-collapse">
           <thead>
             <tr className="border-b border-gray-200">
-              <th className="text-left text-gray-500 font-semibold uppercase tracking-wide pb-2 pr-2">Category</th>
-              <th className="text-left text-gray-500 font-semibold uppercase tracking-wide pb-2 pr-2">Description</th>
-              <th className="text-left text-gray-500 font-semibold uppercase tracking-wide pb-2 pr-2 w-28">Type</th>
-              <th className="text-left text-gray-500 font-semibold uppercase tracking-wide pb-2 pr-2 w-24">Amount</th>
-              <th className="text-left text-gray-500 font-semibold uppercase tracking-wide pb-2 pr-2 w-20">Unit</th>
+              <th className="text-left text-gray-500 font-semibold uppercase tracking-wide pb-2 pr-2">
+                Category
+              </th>
+              <th className="text-left text-gray-500 font-semibold uppercase tracking-wide pb-2 pr-2">
+                Description
+              </th>
+              <th className="text-left text-gray-500 font-semibold uppercase tracking-wide pb-2 pr-2 w-28">
+                Type
+              </th>
+              <th className="text-left text-gray-500 font-semibold uppercase tracking-wide pb-2 pr-2 w-24">
+                Amount
+              </th>
+              <th className="text-left text-gray-500 font-semibold uppercase tracking-wide pb-2 pr-2 w-20">
+                Unit
+              </th>
               <th className="w-8 pb-2" />
             </tr>
           </thead>
@@ -328,16 +352,25 @@ function PricingTab({
             {pricing.lineItems.map((li) => (
               <tr key={li.id} className="group">
                 <td className="py-1.5 pr-2">
-                  <input value={li.category} onChange={(e) => updateItem(li.id, 'category', e.target.value)}
-                    className="w-full border border-transparent hover:border-gray-200 focus:border-blue-400 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500/20 bg-transparent" />
+                  <input
+                    value={li.category}
+                    onChange={(e) => updateItem(li.id, 'category', e.target.value)}
+                    className="w-full border border-transparent hover:border-gray-200 focus:border-blue-400 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500/20 bg-transparent"
+                  />
                 </td>
                 <td className="py-1.5 pr-2">
-                  <input value={li.description} onChange={(e) => updateItem(li.id, 'description', e.target.value)}
-                    className="w-full border border-transparent hover:border-gray-200 focus:border-blue-400 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500/20 bg-transparent" />
+                  <input
+                    value={li.description}
+                    onChange={(e) => updateItem(li.id, 'description', e.target.value)}
+                    className="w-full border border-transparent hover:border-gray-200 focus:border-blue-400 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500/20 bg-transparent"
+                  />
                 </td>
                 <td className="py-1.5 pr-2">
-                  <select value={li.type} onChange={(e) => updateItem(li.id, 'type', e.target.value)}
-                    className="w-full border border-gray-200 rounded px-1.5 py-1 focus:outline-none text-xs bg-white">
+                  <select
+                    value={li.type}
+                    onChange={(e) => updateItem(li.id, 'type', e.target.value)}
+                    className="w-full border border-gray-200 rounded px-1.5 py-1 focus:outline-none text-xs bg-white"
+                  >
                     <option value="one-time">One-time</option>
                     <option value="recurring">Recurring</option>
                     <option value="per-transaction">Per-transaction</option>
@@ -345,16 +378,26 @@ function PricingTab({
                   </select>
                 </td>
                 <td className="py-1.5 pr-2">
-                  <input type="number" value={li.amount} onChange={(e) => updateItem(li.id, 'amount', Number(e.target.value))}
-                    className="w-full border border-transparent hover:border-gray-200 focus:border-blue-400 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500/20 bg-transparent" />
+                  <input
+                    type="number"
+                    value={li.amount}
+                    onChange={(e) => updateItem(li.id, 'amount', Number(e.target.value))}
+                    className="w-full border border-transparent hover:border-gray-200 focus:border-blue-400 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500/20 bg-transparent"
+                  />
                 </td>
                 <td className="py-1.5 pr-2">
-                  <input value={li.unit} onChange={(e) => updateItem(li.id, 'unit', e.target.value)}
-                    className="w-full border border-transparent hover:border-gray-200 focus:border-blue-400 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500/20 bg-transparent" />
+                  <input
+                    value={li.unit}
+                    onChange={(e) => updateItem(li.id, 'unit', e.target.value)}
+                    className="w-full border border-transparent hover:border-gray-200 focus:border-blue-400 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500/20 bg-transparent"
+                  />
                 </td>
                 <td className="py-1.5">
-                  <button onClick={() => removeItem(li.id)} aria-label="Remove pricing line item"
-                    className="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500 p-0.5">
+                  <button
+                    onClick={() => removeItem(li.id)}
+                    aria-label="Remove pricing line item"
+                    className="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500 p-0.5"
+                  >
                     <Trash2 size={13} />
                   </button>
                 </td>
@@ -363,34 +406,51 @@ function PricingTab({
           </tbody>
         </table>
       </div>
-      <button onClick={addItem}
-        className="flex items-center gap-1.5 border border-dashed border-gray-300 text-gray-500 hover:border-blue-400 hover:text-blue-600 px-3 py-1.5 rounded-lg text-xs font-medium w-full justify-center mb-6">
+      <button
+        onClick={addItem}
+        className="flex items-center gap-1.5 border border-dashed border-gray-300 text-gray-500 hover:border-blue-400 hover:text-blue-600 px-3 py-1.5 rounded-lg text-xs font-medium w-full justify-center mb-6"
+      >
         <Plus size={13} /> Add Line Item
       </button>
 
       <div className="grid grid-cols-3 gap-4 p-4 bg-gray-50 rounded-xl border border-gray-200">
         <div>
-          <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Implementation Fee</label>
+          <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">
+            Implementation Fee
+          </label>
           <div className="flex items-center gap-1">
             <span className="text-xs text-gray-400">{pricing.currency}</span>
-            <input type="number" value={pricing.implementationFee}
+            <input
+              type="number"
+              value={pricing.implementationFee}
               onChange={(e) => onUpdate({ ...pricing, implementationFee: Number(e.target.value) })}
-              className="w-full border border-gray-200 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20" />
+              className="w-full border border-gray-200 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+            />
           </div>
         </div>
         <div>
-          <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Annual Recurring</label>
+          <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">
+            Annual Recurring
+          </label>
           <div className="flex items-center gap-1">
             <span className="text-xs text-gray-400">{pricing.currency}</span>
-            <input type="number" value={pricing.annualRecurring}
+            <input
+              type="number"
+              value={pricing.annualRecurring}
               onChange={(e) => onUpdate({ ...pricing, annualRecurring: Number(e.target.value) })}
-              className="w-full border border-gray-200 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20" />
+              className="w-full border border-gray-200 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+            />
           </div>
         </div>
         <div>
-          <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Currency</label>
-          <select value={pricing.currency} onChange={(e) => onUpdate({ ...pricing, currency: e.target.value })}
-            className="w-full border border-gray-200 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 bg-white">
+          <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">
+            Currency
+          </label>
+          <select
+            value={pricing.currency}
+            onChange={(e) => onUpdate({ ...pricing, currency: e.target.value })}
+            className="w-full border border-gray-200 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 bg-white"
+          >
             <option value="USD">USD</option>
             <option value="CAD">CAD</option>
             <option value="EUR">EUR</option>
@@ -448,48 +508,70 @@ function TimelineTab({
         {milestones.map((m) => (
           <div key={m.id} className="border border-gray-200 rounded-xl p-4 group">
             <div className="flex items-center gap-3 mb-3">
-              <input value={m.phase} onChange={(e) => updateM(m.id, 'phase', e.target.value)}
+              <input
+                value={m.phase}
+                onChange={(e) => updateM(m.id, 'phase', e.target.value)}
                 placeholder="Phase name"
-                className="flex-1 border-b border-transparent hover:border-gray-300 focus:border-blue-400 focus:outline-none text-sm font-semibold text-gray-800 bg-transparent pb-0.5" />
+                className="flex-1 border-b border-transparent hover:border-gray-300 focus:border-blue-400 focus:outline-none text-sm font-semibold text-gray-800 bg-transparent pb-0.5"
+              />
               <button
                 onClick={() => cycleStatus(m.id)}
                 aria-label={`Milestone status: ${m.status}. Click to cycle`}
-                className={`text-[10px] font-semibold px-2.5 py-1 rounded-full capitalize cursor-pointer ${STATUS_COLORS_TL[m.status]}`}>
+                className={`text-[10px] font-semibold px-2.5 py-1 rounded-full capitalize cursor-pointer ${STATUS_COLORS_TL[m.status]}`}
+              >
                 {m.status.replace('-', ' ')}
               </button>
-              <button onClick={() => onUpdate(milestones.filter((x) => x.id !== m.id))}
+              <button
+                onClick={() => onUpdate(milestones.filter((x) => x.id !== m.id))}
                 aria-label="Remove milestone"
-                className="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500">
+                className="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500"
+              >
                 <Trash2 size={13} />
               </button>
             </div>
-            <input value={m.description} onChange={(e) => updateM(m.id, 'description', e.target.value)}
+            <input
+              value={m.description}
+              onChange={(e) => updateM(m.id, 'description', e.target.value)}
               placeholder="Description"
-              className="w-full border border-transparent hover:border-gray-200 focus:border-blue-400 rounded px-2 py-1 text-xs text-gray-600 focus:outline-none mb-2 bg-transparent" />
+              className="w-full border border-transparent hover:border-gray-200 focus:border-blue-400 rounded px-2 py-1 text-xs text-gray-600 focus:outline-none mb-2 bg-transparent"
+            />
             <div className="grid grid-cols-3 gap-2 text-xs">
               <div>
                 <label className="text-gray-400 font-medium">Start Week</label>
-                <input type="number" value={m.startWeek} min={1}
+                <input
+                  type="number"
+                  value={m.startWeek}
+                  min={1}
                   onChange={(e) => updateM(m.id, 'startWeek', Number(e.target.value))}
-                  className="w-full mt-0.5 border border-gray-200 rounded px-2 py-1 focus:outline-none" />
+                  className="w-full mt-0.5 border border-gray-200 rounded px-2 py-1 focus:outline-none"
+                />
               </div>
               <div>
                 <label className="text-gray-400 font-medium">Duration (weeks)</label>
-                <input type="number" value={m.durationWeeks} min={1}
+                <input
+                  type="number"
+                  value={m.durationWeeks}
+                  min={1}
                   onChange={(e) => updateM(m.id, 'durationWeeks', Number(e.target.value))}
-                  className="w-full mt-0.5 border border-gray-200 rounded px-2 py-1 focus:outline-none" />
+                  className="w-full mt-0.5 border border-gray-200 rounded px-2 py-1 focus:outline-none"
+                />
               </div>
               <div>
                 <label className="text-gray-400 font-medium">Owner</label>
-                <input value={m.owner} onChange={(e) => updateM(m.id, 'owner', e.target.value)}
-                  className="w-full mt-0.5 border border-gray-200 rounded px-2 py-1 focus:outline-none" />
+                <input
+                  value={m.owner}
+                  onChange={(e) => updateM(m.id, 'owner', e.target.value)}
+                  className="w-full mt-0.5 border border-gray-200 rounded px-2 py-1 focus:outline-none"
+                />
               </div>
             </div>
           </div>
         ))}
       </div>
-      <button onClick={addMilestone}
-        className="flex items-center gap-1.5 border border-dashed border-gray-300 text-gray-500 hover:border-blue-400 hover:text-blue-600 px-3 py-2 rounded-xl text-xs font-medium w-full justify-center">
+      <button
+        onClick={addMilestone}
+        className="flex items-center gap-1.5 border border-dashed border-gray-300 text-gray-500 hover:border-blue-400 hover:text-blue-600 px-3 py-2 rounded-xl text-xs font-medium w-full justify-center"
+      >
         <Plus size={13} /> Add Milestone
       </button>
     </div>
@@ -530,24 +612,51 @@ function SLAsTab({
           <table className="w-full text-xs border-collapse">
             <thead>
               <tr className="border-b border-gray-200">
-                {['Category', 'Metric', 'Target', 'Measurement', 'Penalty', 'Current Perf.', ''].map((h) => (
-                  <th key={h} className="text-left text-gray-500 font-semibold uppercase tracking-wide pb-2 pr-2 whitespace-nowrap">{h}</th>
+                {[
+                  'Category',
+                  'Metric',
+                  'Target',
+                  'Measurement',
+                  'Penalty',
+                  'Current Perf.',
+                  '',
+                ].map((h) => (
+                  <th
+                    key={h}
+                    className="text-left text-gray-500 font-semibold uppercase tracking-wide pb-2 pr-2 whitespace-nowrap"
+                  >
+                    {h}
+                  </th>
                 ))}
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
               {slas.map((s) => (
                 <tr key={s.id} className="group">
-                  {(['category', 'metric', 'target', 'measurement', 'penalty', 'currentPerformance'] as const).map((field) => (
+                  {(
+                    [
+                      'category',
+                      'metric',
+                      'target',
+                      'measurement',
+                      'penalty',
+                      'currentPerformance',
+                    ] as const
+                  ).map((field) => (
                     <td key={field} className="py-1.5 pr-2">
-                      <input value={s[field]} onChange={(e) => updateS(s.id, field, e.target.value)}
-                        className="w-full border border-transparent hover:border-gray-200 focus:border-blue-400 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500/20 bg-transparent min-w-[80px]" />
+                      <input
+                        value={s[field]}
+                        onChange={(e) => updateS(s.id, field, e.target.value)}
+                        className="w-full border border-transparent hover:border-gray-200 focus:border-blue-400 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500/20 bg-transparent min-w-[80px]"
+                      />
                     </td>
                   ))}
                   <td className="py-1.5">
-                    <button onClick={() => onUpdate(slas.filter((x) => x.id !== s.id))}
+                    <button
+                      onClick={() => onUpdate(slas.filter((x) => x.id !== s.id))}
                       aria-label="Remove SLA commitment"
-                      className="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500 p-0.5">
+                      className="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500 p-0.5"
+                    >
                       <Trash2 size={13} />
                     </button>
                   </td>
@@ -557,8 +666,10 @@ function SLAsTab({
           </table>
         </div>
       )}
-      <button onClick={addSLA}
-        className="flex items-center gap-1.5 border border-dashed border-gray-300 text-gray-500 hover:border-blue-400 hover:text-blue-600 px-3 py-1.5 rounded-lg text-xs font-medium w-full justify-center">
+      <button
+        onClick={addSLA}
+        className="flex items-center gap-1.5 border border-dashed border-gray-300 text-gray-500 hover:border-blue-400 hover:text-blue-600 px-3 py-1.5 rounded-lg text-xs font-medium w-full justify-center"
+      >
         <Plus size={13} /> Add SLA Commitment
       </button>
     </div>
@@ -607,7 +718,9 @@ function VersionsTab({
         <input
           value={label}
           onChange={(e) => setLabel(e.target.value)}
-          onKeyDown={(e) => { if (e.key === 'Enter') handleSave(); }}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') handleSave();
+          }}
           placeholder="Version label (optional)…"
           className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400"
         />
@@ -628,13 +741,18 @@ function VersionsTab({
       ) : (
         <div className="space-y-2">
           {[...versions].reverse().map((v) => (
-            <div key={v.timestamp} className="flex items-center justify-between border border-gray-200 rounded-xl px-4 py-3 hover:border-gray-300 group">
+            <div
+              key={v.timestamp}
+              className="flex items-center justify-between border border-gray-200 rounded-xl px-4 py-3 hover:border-gray-300 group"
+            >
               <div className="min-w-0">
                 <span className="font-medium text-sm text-gray-800">{v.label}</span>
                 <div className="flex items-center gap-2 mt-0.5">
                   <span className="text-xs text-gray-400">{formatRelative(v.timestamp)}</span>
                   <span className="text-gray-300">·</span>
-                  <span className="text-xs text-gray-400">{new Date(v.timestamp).toLocaleString()}</span>
+                  <span className="text-xs text-gray-400">
+                    {new Date(v.timestamp).toLocaleString()}
+                  </span>
                   <span className="text-gray-300">·</span>
                   <span className="text-xs text-gray-400">{v.data.questions.length} questions</span>
                 </div>
@@ -652,13 +770,18 @@ function VersionsTab({
                   onClick={() => {
                     const vCount = v.data.questions?.length ?? 0;
                     const diff = vCount - currentQuestionCount;
-                    const diffStr = diff === 0 ? 'same number of questions' : `${Math.abs(diff)} question${Math.abs(diff) === 1 ? '' : 's'} ${diff > 0 ? 'more' : 'fewer'}`;
+                    const diffStr =
+                      diff === 0
+                        ? 'same number of questions'
+                        : `${Math.abs(diff)} question${Math.abs(diff) === 1 ? '' : 's'} ${diff > 0 ? 'more' : 'fewer'}`;
                     const saved = formatRelative(v.timestamp);
-                    if (window.confirm(
-                      `Restore "${v.label}" (saved ${saved})?\n\n` +
-                      `This version has ${vCount} questions (${diffStr} than current).\n\n` +
-                      `Your current unsaved changes will be lost. This cannot be undone.`
-                    )) {
+                    if (
+                      window.confirm(
+                        `Restore "${v.label}" (saved ${saved})?\n\n` +
+                          `This version has ${vCount} questions (${diffStr} than current).\n\n` +
+                          `Your current unsaved changes will be lost. This cannot be undone.`,
+                      )
+                    ) {
                       onRestore(v);
                     }
                   }}
@@ -698,13 +821,24 @@ const TABS: { key: SettingsTab; icon: React.ElementType; label: string }[] = [
 
 export default function SettingsPanel({
   onClose,
-  kb, onUpdateKB, onSaveKB,
-  globalRules, onUpdateRules,
-  validationRules, onUpdateValidationRules,
-  pricing, onUpdatePricing,
-  milestones, onUpdateMilestones,
-  slas, onUpdateSLAs,
-  versions, onSaveVersion, onDeleteVersion, onRestoreVersion, currentQuestionCount,
+  kb,
+  onUpdateKB,
+  onSaveKB,
+  globalRules,
+  onUpdateRules,
+  validationRules,
+  onUpdateValidationRules,
+  pricing,
+  onUpdatePricing,
+  milestones,
+  onUpdateMilestones,
+  slas,
+  onUpdateSLAs,
+  versions,
+  onSaveVersion,
+  onDeleteVersion,
+  onRestoreVersion,
+  currentQuestionCount,
 }: SettingsPanelProps) {
   const [activeTab, setActiveTab] = useState<SettingsTab>('workspace');
 
@@ -721,7 +855,9 @@ export default function SettingsPanel({
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 flex-shrink-0">
           <div>
             <h2 className="text-base font-semibold text-gray-900">Settings & Configuration</h2>
-            <p className="text-xs text-gray-500 mt-0.5">Knowledge base, rules, pricing, timeline, SLAs, and version history</p>
+            <p className="text-xs text-gray-500 mt-0.5">
+              Knowledge base, rules, pricing, timeline, SLAs, and version history
+            </p>
           </div>
           <button
             onClick={onClose}
@@ -762,17 +898,19 @@ export default function SettingsPanel({
               onUpdateValidationRules={onUpdateValidationRules}
             />
           )}
-          {activeTab === 'pricing' && (
-            <PricingTab pricing={pricing} onUpdate={onUpdatePricing} />
-          )}
+          {activeTab === 'pricing' && <PricingTab pricing={pricing} onUpdate={onUpdatePricing} />}
           {activeTab === 'timeline' && (
             <TimelineTab milestones={milestones} onUpdate={onUpdateMilestones} />
           )}
-          {activeTab === 'slas' && (
-            <SLAsTab slas={slas} onUpdate={onUpdateSLAs} />
-          )}
+          {activeTab === 'slas' && <SLAsTab slas={slas} onUpdate={onUpdateSLAs} />}
           {activeTab === 'versions' && (
-            <VersionsTab versions={versions} onSave={onSaveVersion} onDelete={onDeleteVersion} onRestore={onRestoreVersion} currentQuestionCount={currentQuestionCount} />
+            <VersionsTab
+              versions={versions}
+              onSave={onSaveVersion}
+              onDelete={onDeleteVersion}
+              onRestore={onRestoreVersion}
+              currentQuestionCount={currentQuestionCount}
+            />
           )}
         </div>
       </div>

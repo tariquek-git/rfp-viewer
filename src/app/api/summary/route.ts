@@ -78,12 +78,16 @@ Return ONLY valid JSON.`,
     });
 
     const content = message.content[0].type === 'text' ? message.content[0].text : '{}';
-    const result = parseAIJson(content, {
-      coverLetter: 'Failed to generate',
-      strengthsSummary: 'Failed to generate',
-      riskAreas: 'Failed to generate',
-      recommendation: 'Failed to generate',
-    }, 'summary');
+    const result = parseAIJson(
+      content,
+      {
+        coverLetter: 'Failed to generate',
+        strengthsSummary: 'Failed to generate',
+        riskAreas: 'Failed to generate',
+        recommendation: 'Failed to generate',
+      },
+      'summary',
+    );
 
     return NextResponse.json(result);
   } catch (error) {

@@ -105,13 +105,51 @@ function AppHeaderInner({
     setShowSettings(true);
   }, [state, setShowSettings]);
 
-  const iconButtons: { icon: React.ElementType; label: string; active: boolean; onClick: () => void; activeClass: string; dataTour?: string }[] = [
-    { icon: Target, label: 'Win Themes', active: state.showWinThemes, onClick: onToggleWinThemes, activeClass: 'text-violet-600 bg-violet-50' },
-    { icon: BookOpen, label: 'Rules', active: state.showRules, onClick: onToggleRules, activeClass: 'text-blue-600 bg-blue-50' },
-    { icon: ClipboardList, label: 'Checklist', active: false, onClick: onShowChecklist, activeClass: '' },
-    { icon: FileStack, label: 'Templates', active: false, onClick: onShowTemplates, activeClass: '' },
+  const iconButtons: {
+    icon: React.ElementType;
+    label: string;
+    active: boolean;
+    onClick: () => void;
+    activeClass: string;
+    dataTour?: string;
+  }[] = [
+    {
+      icon: Target,
+      label: 'Win Themes',
+      active: state.showWinThemes,
+      onClick: onToggleWinThemes,
+      activeClass: 'text-violet-600 bg-violet-50',
+    },
+    {
+      icon: BookOpen,
+      label: 'Rules',
+      active: state.showRules,
+      onClick: onToggleRules,
+      activeClass: 'text-blue-600 bg-blue-50',
+    },
+    {
+      icon: ClipboardList,
+      label: 'Checklist',
+      active: false,
+      onClick: onShowChecklist,
+      activeClass: '',
+    },
+    {
+      icon: FileStack,
+      label: 'Templates',
+      active: false,
+      onClick: onShowTemplates,
+      activeClass: '',
+    },
     { icon: Keyboard, label: 'Keys', active: false, onClick: onShowShortcuts, activeClass: '' },
-    { icon: Settings, label: 'Settings', active: showSettings, onClick: onShowSettings, activeClass: 'text-gray-700 bg-gray-100', dataTour: 'tour-settings-btn' },
+    {
+      icon: Settings,
+      label: 'Settings',
+      active: showSettings,
+      onClick: onShowSettings,
+      activeClass: 'text-gray-700 bg-gray-100',
+      dataTour: 'tour-settings-btn',
+    },
   ];
 
   return (
@@ -171,7 +209,10 @@ function AppHeaderInner({
       {/* Right side */}
       <div className="flex items-center gap-2">
         <ProgressBar {...state.statusCounts} />
-        <div data-tour="tour-confidence-stats" className="flex items-center gap-1.5 text-[10px] font-medium">
+        <div
+          data-tour="tour-confidence-stats"
+          className="flex items-center gap-1.5 text-[10px] font-medium"
+        >
           <button
             onClick={() => onFilterConfidence?.('GREEN')}
             title="Filter by GREEN confidence"

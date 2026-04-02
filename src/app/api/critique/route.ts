@@ -56,7 +56,11 @@ Be specific. Reference actual content from the response. Return ONLY valid JSON.
     });
 
     const content = message.content[0].type === 'text' ? message.content[0].text : '{}';
-    const result = parseAIJson(content, { strengths: [], weaknesses: [], suggestions: [], score: 5 }, 'critique');
+    const result = parseAIJson(
+      content,
+      { strengths: [], weaknesses: [], suggestions: [], score: 5 },
+      'critique',
+    );
 
     return NextResponse.json(result);
   } catch (error) {

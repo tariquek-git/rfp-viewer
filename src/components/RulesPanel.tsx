@@ -52,8 +52,12 @@ export default function RulesPanel({
       <div className="absolute right-0 top-0 bottom-0 w-full sm:w-[420px] bg-white border-l shadow-2xl z-30 flex flex-col panel-slide-in">
         <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
           <div>
-            <h2 className="text-base font-semibold text-gray-900">AI Writing Rules & Strategic Direction</h2>
-            <p className="text-xs text-gray-500 mt-0.5">Rules that guide how Claude writes and positions Brim responses</p>
+            <h2 className="text-base font-semibold text-gray-900">
+              AI Writing Rules & Strategic Direction
+            </h2>
+            <p className="text-xs text-gray-500 mt-0.5">
+              Rules that guide how Claude writes and positions Brim responses
+            </p>
           </div>
           <button
             onClick={onClose}
@@ -83,7 +87,8 @@ export default function RulesPanel({
           {activeRuleTab === 'global' && (
             <div>
               <p className="text-xs text-gray-500 mb-4">
-                These rules apply to <strong>every response</strong>. Claude follows them when rewriting — tone, positioning, what to emphasize, what to avoid.
+                These rules apply to <strong>every response</strong>. Claude follows them when
+                rewriting — tone, positioning, what to emphasize, what to avoid.
               </p>
               {rules.length === 0 ? (
                 <div className="border-2 border-dashed border-gray-200 rounded-lg p-6 text-center mb-4">

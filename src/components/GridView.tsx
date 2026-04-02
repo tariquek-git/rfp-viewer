@@ -199,7 +199,8 @@ const ALL_COLUMNS: (ColumnDef & { source: ColumnSource })[] = [
     width: 'w-20',
     type: 'badge',
     source: 'analysis',
-    tooltip: 'AI Language Risk: HIGH = AI-sounding phrases detected, MEDIUM = some generic language, LOW = natural human tone',
+    tooltip:
+      'AI Language Risk: HIGH = AI-sounding phrases detected, MEDIUM = some generic language, LOW = natural human tone',
   },
   {
     key: 'rationale',
@@ -397,8 +398,20 @@ const EditableCell = memo(function EditableCell({
         <span className="group-hover:bg-blue-50 group-hover:outline group-hover:outline-1 group-hover:outline-blue-200 rounded px-0.5 -mx-0.5 leading-relaxed">
           {truncated ? value.slice(0, maxLen) + ' ...' : value}
         </span>
-        <span className="absolute top-0 right-0 opacity-0 group-hover:opacity-100 text-blue-400 transition-opacity" title="Edit">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
+        <span
+          className="absolute top-0 right-0 opacity-0 group-hover:opacity-100 text-blue-400 transition-opacity"
+          title="Edit"
+        >
+          <svg
+            width="12"
+            height="12"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
+            <path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
+          </svg>
         </span>
       </div>
       <div className="flex items-center gap-2 mt-0.5">
@@ -774,7 +787,7 @@ export default function GridView({
       case 'committee_score':
         return <ScoreCell value={q.committee_score} />;
       case 'feedback_count': {
-        const fbItems = feedbackItems.filter(f => f.ref === q.ref && !f.resolved);
+        const fbItems = feedbackItems.filter((f) => f.ref === q.ref && !f.resolved);
         if (fbItems.length === 0) return <span className="text-gray-300">0</span>;
         return (
           <span className="text-xs font-bold px-2 py-0.5 rounded bg-amber-50 text-amber-700 border border-amber-200">
@@ -783,12 +796,17 @@ export default function GridView({
         );
       }
       case 'feedback_bullet': {
-        const fbBullet = feedbackItems.filter(f => f.ref === q.ref && f.field === 'bullet' && !f.resolved);
+        const fbBullet = feedbackItems.filter(
+          (f) => f.ref === q.ref && f.field === 'bullet' && !f.resolved,
+        );
         if (fbBullet.length === 0) return <span className="text-gray-300">—</span>;
         return (
           <div className="space-y-1">
-            {fbBullet.slice(0, 3).map(f => (
-              <div key={f.timestamp} className="text-xs bg-amber-50 border border-amber-200 rounded px-2 py-1 text-amber-800">
+            {fbBullet.slice(0, 3).map((f) => (
+              <div
+                key={f.timestamp}
+                className="text-xs bg-amber-50 border border-amber-200 rounded px-2 py-1 text-amber-800"
+              >
                 {f.comment.length > 120 ? f.comment.slice(0, 120) + '...' : f.comment}
               </div>
             ))}
@@ -796,12 +814,17 @@ export default function GridView({
         );
       }
       case 'feedback_paragraph': {
-        const fbPara = feedbackItems.filter(f => f.ref === q.ref && f.field === 'paragraph' && !f.resolved);
+        const fbPara = feedbackItems.filter(
+          (f) => f.ref === q.ref && f.field === 'paragraph' && !f.resolved,
+        );
         if (fbPara.length === 0) return <span className="text-gray-300">—</span>;
         return (
           <div className="space-y-1">
-            {fbPara.slice(0, 3).map(f => (
-              <div key={f.timestamp} className="text-xs bg-amber-50 border border-amber-200 rounded px-2 py-1 text-amber-800">
+            {fbPara.slice(0, 3).map((f) => (
+              <div
+                key={f.timestamp}
+                className="text-xs bg-amber-50 border border-amber-200 rounded px-2 py-1 text-amber-800"
+              >
                 {f.comment.length > 120 ? f.comment.slice(0, 120) + '...' : f.comment}
               </div>
             ))}
@@ -813,15 +836,16 @@ export default function GridView({
 
         // Bullet and paragraph: click opens DetailPanel for full editing + AI tools
         if (col.key === 'bullet' || col.key === 'paragraph') {
-          if (!val) return (
-            <span
-              className="text-gray-300 italic cursor-pointer hover:text-blue-400"
-              onClick={() => onSelectQuestion(q)}
-              title="Click to open and edit"
-            >
-              — click to add
-            </span>
-          );
+          if (!val)
+            return (
+              <span
+                className="text-gray-300 italic cursor-pointer hover:text-blue-400"
+                onClick={() => onSelectQuestion(q)}
+                title="Click to open and edit"
+              >
+                — click to add
+              </span>
+            );
           const wc = countWords(val);
           const wcColor = getWordCountColor(wc);
           const truncated = val.length > 180;
@@ -832,10 +856,29 @@ export default function GridView({
               title="Click to open detail panel"
             >
               <span className="group-hover:bg-blue-50 group-hover:outline group-hover:outline-1 group-hover:outline-blue-200 rounded px-0.5 -mx-0.5 leading-relaxed">
-                <Highlight text={truncated ? val.slice(0, 180) + ' ...' : val} query={searchQuery} />
+                <Highlight
+                  text={truncated ? val.slice(0, 180) + ' ...' : val}
+                  query={searchQuery}
+                />
               </span>
-              <span className="absolute top-0 right-0 opacity-0 group-hover:opacity-100 text-blue-400 transition-opacity" title="Open detail">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+              <span
+                className="absolute top-0 right-0 opacity-0 group-hover:opacity-100 text-blue-400 transition-opacity"
+                title="Open detail"
+              >
+                <svg
+                  width="12"
+                  height="12"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                  <polyline points="15 3 21 3 21 9" />
+                  <line x1="10" y1="14" x2="21" y2="3" />
+                </svg>
               </span>
               <div className="flex items-center gap-2 mt-0.5">
                 <span className={`text-[9px] px-1 py-0 rounded ${getWordCountClasses(wcColor)}`}>
@@ -859,7 +902,10 @@ export default function GridView({
         if (!val) return <span className="text-gray-300">—</span>;
         return (
           <span className="leading-relaxed">
-            <Highlight text={val.length > 180 ? val.slice(0, 180) + ' ...' : val} query={searchQuery} />
+            <Highlight
+              text={val.length > 180 ? val.slice(0, 180) + ' ...' : val}
+              query={searchQuery}
+            />
           </span>
         );
       }

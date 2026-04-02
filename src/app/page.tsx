@@ -55,7 +55,9 @@ export default function Home() {
   // Live stats computed from questions array (data.stats may be stale)
   const liveStats = useMemo(() => {
     if (!state.data) return { green: 0, yellow: 0, red: 0, total: 0 };
-    let green = 0, yellow = 0, red = 0;
+    let green = 0,
+      yellow = 0,
+      red = 0;
     for (const q of state.data.questions) {
       const c = (q.confidence || '').trim().toUpperCase();
       if (c === 'GREEN') green++;
@@ -81,7 +83,7 @@ export default function Home() {
       const main = localStorage.getItem(STORAGE_KEYS.EDITS);
       if (!emergency) return;
       const { data: emergencyData, timestamp } = JSON.parse(emergency);
-      const mainTimestamp = main ? (JSON.parse(main) as { _savedAt?: number })._savedAt ?? 0 : 0;
+      const mainTimestamp = main ? ((JSON.parse(main) as { _savedAt?: number })._savedAt ?? 0) : 0;
       if (timestamp > mainTimestamp && emergencyData?.questions?.length) {
         const minutes = Math.round((Date.now() - timestamp) / 60000);
         const label = minutes < 2 ? 'just now' : `${minutes}m ago`;
@@ -98,7 +100,7 @@ export default function Home() {
     } catch {
       /* ignore malformed emergency data */
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // intentionally run only on mount
 
   const { showShortcuts, setShowShortcuts } = useKeyboardShortcuts({
@@ -106,7 +108,10 @@ export default function Home() {
     onNextFlagged: useCallback(() => {
       if (!state.data) return;
       const flagged = state.data.questions.filter((q) => q.status === 'flagged');
-      if (!flagged.length) { state.addToast('info', 'No flagged questions'); return; }
+      if (!flagged.length) {
+        state.addToast('info', 'No flagged questions');
+        return;
+      }
       const currentIdx = flagged.findIndex((q) => q.ref === state.selectedQuestion?.ref);
       const next = flagged[(currentIdx + 1) % flagged.length];
       state.setSelectedQuestion(next);
@@ -115,7 +120,10 @@ export default function Home() {
     onNextRed: useCallback(() => {
       if (!state.data) return;
       const red = state.data.questions.filter((q) => q.confidence === 'RED');
-      if (!red.length) { state.addToast('info', 'No RED confidence questions'); return; }
+      if (!red.length) {
+        state.addToast('info', 'No RED confidence questions');
+        return;
+      }
       const currentIdx = red.findIndex((q) => q.ref === state.selectedQuestion?.ref);
       const next = red[(currentIdx + 1) % red.length];
       state.setSelectedQuestion(next);
@@ -138,11 +146,14 @@ export default function Home() {
 
   // Stable callback — avoids re-rendering GridView rows on every page render
   const { setShowRules, setShowWinThemes, setSelectedQuestion } = state;
-  const handleSelectQuestion = useCallback((q: Parameters<typeof setSelectedQuestion>[0]) => {
-    setShowRules(false);
-    setShowWinThemes(false);
-    setSelectedQuestion(q);
-  }, [setShowRules, setShowWinThemes, setSelectedQuestion]);
+  const handleSelectQuestion = useCallback(
+    (q: Parameters<typeof setSelectedQuestion>[0]) => {
+      setShowRules(false);
+      setShowWinThemes(false);
+      setSelectedQuestion(q);
+    },
+    [setShowRules, setShowWinThemes, setSelectedQuestion],
+  );
 
   const handleConsistencyCheck = useCallback(async () => {
     if (!state.data) return;
@@ -297,7 +308,10 @@ export default function Home() {
 
       {showTour && (
         <TourOverlay
-          onNavigate={(tab) => { state.setActiveTab(tab as Parameters<typeof state.setActiveTab>[0]); state.setSelectedQuestion(null); }}
+          onNavigate={(tab) => {
+            state.setActiveTab(tab as Parameters<typeof state.setActiveTab>[0]);
+            state.setSelectedQuestion(null);
+          }}
           onClose={() => setShowTour(false)}
         />
       )}
@@ -359,14 +373,19 @@ export default function Home() {
           onPushToCloud={state.handlePushToCloud}
           onPullFromCloud={state.handlePullFromCloud}
           onSaveVersion={() => {
-            state.saveVersion(`Snapshot ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`);
+            state.saveVersion(
+              `Snapshot ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`,
+            );
             state.addToast('success', 'Version snapshot saved');
           }}
           onShowVersionCompare={() => state.setShowVersionCompare(true)}
           onConsistencyCheck={handleConsistencyCheck}
           onShowNarrativeAudit={() => state.setShowNarrativeAudit(true)}
           onShowSummary={() => state.setShowSummary(true)}
-          onBulkAiRewrite={() => { state.setActiveTab('humanize'); state.setSelectedQuestion(null); }}
+          onBulkAiRewrite={() => {
+            state.setActiveTab('humanize');
+            state.setSelectedQuestion(null);
+          }}
           needsAttention={liveStats.yellow + liveStats.red}
         />
       )}
@@ -382,7 +401,17 @@ export default function Home() {
         <div className="flex-1 overflow-hidden relative flex flex-col">
           <div className="px-4 py-1 text-xs border-b border-gray-100 bg-gray-50/60 flex items-center gap-1.5 flex-shrink-0 select-none">
             <span className="font-semibold text-gray-600 tracking-tight">
-              {{ grid: 'Response Grid', context: 'Dashboard', humanize: 'AI QA', knowledgebase: 'Knowledge Base', pricing: 'Pricing', timeline: 'Timeline', sla: 'SLAs', compliance: 'Compliance', submission: 'Export' }[state.activeTab] || state.activeTab}
+              {{
+                grid: 'Response Grid',
+                context: 'Dashboard',
+                humanize: 'AI QA',
+                knowledgebase: 'Knowledge Base',
+                pricing: 'Pricing',
+                timeline: 'Timeline',
+                sla: 'SLAs',
+                compliance: 'Compliance',
+                submission: 'Export',
+              }[state.activeTab] || state.activeTab}
             </span>
             {state.activeTab === 'grid' && state.activeCategory !== 'All' && (
               <>
@@ -392,158 +421,166 @@ export default function Home() {
             )}
             {state.activeTab === 'grid' && (
               <span className="ml-auto text-[10px] text-gray-400 tabular-nums">
-                {state.filteredQuestions.length < liveStats.total
-                  ? <><span className="font-semibold text-gray-500">{state.filteredQuestions.length}</span> of {liveStats.total}</>
-                  : <><span className="font-semibold text-gray-500">{liveStats.total}</span> questions</>
-                }
+                {state.filteredQuestions.length < liveStats.total ? (
+                  <>
+                    <span className="font-semibold text-gray-500">
+                      {state.filteredQuestions.length}
+                    </span>{' '}
+                    of {liveStats.total}
+                  </>
+                ) : (
+                  <>
+                    <span className="font-semibold text-gray-500">{liveStats.total}</span> questions
+                  </>
+                )}
               </span>
             )}
           </div>
           <div className="flex-1 overflow-hidden relative">
-          {state.activeTab === 'grid' && (
-            <GridView
-              questions={state.filteredQuestions}
-              totalCount={state.data?.questions.length ?? 0}
-              onClearFilters={handleClearFilters}
-              onSelectQuestion={handleSelectQuestion}
-              onCellEdit={state.handleCellEdit}
-              selectedRows={state.selectedRows}
-              onToggleRow={state.toggleRow}
-              onSelectAll={state.selectAllFiltered}
-              sortConfig={state.sortConfig}
-              onSort={state.setSortConfig}
-              onCycleStatus={state.cycleStatus}
-              pendingDiffKeys={pendingDiffKeys}
-              density={density}
-              onChangeDensity={setDensity}
-              feedbackItems={state.feedbackItems}
-              searchQuery={state.search}
-            />
-          )}
-          {state.activeTab === 'context' && (
-            <ContextView
-              data={state.data}
-              onNavigate={handleDashboardNavigate}
-              onBulkApproveGreen={() => {
-                if (!state.data) return;
-                const toApprove = state.data.questions.filter(
-                  (q) => q.confidence === 'GREEN' && q.status !== 'approved',
-                );
-                toApprove.forEach((q) =>
-                  state.updateQuestion({ ...q, status: 'approved' as const }),
-                );
-                state.addToast(
-                  'success',
-                  `Approved ${toApprove.length} GREEN question${toApprove.length !== 1 ? 's' : ''}`,
-                );
-              }}
-            />
-          )}
-          {state.activeTab === 'knowledgebase' && (
-            <KnowledgeBaseView
-              kb={state.knowledgeBase}
-              onUpdate={state.updateKnowledgeBase}
-              onSave={state.saveToLocal}
-            />
-          )}
-          {state.activeTab === 'pricing' && (
-            <PricingView pricing={state.pricingModel} onUpdate={state.updatePricing} />
-          )}
-          {state.activeTab === 'timeline' && (
-            <TimelineView milestones={state.milestones} onUpdate={state.updateMilestones} />
-          )}
-          {state.activeTab === 'sla' && (
-            <SLAView slas={state.slaCommitments} onUpdate={state.updateSLAs} />
-          )}
-          {state.activeTab === 'compliance' && (
-            <ComplianceView
-              questions={state.filteredQuestions}
-              categories={state.data.categories}
-              onUpdateCompliant={handleUpdateCompliant}
-            />
-          )}
-          {state.activeTab === 'humanize' && (
-            <HumanizeView
-              questions={state.data.questions}
-              onUpdateQuestion={state.updateQuestion}
-              addToast={state.addToast}
-            />
-          )}
-          {state.activeTab === 'submission' && (
-            <SubmissionView
-              questions={state.data.questions}
-              categories={state.data.categories}
-              data={state.data}
-              knowledgeBase={state.knowledgeBase}
-              globalRules={state.globalRules}
-              validationRules={state.validationRules}
-            />
-          )}
+            {state.activeTab === 'grid' && (
+              <GridView
+                questions={state.filteredQuestions}
+                totalCount={state.data?.questions.length ?? 0}
+                onClearFilters={handleClearFilters}
+                onSelectQuestion={handleSelectQuestion}
+                onCellEdit={state.handleCellEdit}
+                selectedRows={state.selectedRows}
+                onToggleRow={state.toggleRow}
+                onSelectAll={state.selectAllFiltered}
+                sortConfig={state.sortConfig}
+                onSort={state.setSortConfig}
+                onCycleStatus={state.cycleStatus}
+                pendingDiffKeys={pendingDiffKeys}
+                density={density}
+                onChangeDensity={setDensity}
+                feedbackItems={state.feedbackItems}
+                searchQuery={state.search}
+              />
+            )}
+            {state.activeTab === 'context' && (
+              <ContextView
+                data={state.data}
+                onNavigate={handleDashboardNavigate}
+                onBulkApproveGreen={() => {
+                  if (!state.data) return;
+                  const toApprove = state.data.questions.filter(
+                    (q) => q.confidence === 'GREEN' && q.status !== 'approved',
+                  );
+                  toApprove.forEach((q) =>
+                    state.updateQuestion({ ...q, status: 'approved' as const }),
+                  );
+                  state.addToast(
+                    'success',
+                    `Approved ${toApprove.length} GREEN question${toApprove.length !== 1 ? 's' : ''}`,
+                  );
+                }}
+              />
+            )}
+            {state.activeTab === 'knowledgebase' && (
+              <KnowledgeBaseView
+                kb={state.knowledgeBase}
+                onUpdate={state.updateKnowledgeBase}
+                onSave={state.saveToLocal}
+              />
+            )}
+            {state.activeTab === 'pricing' && (
+              <PricingView pricing={state.pricingModel} onUpdate={state.updatePricing} />
+            )}
+            {state.activeTab === 'timeline' && (
+              <TimelineView milestones={state.milestones} onUpdate={state.updateMilestones} />
+            )}
+            {state.activeTab === 'sla' && (
+              <SLAView slas={state.slaCommitments} onUpdate={state.updateSLAs} />
+            )}
+            {state.activeTab === 'compliance' && (
+              <ComplianceView
+                questions={state.filteredQuestions}
+                categories={state.data.categories}
+                onUpdateCompliant={handleUpdateCompliant}
+              />
+            )}
+            {state.activeTab === 'humanize' && (
+              <HumanizeView
+                questions={state.data.questions}
+                onUpdateQuestion={state.updateQuestion}
+                addToast={state.addToast}
+              />
+            )}
+            {state.activeTab === 'submission' && (
+              <SubmissionView
+                questions={state.data.questions}
+                categories={state.data.categories}
+                data={state.data}
+                knowledgeBase={state.knowledgeBase}
+                globalRules={state.globalRules}
+                validationRules={state.validationRules}
+              />
+            )}
 
-          {state.showRules && (
-            <RulesPanel
-              onClose={() => state.setShowRules(false)}
-              rules={state.globalRules}
-              onUpdateRules={state.setGlobalRules}
-              validationRules={state.validationRules}
-              onUpdateValidationRules={state.updateValidationRules}
-            />
-          )}
-          {showSettings && (
-            <SettingsPanel
-              onClose={() => setShowSettings(false)}
-              kb={state.knowledgeBase}
-              onUpdateKB={state.updateKnowledgeBase}
-              onSaveKB={state.saveToLocal}
-              globalRules={state.globalRules}
-              onUpdateRules={state.setGlobalRules}
-              validationRules={state.validationRules}
-              onUpdateValidationRules={state.updateValidationRules}
-              pricing={state.pricingModel}
-              onUpdatePricing={state.updatePricing}
-              milestones={state.milestones}
-              onUpdateMilestones={state.updateMilestones}
-              slas={state.slaCommitments}
-              onUpdateSLAs={state.updateSLAs}
-              versions={state.versions}
-              onSaveVersion={state.saveVersion}
-              onDeleteVersion={state.deleteVersion}
-              onRestoreVersion={(v) => {
-                state.loadTemplateData(v.data);
-                state.addToast('success', `Restored "${v.label}" — press ⌘S to save`);
-                setShowSettings(false);
-              }}
-              currentQuestionCount={state.data?.questions.length ?? 0}
-            />
-          )}
-          {state.showWinThemes && (
-            <WinThemesPanel
-              themes={state.winThemes}
-              onUpdate={state.updateWinThemes}
-              questions={state.data.questions}
-              onClose={() => state.setShowWinThemes(false)}
-            />
-          )}
-          {state.selectedQuestion && (
-            <DetailPanel
-              question={state.selectedQuestion}
-              onClose={() => state.setSelectedQuestion(null)}
-              onSave={(updated) => {
-                state.updateQuestion(updated);
-                state.addCellHistory(updated.ref, 'detail-save', '', 'human');
-              }}
-              onAiRewrite={state.handleAiRewrite}
-              cellHistory={state.cellHistory}
-              feedbackItems={state.feedbackItems}
-              onAddFeedback={state.handleAddFeedback}
-              onResolveFeedback={state.handleResolveFeedback}
-              pendingDiffs={state.pendingDiffs}
-              onAcceptDiff={state.acceptDiff}
-              onRejectDiff={state.rejectDiff}
-              onAcceptEditedDiff={state.acceptEditedDiff}
-            />
-          )}
-        </div>
+            {state.showRules && (
+              <RulesPanel
+                onClose={() => state.setShowRules(false)}
+                rules={state.globalRules}
+                onUpdateRules={state.setGlobalRules}
+                validationRules={state.validationRules}
+                onUpdateValidationRules={state.updateValidationRules}
+              />
+            )}
+            {showSettings && (
+              <SettingsPanel
+                onClose={() => setShowSettings(false)}
+                kb={state.knowledgeBase}
+                onUpdateKB={state.updateKnowledgeBase}
+                onSaveKB={state.saveToLocal}
+                globalRules={state.globalRules}
+                onUpdateRules={state.setGlobalRules}
+                validationRules={state.validationRules}
+                onUpdateValidationRules={state.updateValidationRules}
+                pricing={state.pricingModel}
+                onUpdatePricing={state.updatePricing}
+                milestones={state.milestones}
+                onUpdateMilestones={state.updateMilestones}
+                slas={state.slaCommitments}
+                onUpdateSLAs={state.updateSLAs}
+                versions={state.versions}
+                onSaveVersion={state.saveVersion}
+                onDeleteVersion={state.deleteVersion}
+                onRestoreVersion={(v) => {
+                  state.loadTemplateData(v.data);
+                  state.addToast('success', `Restored "${v.label}" — press ⌘S to save`);
+                  setShowSettings(false);
+                }}
+                currentQuestionCount={state.data?.questions.length ?? 0}
+              />
+            )}
+            {state.showWinThemes && (
+              <WinThemesPanel
+                themes={state.winThemes}
+                onUpdate={state.updateWinThemes}
+                questions={state.data.questions}
+                onClose={() => state.setShowWinThemes(false)}
+              />
+            )}
+            {state.selectedQuestion && (
+              <DetailPanel
+                question={state.selectedQuestion}
+                onClose={() => state.setSelectedQuestion(null)}
+                onSave={(updated) => {
+                  state.updateQuestion(updated);
+                  state.addCellHistory(updated.ref, 'detail-save', '', 'human');
+                }}
+                onAiRewrite={state.handleAiRewrite}
+                cellHistory={state.cellHistory}
+                feedbackItems={state.feedbackItems}
+                onAddFeedback={state.handleAddFeedback}
+                onResolveFeedback={state.handleResolveFeedback}
+                pendingDiffs={state.pendingDiffs}
+                onAcceptDiff={state.acceptDiff}
+                onRejectDiff={state.rejectDiff}
+                onAcceptEditedDiff={state.acceptEditedDiff}
+              />
+            )}
+          </div>
         </div>
 
         {/* Modals */}
@@ -613,7 +650,9 @@ export default function Home() {
             { key: '↑↓', label: 'navigate rows' },
           ].map(({ key, label }) => (
             <span key={key} className="flex items-center gap-1">
-              <kbd className="px-1 py-0.5 bg-white rounded text-[9px] font-mono border border-gray-200 shadow-sm">{key}</kbd>
+              <kbd className="px-1 py-0.5 bg-white rounded text-[9px] font-mono border border-gray-200 shadow-sm">
+                {key}
+              </kbd>
               <span>{label}</span>
             </span>
           ))}
@@ -623,14 +662,19 @@ export default function Home() {
         <div className="flex items-center gap-3">
           {state.hasUnsaved && (
             <span className="flex items-center gap-1 text-amber-600 font-medium">
-              <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" /> Unsaved changes
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" /> Unsaved
+              changes
             </span>
           )}
           {state.unresolvedFeedback > 0 && (
-            <span className="text-orange-500 font-medium">{state.unresolvedFeedback} open feedback</span>
+            <span className="text-orange-500 font-medium">
+              {state.unresolvedFeedback} open feedback
+            </span>
           )}
           {state.versions.length > 0 && (
-            <span className="text-gray-400 font-medium">{state.versions.length} version{state.versions.length !== 1 ? 's' : ''}</span>
+            <span className="text-gray-400 font-medium">
+              {state.versions.length} version{state.versions.length !== 1 ? 's' : ''}
+            </span>
           )}
         </div>
       </footer>
