@@ -158,7 +158,7 @@ Email: jacquline.white@brimfinancial.com | Phone: Available on request
 
 Years in Business: Brim Financial was incorporated in 2015 and launched its first live credit card program in 2019. The company has operated continuously under the Brim Financial brand since incorporation.
 
-Ownership Structure: Privately held. Backed by institutional investors including EDC (Export Development Canada), White Owl, Vestara, Zions Bank, goeasy Financial (TSX: GSY), and Desjardins Group. No public listing. No pending IPO or acquisition plans disclosed.
+Ownership Structure: Privately held. Backed by institutional investors including EDC Investments (Export Development Canada), White Owl Group, Vestara, Zions Bank, goeasy Financial (TSX: GSY), and Desjardins Group. No public listing. No pending IPO or acquisition plans disclosed.
 
 Total Employees: ~200 globally, including engineers, implementation specialists, compliance/risk professionals, and client success teams.`,
       'HIGH', 'FULL', '10/10', 'Company Background'
@@ -170,7 +170,7 @@ Total Employees: ~200 globally, including engineers, implementation specialists,
 
 Live Programs:
 
-MANULIFE BANK (Manulife Vitality Mastercard / Visa) — Consumer, Mastercard and Visa. Health-rewards card linking spend to Vitality benefit milestones (fitness goals, health screenings, wellness activity). MANULIFE BANK is a Schedule I federally chartered bank serving 550,000 banking clients through a network of 55,000 financial advisors — part of the 7M+ client Manulife parent ecosystem. The card program is positioned to grow into that broader advisor-referred client base. Converted from Fiserv. Brim replaced the legacy infrastructure end-to-end: real-time onboarding, instant virtual issuance, a unified cardholder experience, and a rewards engine integrated directly with the Vitality health program. Live Q3 2025.
+MANULIFE BANK (Manulife Vitality Visa) — Consumer, Visa. Health-rewards card linking spend to Vitality benefit milestones (fitness goals, health screenings, wellness activity). MANULIFE BANK is a Schedule I federally chartered bank serving 550,000 banking clients through a network of 55,000 financial advisors — part of the 7M+ client Manulife parent ecosystem. The card program is positioned to grow into that broader advisor-referred client base. Converted from Fiserv. Brim replaced the legacy infrastructure end-to-end: real-time onboarding, instant virtual issuance, a unified cardholder experience, and a rewards engine integrated directly with the Vitality health program. Live Q3 2025.
 
 AFFINITY CREDIT UNION — Consumer and business, Mastercard. Community-focused rewards program with spend-based earn rates and a local merchant-funded rewards ecosystem built around cooperative values. Saskatchewan's largest credit union. Converted from a traditional agent banking infrastructure (Valera/Collabria), where the CU had no control over the member experience. On Brim, AFFINITY owns the full program: card design, pricing, credit policy, rewards structure, and servicing. Consumer cards live since 2022; business cards added 2024.
 
@@ -186,7 +186,7 @@ MOMENTUM FINANCIAL / MONEY MART — Consumer secured and prepaid cards. Serving 
 
 ZOOMER / CARP — Consumer lifestyle-based rewards card for the 50+ segment. Targeted rewards tied to the CARP member ecosystem and lifestyle spending categories.
 
-Platform: 7+ years of live issuing operations. TSYS (TMS platform) as core processor. Mastercard network — direct Principal Member for Canadian programs; CONTINENTAL BANK as US sponsor bank. Visa BIN issued through LAURENTIAN BANK. 100% institutional client retention since launch.`,
+Platform: 7+ years of live issuing operations. TSYS (TMS platform) as core processor. Both Mastercard and Visa networks — Brim operates programs on both (e.g., MANULIFE BANK on Visa; ZOLVE/CONTINENTAL BANK and AFFINITY CREDIT UNION on Mastercard). US programs via Continental Bank sponsorship. 100% institutional client retention since launch.`,
       'HIGH', 'FULL', '10/10', 'Company Background'
     ),
     ...question(
@@ -236,9 +236,12 @@ Financial Information: As a private company, Brim does not publish public financ
 
 Market Position: Brim is the only Canadian-headquartered, full-stack credit card Platform-as-a-Service vendor operating live programs in both Canada and the US. In the community bank and credit union agent banking segment, Brim competes with FIS, Jack Henry (Zelle-integrated), and legacy processors. Brim differentiates on configurability, speed-to-market, and commercial model transparency.
 
-Implementation vs. Annuity: Approximately 25% implementation services revenue / 75% recurring annuity (platform fees, processing revenue, support).
+Organizational Stability: No pending mergers, acquisitions, or structural changes. No public-to-private or private-to-public transition planned. No regulatory findings, enforcement actions, or material litigation in the past 5 years.
 
-Organizational Stability: No pending mergers, acquisitions, or structural changes. No public-to-private or private-to-public transition planned. Leadership team has been stable with no C-suite changes in the past 24 months. No regulatory findings, enforcement actions, or material litigation in the past 5 years.
+Leadership Team:
+• Rasha Katabi — Founder & CEO. Founded Brim in 2017. Built the platform from the ground up as Canada's only full-stack credit card PaaS.
+• Jacquline White — EVP, Growth and Customer Experience. Leads sales, partnerships, and client experience across Brim's FI portfolio.
+• Abraham Tachjian — SVP, Office of the CEO & Chief Regulatory Affairs Officer. Former federally appointed open banking lead for the Department of Finance Canada (2022–2023); former director at PwC Canada. Joined Brim to lead regulatory strategy and compliance positioning as the platform scales into the US and as Canada's open banking framework matures.
 
 D&B Report: Available upon request under NDA.`,
       'HIGH', 'FULL', '9/10', 'Company Background'
@@ -426,7 +429,7 @@ Relevance to BSB: This is the closest direct analog to BSB's proposed agent bank
 Contact: Available upon request
 
 Reference 3 — MANULIFE BANK
-Program Type: Consumer Mastercard and Visa — health-rewards program, full platform conversion from legacy processor
+Program Type: Consumer Visa — health-rewards program, full platform conversion from legacy processor
 Program Duration: Live 2025
 Description: MANULIFE BANK is a Schedule I federally chartered bank and wholly-owned subsidiary of The Manufacturers Life Insurance Company, serving 550,000+ clients through 55,000 financial advisors. MANULIFE BANK converted its consumer credit card program to Brim from FISERV — a full platform migration of an established card portfolio at a major regulated financial institution.
 
