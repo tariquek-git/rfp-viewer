@@ -434,21 +434,20 @@ SETUP & IMPLEMENTATION:
 • Testing and UAT support: Included in implementation fee
 
 ONGOING PLATFORM FEES (Annual):
-• Platform access fee: Volume-tiered annual fee (based on program scale)
-• Per-active-account fee: $2.50 – $4.50/account/month (volume tiers; pricing decreases at 10K, 25K, 50K+ accounts)
-• Authorization processing: Pass-through TSYS fees + Brim margin (disclosed)
-• Card production: Pass-through IDEMIA costs (approx. $3–5/card)
+• Platform access fee: Volume-tiered annual fee based on program scale
+• Per-active-account fee: Volume-tiered (pricing decreases at scale thresholds)
+• Authorization processing: Pass-through processor fees + Brim margin (disclosed)
+• Card production: Pass-through at cost
 • Rewards fulfillment: Pass-through at cost + margin (disclosed)
 
 PROFESSIONAL SERVICES (Post-Launch):
-• Rate: $175 – $225/hour for custom development / integrations
-• Custom changes via change order process; SOW-based
+• Custom development and integrations: SOW-based, per change order process
 
-ANNUAL COST INCREASES: Average 3–5% per year (CPI-indexed). No surprise increases. Multi-year contracts available with fixed pricing.
+ANNUAL COST INCREASES: CPI-indexed. No surprise increases. Multi-year contracts available with fixed pricing.
 
-5-YEAR TCO ESTIMATE: For a BSB program launching with 3,000 accounts and scaling to 15,000 accounts by Year 5, estimated 5-year TCO: $2.8M – $4.2M (inclusive of implementation, platform fees, processing, and card production). Detailed TCO model provided upon request.
+API Access: Included in platform fee. No per-call API charges. Sandbox environment: Included.
 
-API Access: Included in platform fee. No per-call API charges. Sandbox environment: Included.`,
+Detailed pricing is provided separately as part of the formal proposal.`,
       'HIGH',
       'FULL',
       '9/10',
@@ -457,30 +456,9 @@ API Access: Included in platform fee. No per-call API charges. Sandbox environme
     ...question(
       'Q5.3 — Total Cost of Ownership',
       'What is the estimated 5-year total cost of ownership for the proposed software solution?',
-      `5-Year TCO Model (Illustrative — BSB Program):
+      `Brim provides a detailed 5-year TCO model using BSB's actual program assumptions — account volume ramp, average balance, transaction activity, and product mix. The model covers implementation costs, platform fees, processing costs, card production, and rewards fulfillment, offset against projected interchange income, net interest income, and fee income.
 
-Assumptions:
-• Program launch: Q1 2027
-• Year 1: 3,000 active accounts; Year 3: 8,000; Year 5: 18,000
-• Average balance per account: $3,500
-• Average transactions/account/month: 12
-
-Year-by-Year Cost Summary:
-• Year 1: ~$580K (implementation $200K + platform $180K + processing/ops $200K)
-• Year 2: ~$420K (platform fees + processing)
-• Year 3: ~$520K (growing account base)
-• Year 4: ~$620K
-• Year 5: ~$780K
-
-Cumulative 5-Year TCO: ~$2.9M
-
-Revenue Offset (Illustrative): At Year 5 with 18,000 accounts at $3,500 avg balance:
-• Net interest income: ~$2.5M–$3.5M/year (at 3–4% NIM after program economics)
-• Interchange income: ~$400K–$600K/year
-• Fee income: ~$150–$250K/year
-• Total revenue Year 5: ~$3.2M–$4.3M — delivering positive program ROI by Year 3
-
-A fully customized financial model using BSB's actual assumptions will be provided during vendor demos.`,
+A customized TCO and program ROI model will be provided as part of the formal proposal and vendor demo process. BSB's program economics will be modeled against comparable Brim client programs to set realistic benchmarks.`,
       'HIGH',
       'FULL',
       '10/10',
