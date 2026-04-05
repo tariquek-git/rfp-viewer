@@ -62,8 +62,16 @@ function applyHeader(ws: ExcelJS.Worksheet, headers: string[], widths: number[])
 }
 
 export async function POST(request: Request) {
-  const body = (await request.json()) as { data: RFPData };
+  let body: { data: RFPData };
+  try {
+    body = (await request.json()) as { data: RFPData };
+  } catch {
+    return new NextResponse('Invalid JSON', { status: 400 });
+  }
   const { data } = body;
+  if (!data || !Array.isArray(data.questions) || !Array.isArray(data.categories)) {
+    return new NextResponse('Missing required fields: data.questions, data.categories', { status: 400 });
+  }
 
   const wb = new ExcelJS.Workbook();
   wb.creator = 'Brim Financial';

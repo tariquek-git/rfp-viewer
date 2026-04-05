@@ -12,10 +12,10 @@ export interface Question {
   b_config: boolean;
   c_custom: boolean;
   d_dnm: boolean;
-  compliant: string;
+  compliant: 'Y' | 'N' | 'Partial';
   bullet: string;
   paragraph: string;
-  confidence: string;
+  confidence: 'GREEN' | 'YELLOW' | 'RED';
   rationale: string;
   notes: string;
   pricing: string;

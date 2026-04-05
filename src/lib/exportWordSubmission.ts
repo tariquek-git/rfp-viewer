@@ -21,6 +21,7 @@ import {
   Header,
   Footer,
   BorderStyle,
+  PageNumber,
 } from 'docx';
 import { saveAs } from 'file-saver';
 import type { RFPData } from '@/types';
@@ -37,6 +38,8 @@ const C = {
   medium: '374151',
   white: 'FFFFFF',
   accent: '0EA5E9',
+  green: '047857',
+  red: 'B91C1C',
 };
 
 function emptyParagraph(before = 0, after = 0) {
@@ -418,6 +421,95 @@ export async function exportWordSubmission(data: RFPData, options?: SubmissionEx
 
   allBlocks.push(new Paragraph({ children: [new PageBreak()] }));
 
+  // ── Compliance Summary ──────────────────────────────────────────────────────
+  allBlocks.push(
+    new Paragraph({
+      heading: HeadingLevel.HEADING_1,
+      spacing: { before: 200, after: 80 },
+      border: { bottom: { style: BorderStyle.THICK, size: 8, color: C.navy } },
+      shading: { type: ShadingType.SOLID, color: C.navyBg },
+      children: [new TextRun({ text: 'Compliance Summary', bold: true, size: 32, font: 'Calibri', color: C.navy })],
+    }),
+    new Paragraph({
+      spacing: { before: 0, after: 160 },
+      children: [new TextRun({ text: `Compliance status for all ${questions.length} requirements across ${categories.length} functional areas.`, size: 20, font: 'Calibri', color: C.gray, italics: true })],
+    }),
+  );
+
+  allBlocks.push(
+    new Table({
+      width: { size: 100, type: WidthType.PERCENTAGE },
+      rows: [
+        new TableRow({
+          tableHeader: true,
+          children: [
+            new TableCell({
+              width: { size: 12, type: WidthType.PERCENTAGE },
+              shading: { type: ShadingType.SOLID, color: C.navy },
+              margins: { top: 80, bottom: 80, left: 120, right: 120 },
+              children: [new Paragraph({ children: [new TextRun({ text: 'Ref', bold: true, size: 18, font: 'Calibri', color: C.white })] })],
+            }),
+            new TableCell({
+              width: { size: 42, type: WidthType.PERCENTAGE },
+              shading: { type: ShadingType.SOLID, color: C.navy },
+              margins: { top: 80, bottom: 80, left: 120, right: 120 },
+              children: [new Paragraph({ children: [new TextRun({ text: 'Requirement Topic', bold: true, size: 18, font: 'Calibri', color: C.white })] })],
+            }),
+            new TableCell({
+              width: { size: 22, type: WidthType.PERCENTAGE },
+              shading: { type: ShadingType.SOLID, color: C.navy },
+              margins: { top: 80, bottom: 80, left: 120, right: 120 },
+              children: [new Paragraph({ children: [new TextRun({ text: 'Category', bold: true, size: 18, font: 'Calibri', color: C.white })] })],
+            }),
+            new TableCell({
+              width: { size: 24, type: WidthType.PERCENTAGE },
+              shading: { type: ShadingType.SOLID, color: C.navy },
+              margins: { top: 80, bottom: 80, left: 80, right: 80 },
+              children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: 'Compliance Status', bold: true, size: 18, font: 'Calibri', color: C.white })] })],
+            }),
+          ],
+        }),
+        ...questions.map((q, i) => {
+          const isY = q.compliant === 'Y';
+          const isN = q.compliant === 'N';
+          const rowBg = i % 2 === 0 ? C.white : C.grayBg;
+          const statusColor = isY ? C.green : isN ? C.red : C.navyLight;
+          const statusText = isY ? 'Compliant' : isN ? 'Non-Compliant' : 'Partial';
+          return new TableRow({
+            children: [
+              new TableCell({
+                width: { size: 12, type: WidthType.PERCENTAGE },
+                shading: { type: ShadingType.SOLID, color: rowBg },
+                margins: { top: 50, bottom: 50, left: 120, right: 120 },
+                children: [new Paragraph({ children: [new TextRun({ text: q.ref, size: 16, font: 'Courier New', color: C.navy })] })],
+              }),
+              new TableCell({
+                width: { size: 42, type: WidthType.PERCENTAGE },
+                shading: { type: ShadingType.SOLID, color: rowBg },
+                margins: { top: 50, bottom: 50, left: 120, right: 120 },
+                children: [new Paragraph({ children: [new TextRun({ text: q.topic || '', size: 16, font: 'Calibri', color: C.dark })] })],
+              }),
+              new TableCell({
+                width: { size: 22, type: WidthType.PERCENTAGE },
+                shading: { type: ShadingType.SOLID, color: rowBg },
+                margins: { top: 50, bottom: 50, left: 120, right: 120 },
+                children: [new Paragraph({ children: [new TextRun({ text: q.category, size: 15, font: 'Calibri', color: C.gray })] })],
+              }),
+              new TableCell({
+                width: { size: 24, type: WidthType.PERCENTAGE },
+                shading: { type: ShadingType.SOLID, color: rowBg },
+                margins: { top: 50, bottom: 50, left: 80, right: 80 },
+                children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: statusText, bold: true, size: 16, font: 'Calibri', color: statusColor })] })],
+              }),
+            ],
+          });
+        }),
+      ],
+    }),
+  );
+
+  allBlocks.push(new Paragraph({ children: [new PageBreak()] }));
+
   // ── Per-category sections ───────────────────────────────────────────────────
   for (let catIdx = 0; catIdx < categories.length; catIdx++) {
     const cat = categories[catIdx];
@@ -512,12 +604,10 @@ export async function exportWordSubmission(data: RFPData, options?: SubmissionEx
                 alignment: AlignmentType.CENTER,
                 border: { top: { style: BorderStyle.SINGLE, size: 4, color: C.grayLight } },
                 children: [
-                  new TextRun({
-                    text: `Brim Financial · BSB RFP Response · ${new Date().getFullYear()} · Confidential`,
-                    size: 16,
-                    color: C.gray,
-                    font: 'Calibri',
-                  }),
+                  new TextRun({ text: `Brim Financial · BSB RFP Response · ${new Date().getFullYear()} · Confidential · Page `, size: 16, color: C.gray, font: 'Calibri' }),
+                  new TextRun({ children: [PageNumber.CURRENT], size: 16, color: C.gray, font: 'Calibri' }),
+                  new TextRun({ text: ' of ', size: 16, color: C.gray, font: 'Calibri' }),
+                  new TextRun({ children: [PageNumber.TOTAL_PAGES], size: 16, color: C.gray, font: 'Calibri' }),
                 ],
               }),
             ],
