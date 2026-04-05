@@ -10,7 +10,6 @@ import {
   WidthType,
   AlignmentType,
   ShadingType,
-  BorderStyle,
   HeadingLevel,
   PageBreak,
   TableLayoutType,

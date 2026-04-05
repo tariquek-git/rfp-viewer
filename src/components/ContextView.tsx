@@ -1,7 +1,7 @@
 'use client';
 
+import React, { useMemo, useState } from 'react';
 import type { RFPData, FeedbackItem } from '@/types';
-import { useMemo, useState } from 'react';
 import {
   FileText,
   Shield,
@@ -20,8 +20,6 @@ import {
   ClipboardList,
   Target,
   MessageSquare,
-  Plus,
-  X,
 } from 'lucide-react';
 
 function getCategoryIcon(category: string): React.ElementType {
@@ -144,13 +142,13 @@ function SectionScoreCard({
 
   return (
     <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-all hover:border-blue-300 group">
-      <div
-        className="cursor-pointer"
-        onClick={onClick}
-      >
+      <div className="cursor-pointer" onClick={onClick}>
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
-            {(() => { const Icon = getCategoryIcon(name); return <Icon size={14} className="text-gray-400 flex-shrink-0" />; })()}
+            {React.createElement(getCategoryIcon(name), {
+              size: 14,
+              className: 'text-gray-400 flex-shrink-0',
+            })}
             <h4 className="font-semibold text-sm text-gray-900 group-hover:text-blue-600 transition-colors">
               {name}
             </h4>
@@ -180,7 +178,10 @@ function SectionScoreCard({
           )}
           {med > 0 && <div className="bg-amber-400" style={{ width: `${(med / total) * 100}%` }} />}
           {low > 0 && (
-            <div className="bg-emerald-400 rounded-r" style={{ width: `${(low / total) * 100}%` }} />
+            <div
+              className="bg-emerald-400 rounded-r"
+              style={{ width: `${(low / total) * 100}%` }}
+            />
           )}
         </div>
         <div className="flex justify-between text-[10px] text-gray-400 font-medium">
@@ -197,8 +198,12 @@ function SectionScoreCard({
           {openNotes.length > 0 && (
             <div className="space-y-1 mb-2">
               {openNotes.slice(0, 2).map((f) => (
-                <div key={f.timestamp} className="text-[10px] text-amber-700 bg-amber-50 rounded px-2 py-1 leading-snug">
-                  {f.comment.slice(0, 100)}{f.comment.length > 100 ? '…' : ''}
+                <div
+                  key={f.timestamp}
+                  className="text-[10px] text-amber-700 bg-amber-50 rounded px-2 py-1 leading-snug"
+                >
+                  {f.comment.slice(0, 100)}
+                  {f.comment.length > 100 ? '…' : ''}
                 </div>
               ))}
               {openNotes.length > 2 && (
@@ -207,7 +212,10 @@ function SectionScoreCard({
             </div>
           )}
           <button
-            onClick={(e) => { e.stopPropagation(); setShowNotes(!showNotes); }}
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowNotes(!showNotes);
+            }}
             className="flex items-center gap-1 text-[10px] text-gray-400 hover:text-blue-500 transition-colors"
           >
             <MessageSquare size={10} />
@@ -237,7 +245,13 @@ function SectionScoreCard({
   );
 }
 
-export default function ContextView({ data, onNavigate, onBulkApproveGreen, feedbackItems, onAddFeedback }: ContextViewProps) {
+export default function ContextView({
+  data,
+  onNavigate,
+  onBulkApproveGreen,
+  feedbackItems,
+  onAddFeedback,
+}: ContextViewProps) {
   const sectionStats = useMemo(() => {
     const sections: Record<
       string,
