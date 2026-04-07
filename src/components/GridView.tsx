@@ -462,7 +462,9 @@ function ConfidenceBadge({ value }: { value: string }) {
           ? 'text-red-500'
           : 'text-gray-300';
   return (
-    <span className={`inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full border font-semibold ${cls}`}>
+    <span
+      className={`inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full border font-semibold ${cls}`}
+    >
       <Circle size={6} fill="currentColor" className={dotColor} />
       {value}
     </span>
@@ -478,7 +480,9 @@ function CompliantBadge({ value }: { value: string }) {
         : 'bg-amber-50 text-amber-700 border-amber-200';
   const Icon = value === 'Y' ? CheckCircle2 : value === 'N' ? XCircle : MinusCircle;
   return (
-    <span className={`inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full border font-semibold ${cls}`}>
+    <span
+      className={`inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full border font-semibold ${cls}`}
+    >
       <Icon size={10} />
       {value}
     </span>
@@ -521,10 +525,34 @@ function ScoreCell({ value }: { value: number }) {
 
 function DeliveryTags({ q }: { q: Question }) {
   const tags: { label: string; cls: string; icon: React.ElementType; title: string }[] = [];
-  if (q.a_oob) tags.push({ label: 'OOB', cls: 'bg-sky-50 text-sky-700 border-sky-200', icon: Box, title: 'Out-of-box' });
-  if (q.b_config) tags.push({ label: 'CFG', cls: 'bg-violet-50 text-violet-700 border-violet-200', icon: Settings2, title: 'Configurable' });
-  if (q.c_custom) tags.push({ label: 'CST', cls: 'bg-amber-50 text-amber-700 border-amber-200', icon: Wrench, title: 'Custom build' });
-  if (q.d_dnm) tags.push({ label: 'DNM', cls: 'bg-gray-50 text-gray-400 border-gray-200', icon: Ban, title: 'Does not meet' });
+  if (q.a_oob)
+    tags.push({
+      label: 'OOB',
+      cls: 'bg-sky-50 text-sky-700 border-sky-200',
+      icon: Box,
+      title: 'Out-of-box',
+    });
+  if (q.b_config)
+    tags.push({
+      label: 'CFG',
+      cls: 'bg-violet-50 text-violet-700 border-violet-200',
+      icon: Settings2,
+      title: 'Configurable',
+    });
+  if (q.c_custom)
+    tags.push({
+      label: 'CST',
+      cls: 'bg-amber-50 text-amber-700 border-amber-200',
+      icon: Wrench,
+      title: 'Custom build',
+    });
+  if (q.d_dnm)
+    tags.push({
+      label: 'DNM',
+      cls: 'bg-gray-50 text-gray-400 border-gray-200',
+      icon: Ban,
+      title: 'Does not meet',
+    });
   if (tags.length === 0) return <span className="text-gray-300">—</span>;
   return (
     <div className="flex gap-1 flex-wrap">

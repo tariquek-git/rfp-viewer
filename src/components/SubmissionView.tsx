@@ -86,7 +86,9 @@ export default function SubmissionView({
 
   const [mode, setMode] = useState<ExportMode>('full');
   const [showAdvisory, setShowAdvisory] = useState(true);
-  const [exporting, setExporting] = useState<'word' | 'word-review' | 'word-submission' | 'pdf' | 'excel' | null>(null);
+  const [exporting, setExporting] = useState<
+    'word' | 'word-review' | 'word-submission' | 'pdf' | 'excel' | null
+  >(null);
   const [showGlobalNotes, setShowGlobalNotes] = useState(false);
   const [globalNoteText, setGlobalNoteText] = useState('');
 
@@ -308,7 +310,8 @@ h3{font-size:14px;margin-top:16px;color:#374151}
             title="Clean BSB submission document — paragraphs only, no internal notes"
             className="flex items-center gap-1.5 bg-blue-600 text-white px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-blue-700 disabled:opacity-50"
           >
-            <FileSpreadsheet size={13} /> {exporting === 'word-submission' ? 'Exporting...' : 'Word Submission'}
+            <FileSpreadsheet size={13} />{' '}
+            {exporting === 'word-submission' ? 'Exporting...' : 'Word Submission'}
           </button>
           <button
             onClick={handleWordExport}
@@ -350,8 +353,14 @@ h3{font-size:14px;margin-top:16px;color:#374151}
             <MessageSquare size={14} />
             Global Notes
             {(() => {
-              const count = (feedbackItems || []).filter((f) => f.ref === 'global' && !f.resolved).length;
-              return count > 0 ? <span className="text-xs bg-amber-200 text-amber-800 rounded-full px-1.5 py-0.5">{count}</span> : null;
+              const count = (feedbackItems || []).filter(
+                (f) => f.ref === 'global' && !f.resolved,
+              ).length;
+              return count > 0 ? (
+                <span className="text-xs bg-amber-200 text-amber-800 rounded-full px-1.5 py-0.5">
+                  {count}
+                </span>
+              ) : null;
             })()}
             {showGlobalNotes ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
           </button>
@@ -360,28 +369,32 @@ h3{font-size:14px;margin-top:16px;color:#374151}
               {/* Existing global notes */}
               {(feedbackItems || []).filter((f) => f.ref === 'global').length > 0 && (
                 <div className="space-y-2">
-                  {(feedbackItems || []).filter((f) => f.ref === 'global').map((f) => (
-                    <div
-                      key={f.timestamp}
-                      className={`flex items-start justify-between rounded px-3 py-2 text-sm border ${f.resolved ? 'bg-gray-50 border-gray-200 opacity-60' : 'bg-white border-amber-200'}`}
-                    >
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="text-xs text-gray-400">{new Date(f.timestamp).toLocaleDateString()}</span>
-                          {f.resolved && <span className="text-xs text-green-600">resolved</span>}
+                  {(feedbackItems || [])
+                    .filter((f) => f.ref === 'global')
+                    .map((f) => (
+                      <div
+                        key={f.timestamp}
+                        className={`flex items-start justify-between rounded px-3 py-2 text-sm border ${f.resolved ? 'bg-gray-50 border-gray-200 opacity-60' : 'bg-white border-amber-200'}`}
+                      >
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="text-xs text-gray-400">
+                              {new Date(f.timestamp).toLocaleDateString()}
+                            </span>
+                            {f.resolved && <span className="text-xs text-green-600">resolved</span>}
+                          </div>
+                          <p className="text-gray-700 text-xs leading-relaxed">{f.comment}</p>
                         </div>
-                        <p className="text-gray-700 text-xs leading-relaxed">{f.comment}</p>
+                        {!f.resolved && onResolveFeedback && (
+                          <button
+                            onClick={() => onResolveFeedback(f.ref, f.timestamp)}
+                            className="ml-3 text-xs text-green-600 hover:underline flex-shrink-0"
+                          >
+                            resolve
+                          </button>
+                        )}
                       </div>
-                      {!f.resolved && onResolveFeedback && (
-                        <button
-                          onClick={() => onResolveFeedback(f.ref, f.timestamp)}
-                          className="ml-3 text-xs text-green-600 hover:underline flex-shrink-0"
-                        >
-                          resolve
-                        </button>
-                      )}
-                    </div>
-                  ))}
+                    ))}
                 </div>
               )}
               {/* Add new global note */}

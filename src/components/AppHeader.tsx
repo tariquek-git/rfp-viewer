@@ -18,6 +18,7 @@ import {
   Settings,
   Circle,
   AlertTriangle,
+  Users,
 } from 'lucide-react';
 import ProgressBar from '@/components/ProgressBar';
 import { TourLaunchButton } from '@/components/TourOverlay';
@@ -61,6 +62,7 @@ const NAV_GROUPS = [
     tabs: [
       { key: 'compliance' as ViewTab, icon: ClipboardCheck, label: 'Compliance' },
       { key: 'submission' as ViewTab, icon: FileText, label: 'Export' },
+      { key: 'assignments' as ViewTab, icon: Users, label: 'Assignments' },
     ],
   },
 ];
@@ -190,19 +192,28 @@ function AppHeaderInner({
               {group.label}
             </span>
             <div className="flex items-center bg-gray-100 rounded-lg p-0.5">
-              {group.tabs.map((tab) => (
-                <button
-                  key={tab.key}
-                  data-tour={`tour-${tab.key}-tab`}
-                  onClick={() => {
-                    state.setActiveTab(tab.key);
-                    state.setSelectedQuestion(null);
-                  }}
-                  className={`flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium whitespace-nowrap transition-all ${state.activeTab === tab.key ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
-                >
-                  <tab.icon size={11} /> {tab.label}
-                </button>
-              ))}
+              {group.tabs.map((tab) => {
+                const isAssignments = tab.key === 'assignments';
+                const redCount = isAssignments ? liveStats.red : 0;
+                return (
+                  <button
+                    key={tab.key}
+                    data-tour={`tour-${tab.key}-tab`}
+                    onClick={() => {
+                      state.setActiveTab(tab.key);
+                      state.setSelectedQuestion(null);
+                    }}
+                    className={`relative flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium whitespace-nowrap transition-all ${state.activeTab === tab.key ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+                  >
+                    <tab.icon size={11} /> {tab.label}
+                    {isAssignments && redCount > 0 && (
+                      <span className="ml-0.5 bg-red-500 text-white text-[8px] font-bold px-1 py-0.5 rounded-full leading-none">
+                        {redCount}
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
             </div>
           </div>
         ))}

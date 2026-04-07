@@ -388,7 +388,10 @@ export default function DetailPanel({
       <div className="flex items-center justify-between px-6 py-4 border-b flex-shrink-0">
         <div className="flex items-start gap-3">
           <div className="mt-0.5 p-1.5 bg-gray-100 rounded-lg flex-shrink-0">
-            {(() => { const Icon = getCategoryIcon(q.category); return <Icon size={16} className="text-gray-500" />; })()}
+            {(() => {
+              const Icon = getCategoryIcon(q.category);
+              return <Icon size={16} className="text-gray-500" />;
+            })()}
           </div>
           <div>
             <h2 className="text-lg font-semibold text-gray-900">{q.ref}</h2>
@@ -431,15 +434,29 @@ export default function DetailPanel({
 
       <div className="px-6 py-3 border-b flex items-center gap-2 flex-shrink-0 flex-wrap">
         {/* Confidence */}
-        <span className={`inline-flex items-center gap-1 text-xs px-2 py-1 rounded border font-medium ${confClass}`}>
+        <span
+          className={`inline-flex items-center gap-1 text-xs px-2 py-1 rounded border font-medium ${confClass}`}
+        >
           <Circle size={7} fill="currentColor" />
           {q.confidence}
         </span>
         {/* Compliant */}
-        <span className={`inline-flex items-center gap-1 text-xs px-2 py-1 rounded border font-medium ${
-          q.compliant === 'Y' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : q.compliant === 'N' ? 'bg-red-50 text-red-700 border-red-200' : 'bg-amber-50 text-amber-700 border-amber-200'
-        }`}>
-          {q.compliant === 'Y' ? <CheckCircle2 size={12} /> : q.compliant === 'N' ? <XCircle size={12} /> : <MinusCircle size={12} />}
+        <span
+          className={`inline-flex items-center gap-1 text-xs px-2 py-1 rounded border font-medium ${
+            q.compliant === 'Y'
+              ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+              : q.compliant === 'N'
+                ? 'bg-red-50 text-red-700 border-red-200'
+                : 'bg-amber-50 text-amber-700 border-amber-200'
+          }`}
+        >
+          {q.compliant === 'Y' ? (
+            <CheckCircle2 size={12} />
+          ) : q.compliant === 'N' ? (
+            <XCircle size={12} />
+          ) : (
+            <MinusCircle size={12} />
+          )}
           {q.compliant === 'Y' ? 'Compliant' : q.compliant === 'N' ? 'Non-compliant' : 'Partial'}
         </span>
         {/* Status */}
@@ -458,22 +475,34 @@ export default function DetailPanel({
         </span>
         {/* Delivery methods */}
         {q.a_oob && (
-          <span className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded bg-sky-100 text-sky-700 font-medium" title="Out-of-box">
+          <span
+            className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded bg-sky-100 text-sky-700 font-medium"
+            title="Out-of-box"
+          >
             <Box size={11} /> OOB
           </span>
         )}
         {q.b_config && (
-          <span className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded bg-purple-100 text-purple-700 font-medium" title="Configurable">
+          <span
+            className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded bg-purple-100 text-purple-700 font-medium"
+            title="Configurable"
+          >
             <Settings2 size={11} /> CFG
           </span>
         )}
         {q.c_custom && (
-          <span className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded bg-orange-100 text-orange-700 font-medium" title="Custom build">
+          <span
+            className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded bg-orange-100 text-orange-700 font-medium"
+            title="Custom build"
+          >
             <Wrench size={11} /> Custom
           </span>
         )}
         {q.d_dnm && (
-          <span className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded bg-gray-100 text-gray-500 font-medium" title="Does not meet">
+          <span
+            className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded bg-gray-100 text-gray-500 font-medium"
+            title="Does not meet"
+          >
             <Ban size={11} /> DNM
           </span>
         )}
@@ -489,19 +518,35 @@ export default function DetailPanel({
         )}
         {/* Risk badge */}
         {q.committee_risk && (
-          <span className={`inline-flex items-center gap-1 text-xs px-2 py-1 rounded border font-bold ${
-            q.committee_risk.toUpperCase() === 'HIGH' ? 'bg-red-100 text-red-700 border-red-200' :
-            q.committee_risk.toUpperCase() === 'MEDIUM' ? 'bg-amber-100 text-amber-700 border-amber-200' :
-            'bg-blue-100 text-blue-600 border-blue-200'
-          }`}>
-            {q.committee_risk.toUpperCase() === 'HIGH' ? <AlertTriangle size={11} /> : q.committee_risk.toUpperCase() === 'MEDIUM' ? <AlertCircle size={11} /> : <Info size={11} />}
+          <span
+            className={`inline-flex items-center gap-1 text-xs px-2 py-1 rounded border font-bold ${
+              q.committee_risk.toUpperCase() === 'HIGH'
+                ? 'bg-red-100 text-red-700 border-red-200'
+                : q.committee_risk.toUpperCase() === 'MEDIUM'
+                  ? 'bg-amber-100 text-amber-700 border-amber-200'
+                  : 'bg-blue-100 text-blue-600 border-blue-200'
+            }`}
+          >
+            {q.committee_risk.toUpperCase() === 'HIGH' ? (
+              <AlertTriangle size={11} />
+            ) : q.committee_risk.toUpperCase() === 'MEDIUM' ? (
+              <AlertCircle size={11} />
+            ) : (
+              <Info size={11} />
+            )}
             {q.committee_risk} RISK
           </span>
         )}
         {/* Score */}
-        <span className={`ml-auto inline-flex items-center gap-1 text-xs px-2 py-1 rounded font-bold ${
-          q.committee_score >= 7 ? 'bg-emerald-100 text-emerald-700' : q.committee_score >= 5 ? 'bg-amber-100 text-amber-700' : 'bg-red-100 text-red-700'
-        }`}>
+        <span
+          className={`ml-auto inline-flex items-center gap-1 text-xs px-2 py-1 rounded font-bold ${
+            q.committee_score >= 7
+              ? 'bg-emerald-100 text-emerald-700'
+              : q.committee_score >= 5
+                ? 'bg-amber-100 text-amber-700'
+                : 'bg-red-100 text-red-700'
+          }`}
+        >
           {q.committee_score}/10
         </span>
       </div>

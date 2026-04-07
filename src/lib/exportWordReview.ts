@@ -169,7 +169,8 @@ function questionBlock(q: {
       new Paragraph({
         spacing: { before: 0, after: 80 },
         children: metaParts.map(
-          (p) => new TextRun({ text: p.text, size: 18, font: 'Calibri', color: p.color, bold: p.bold }),
+          (p) =>
+            new TextRun({ text: p.text, size: 18, font: 'Calibri', color: p.color, bold: p.bold }),
         ),
       }),
     );
@@ -263,7 +264,14 @@ function questionBlock(q: {
   }
 
   // ── Committee Assessment ──────────────────────────────────────────────────
-  if (q.committee_review || q.committee_risk || q.rationale || q.compliance_notes || q.notes || q.pricing) {
+  if (
+    q.committee_review ||
+    q.committee_risk ||
+    q.rationale ||
+    q.compliance_notes ||
+    q.notes ||
+    q.pricing
+  ) {
     blocks.push(emptyParagraph(60, 0));
     const committeeRows: TableRow[] = [];
 
@@ -276,19 +284,46 @@ function questionBlock(q: {
               shading: { type: ShadingType.SOLID, color: C.navyBg },
               margins: { top: 60, bottom: 60, left: 120, right: 120 },
               borders: {
-                top: { style: BorderStyle.NONE }, bottom: { style: BorderStyle.NONE },
-                left: { style: BorderStyle.NONE }, right: { style: BorderStyle.NONE },
+                top: { style: BorderStyle.NONE },
+                bottom: { style: BorderStyle.NONE },
+                left: { style: BorderStyle.NONE },
+                right: { style: BorderStyle.NONE },
               },
-              children: [new Paragraph({ children: [new TextRun({ text: 'Committee Review', bold: true, size: 17, font: 'Calibri', color: C.navy })] })],
+              children: [
+                new Paragraph({
+                  children: [
+                    new TextRun({
+                      text: 'Committee Review',
+                      bold: true,
+                      size: 17,
+                      font: 'Calibri',
+                      color: C.navy,
+                    }),
+                  ],
+                }),
+              ],
             }),
             new TableCell({
               width: { size: 78, type: WidthType.PERCENTAGE },
               margins: { top: 60, bottom: 60, left: 120, right: 120 },
               borders: {
-                top: { style: BorderStyle.NONE }, bottom: { style: BorderStyle.NONE },
-                left: { style: BorderStyle.NONE }, right: { style: BorderStyle.NONE },
+                top: { style: BorderStyle.NONE },
+                bottom: { style: BorderStyle.NONE },
+                left: { style: BorderStyle.NONE },
+                right: { style: BorderStyle.NONE },
               },
-              children: [new Paragraph({ children: [new TextRun({ text: q.committee_review, size: 18, font: 'Calibri', color: C.medium })] })],
+              children: [
+                new Paragraph({
+                  children: [
+                    new TextRun({
+                      text: q.committee_review,
+                      size: 18,
+                      font: 'Calibri',
+                      color: C.medium,
+                    }),
+                  ],
+                }),
+              ],
             }),
           ],
         }),
@@ -304,19 +339,46 @@ function questionBlock(q: {
               shading: { type: ShadingType.SOLID, color: C.navyBg },
               margins: { top: 60, bottom: 60, left: 120, right: 120 },
               borders: {
-                top: { style: BorderStyle.NONE }, bottom: { style: BorderStyle.NONE },
-                left: { style: BorderStyle.NONE }, right: { style: BorderStyle.NONE },
+                top: { style: BorderStyle.NONE },
+                bottom: { style: BorderStyle.NONE },
+                left: { style: BorderStyle.NONE },
+                right: { style: BorderStyle.NONE },
               },
-              children: [new Paragraph({ children: [new TextRun({ text: 'Risk Assessment', bold: true, size: 17, font: 'Calibri', color: C.red })] })],
+              children: [
+                new Paragraph({
+                  children: [
+                    new TextRun({
+                      text: 'Risk Assessment',
+                      bold: true,
+                      size: 17,
+                      font: 'Calibri',
+                      color: C.red,
+                    }),
+                  ],
+                }),
+              ],
             }),
             new TableCell({
               width: { size: 78, type: WidthType.PERCENTAGE },
               margins: { top: 60, bottom: 60, left: 120, right: 120 },
               borders: {
-                top: { style: BorderStyle.NONE }, bottom: { style: BorderStyle.NONE },
-                left: { style: BorderStyle.NONE }, right: { style: BorderStyle.NONE },
+                top: { style: BorderStyle.NONE },
+                bottom: { style: BorderStyle.NONE },
+                left: { style: BorderStyle.NONE },
+                right: { style: BorderStyle.NONE },
               },
-              children: [new Paragraph({ children: [new TextRun({ text: q.committee_risk, size: 18, font: 'Calibri', color: C.medium })] })],
+              children: [
+                new Paragraph({
+                  children: [
+                    new TextRun({
+                      text: q.committee_risk,
+                      size: 18,
+                      font: 'Calibri',
+                      color: C.medium,
+                    }),
+                  ],
+                }),
+              ],
             }),
           ],
         }),
@@ -332,19 +394,41 @@ function questionBlock(q: {
               shading: { type: ShadingType.SOLID, color: C.navyBg },
               margins: { top: 60, bottom: 60, left: 120, right: 120 },
               borders: {
-                top: { style: BorderStyle.NONE }, bottom: { style: BorderStyle.NONE },
-                left: { style: BorderStyle.NONE }, right: { style: BorderStyle.NONE },
+                top: { style: BorderStyle.NONE },
+                bottom: { style: BorderStyle.NONE },
+                left: { style: BorderStyle.NONE },
+                right: { style: BorderStyle.NONE },
               },
-              children: [new Paragraph({ children: [new TextRun({ text: 'Rationale', bold: true, size: 17, font: 'Calibri', color: C.navy })] })],
+              children: [
+                new Paragraph({
+                  children: [
+                    new TextRun({
+                      text: 'Rationale',
+                      bold: true,
+                      size: 17,
+                      font: 'Calibri',
+                      color: C.navy,
+                    }),
+                  ],
+                }),
+              ],
             }),
             new TableCell({
               width: { size: 78, type: WidthType.PERCENTAGE },
               margins: { top: 60, bottom: 60, left: 120, right: 120 },
               borders: {
-                top: { style: BorderStyle.NONE }, bottom: { style: BorderStyle.NONE },
-                left: { style: BorderStyle.NONE }, right: { style: BorderStyle.NONE },
+                top: { style: BorderStyle.NONE },
+                bottom: { style: BorderStyle.NONE },
+                left: { style: BorderStyle.NONE },
+                right: { style: BorderStyle.NONE },
               },
-              children: [new Paragraph({ children: [new TextRun({ text: q.rationale, size: 18, font: 'Calibri', color: C.medium })] })],
+              children: [
+                new Paragraph({
+                  children: [
+                    new TextRun({ text: q.rationale, size: 18, font: 'Calibri', color: C.medium }),
+                  ],
+                }),
+              ],
             }),
           ],
         }),
@@ -360,19 +444,46 @@ function questionBlock(q: {
               shading: { type: ShadingType.SOLID, color: C.navyBg },
               margins: { top: 60, bottom: 60, left: 120, right: 120 },
               borders: {
-                top: { style: BorderStyle.NONE }, bottom: { style: BorderStyle.NONE },
-                left: { style: BorderStyle.NONE }, right: { style: BorderStyle.NONE },
+                top: { style: BorderStyle.NONE },
+                bottom: { style: BorderStyle.NONE },
+                left: { style: BorderStyle.NONE },
+                right: { style: BorderStyle.NONE },
               },
-              children: [new Paragraph({ children: [new TextRun({ text: 'Compliance Notes', bold: true, size: 17, font: 'Calibri', color: C.yellow })] })],
+              children: [
+                new Paragraph({
+                  children: [
+                    new TextRun({
+                      text: 'Compliance Notes',
+                      bold: true,
+                      size: 17,
+                      font: 'Calibri',
+                      color: C.yellow,
+                    }),
+                  ],
+                }),
+              ],
             }),
             new TableCell({
               width: { size: 78, type: WidthType.PERCENTAGE },
               margins: { top: 60, bottom: 60, left: 120, right: 120 },
               borders: {
-                top: { style: BorderStyle.NONE }, bottom: { style: BorderStyle.NONE },
-                left: { style: BorderStyle.NONE }, right: { style: BorderStyle.NONE },
+                top: { style: BorderStyle.NONE },
+                bottom: { style: BorderStyle.NONE },
+                left: { style: BorderStyle.NONE },
+                right: { style: BorderStyle.NONE },
               },
-              children: [new Paragraph({ children: [new TextRun({ text: q.compliance_notes, size: 18, font: 'Calibri', color: C.medium })] })],
+              children: [
+                new Paragraph({
+                  children: [
+                    new TextRun({
+                      text: q.compliance_notes,
+                      size: 18,
+                      font: 'Calibri',
+                      color: C.medium,
+                    }),
+                  ],
+                }),
+              ],
             }),
           ],
         }),
@@ -388,19 +499,41 @@ function questionBlock(q: {
               shading: { type: ShadingType.SOLID, color: C.navyBg },
               margins: { top: 60, bottom: 60, left: 120, right: 120 },
               borders: {
-                top: { style: BorderStyle.NONE }, bottom: { style: BorderStyle.NONE },
-                left: { style: BorderStyle.NONE }, right: { style: BorderStyle.NONE },
+                top: { style: BorderStyle.NONE },
+                bottom: { style: BorderStyle.NONE },
+                left: { style: BorderStyle.NONE },
+                right: { style: BorderStyle.NONE },
               },
-              children: [new Paragraph({ children: [new TextRun({ text: 'Internal Notes', bold: true, size: 17, font: 'Calibri', color: C.navy })] })],
+              children: [
+                new Paragraph({
+                  children: [
+                    new TextRun({
+                      text: 'Internal Notes',
+                      bold: true,
+                      size: 17,
+                      font: 'Calibri',
+                      color: C.navy,
+                    }),
+                  ],
+                }),
+              ],
             }),
             new TableCell({
               width: { size: 78, type: WidthType.PERCENTAGE },
               margins: { top: 60, bottom: 60, left: 120, right: 120 },
               borders: {
-                top: { style: BorderStyle.NONE }, bottom: { style: BorderStyle.NONE },
-                left: { style: BorderStyle.NONE }, right: { style: BorderStyle.NONE },
+                top: { style: BorderStyle.NONE },
+                bottom: { style: BorderStyle.NONE },
+                left: { style: BorderStyle.NONE },
+                right: { style: BorderStyle.NONE },
               },
-              children: [new Paragraph({ children: [new TextRun({ text: q.notes, size: 18, font: 'Calibri', color: C.medium })] })],
+              children: [
+                new Paragraph({
+                  children: [
+                    new TextRun({ text: q.notes, size: 18, font: 'Calibri', color: C.medium }),
+                  ],
+                }),
+              ],
             }),
           ],
         }),
@@ -416,19 +549,41 @@ function questionBlock(q: {
               shading: { type: ShadingType.SOLID, color: C.navyBg },
               margins: { top: 60, bottom: 60, left: 120, right: 120 },
               borders: {
-                top: { style: BorderStyle.NONE }, bottom: { style: BorderStyle.NONE },
-                left: { style: BorderStyle.NONE }, right: { style: BorderStyle.NONE },
+                top: { style: BorderStyle.NONE },
+                bottom: { style: BorderStyle.NONE },
+                left: { style: BorderStyle.NONE },
+                right: { style: BorderStyle.NONE },
               },
-              children: [new Paragraph({ children: [new TextRun({ text: 'Pricing Notes', bold: true, size: 17, font: 'Calibri', color: C.navy })] })],
+              children: [
+                new Paragraph({
+                  children: [
+                    new TextRun({
+                      text: 'Pricing Notes',
+                      bold: true,
+                      size: 17,
+                      font: 'Calibri',
+                      color: C.navy,
+                    }),
+                  ],
+                }),
+              ],
             }),
             new TableCell({
               width: { size: 78, type: WidthType.PERCENTAGE },
               margins: { top: 60, bottom: 60, left: 120, right: 120 },
               borders: {
-                top: { style: BorderStyle.NONE }, bottom: { style: BorderStyle.NONE },
-                left: { style: BorderStyle.NONE }, right: { style: BorderStyle.NONE },
+                top: { style: BorderStyle.NONE },
+                bottom: { style: BorderStyle.NONE },
+                left: { style: BorderStyle.NONE },
+                right: { style: BorderStyle.NONE },
               },
-              children: [new Paragraph({ children: [new TextRun({ text: q.pricing, size: 18, font: 'Calibri', color: C.medium })] })],
+              children: [
+                new Paragraph({
+                  children: [
+                    new TextRun({ text: q.pricing, size: 18, font: 'Calibri', color: C.medium }),
+                  ],
+                }),
+              ],
             }),
           ],
         }),
@@ -485,12 +640,21 @@ function questionBlock(q: {
                 new Paragraph({
                   spacing: { before: 0, after: 60 },
                   children: [
-                    new TextRun({ text: 'Reviewed by: ________________________________   Date: ____________', size: 17, font: 'Calibri', color: C.yellow }),
+                    new TextRun({
+                      text: 'Reviewed by: ________________________________   Date: ____________',
+                      size: 17,
+                      font: 'Calibri',
+                      color: C.yellow,
+                    }),
                   ],
                 }),
                 // Six blank lines for notes
-                ...[1,2,3,4,5,6].map(() =>
-                  new Paragraph({ spacing: { before: 0, after: 120 }, children: [new TextRun({ text: '', size: 20 })] })
+                ...[1, 2, 3, 4, 5, 6].map(
+                  () =>
+                    new Paragraph({
+                      spacing: { before: 0, after: 120 },
+                      children: [new TextRun({ text: '', size: 20 })],
+                    }),
                 ),
               ],
             }),
@@ -625,7 +789,13 @@ export async function exportWordReview(data: RFPData, options?: ReviewExportOpti
       heading: HeadingLevel.HEADING_1,
       spacing: { before: 200, after: 160 },
       children: [
-        new TextRun({ text: 'Table of Contents', bold: true, size: 28, font: 'Calibri', color: C.navy }),
+        new TextRun({
+          text: 'Table of Contents',
+          bold: true,
+          size: 28,
+          font: 'Calibri',
+          color: C.navy,
+        }),
       ],
     }),
   );
@@ -637,7 +807,13 @@ export async function exportWordReview(data: RFPData, options?: ReviewExportOpti
       new Paragraph({
         spacing: { before: 60, after: 60 },
         children: [
-          new TextRun({ text: `${i + 1}.  `, bold: true, size: 20, font: 'Calibri', color: C.navy }),
+          new TextRun({
+            text: `${i + 1}.  `,
+            bold: true,
+            size: 20,
+            font: 'Calibri',
+            color: C.navy,
+          }),
           new TextRun({ text: cat, size: 20, font: 'Calibri', color: C.dark }),
           new TextRun({ text: `  (${count} questions)`, size: 18, font: 'Calibri', color: C.gray }),
         ],
@@ -653,7 +829,15 @@ export async function exportWordReview(data: RFPData, options?: ReviewExportOpti
       heading: HeadingLevel.HEADING_1,
       spacing: { before: 200, after: 160 },
       border: { bottom: { style: BorderStyle.SINGLE, size: 8, color: C.grayLight } },
-      children: [new TextRun({ text: 'Category Scorecard', bold: true, size: 28, font: 'Calibri', color: C.navy })],
+      children: [
+        new TextRun({
+          text: 'Category Scorecard',
+          bold: true,
+          size: 28,
+          font: 'Calibri',
+          color: C.navy,
+        }),
+      ],
     }),
   );
 
@@ -669,43 +853,122 @@ export async function exportWordReview(data: RFPData, options?: ReviewExportOpti
               width: { size: 38, type: WidthType.PERCENTAGE },
               shading: { type: ShadingType.SOLID, color: C.navy },
               margins: { top: 80, bottom: 80, left: 120, right: 120 },
-              children: [new Paragraph({ children: [new TextRun({ text: 'Category', bold: true, size: 18, font: 'Calibri', color: C.white })] })],
+              children: [
+                new Paragraph({
+                  children: [
+                    new TextRun({
+                      text: 'Category',
+                      bold: true,
+                      size: 18,
+                      font: 'Calibri',
+                      color: C.white,
+                    }),
+                  ],
+                }),
+              ],
             }),
             new TableCell({
               width: { size: 10, type: WidthType.PERCENTAGE },
               shading: { type: ShadingType.SOLID, color: C.navy },
               margins: { top: 80, bottom: 80, left: 80, right: 80 },
-              children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: 'Qs', bold: true, size: 18, font: 'Calibri', color: C.white })] })],
+              children: [
+                new Paragraph({
+                  alignment: AlignmentType.CENTER,
+                  children: [
+                    new TextRun({
+                      text: 'Qs',
+                      bold: true,
+                      size: 18,
+                      font: 'Calibri',
+                      color: C.white,
+                    }),
+                  ],
+                }),
+              ],
             }),
             new TableCell({
               width: { size: 13, type: WidthType.PERCENTAGE },
               shading: { type: ShadingType.SOLID, color: C.navy },
               margins: { top: 80, bottom: 80, left: 80, right: 80 },
-              children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: 'Avg Score', bold: true, size: 18, font: 'Calibri', color: C.white })] })],
+              children: [
+                new Paragraph({
+                  alignment: AlignmentType.CENTER,
+                  children: [
+                    new TextRun({
+                      text: 'Avg Score',
+                      bold: true,
+                      size: 18,
+                      font: 'Calibri',
+                      color: C.white,
+                    }),
+                  ],
+                }),
+              ],
             }),
             new TableCell({
               width: { size: 13, type: WidthType.PERCENTAGE },
               shading: { type: ShadingType.SOLID, color: C.green },
               margins: { top: 80, bottom: 80, left: 80, right: 80 },
-              children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: 'GREEN', bold: true, size: 18, font: 'Calibri', color: C.white })] })],
+              children: [
+                new Paragraph({
+                  alignment: AlignmentType.CENTER,
+                  children: [
+                    new TextRun({
+                      text: 'GREEN',
+                      bold: true,
+                      size: 18,
+                      font: 'Calibri',
+                      color: C.white,
+                    }),
+                  ],
+                }),
+              ],
             }),
             new TableCell({
               width: { size: 13, type: WidthType.PERCENTAGE },
               shading: { type: ShadingType.SOLID, color: C.yellow },
               margins: { top: 80, bottom: 80, left: 80, right: 80 },
-              children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: 'YELLOW', bold: true, size: 18, font: 'Calibri', color: C.white })] })],
+              children: [
+                new Paragraph({
+                  alignment: AlignmentType.CENTER,
+                  children: [
+                    new TextRun({
+                      text: 'YELLOW',
+                      bold: true,
+                      size: 18,
+                      font: 'Calibri',
+                      color: C.white,
+                    }),
+                  ],
+                }),
+              ],
             }),
             new TableCell({
               width: { size: 13, type: WidthType.PERCENTAGE },
               shading: { type: ShadingType.SOLID, color: C.red },
               margins: { top: 80, bottom: 80, left: 80, right: 80 },
-              children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: 'RED', bold: true, size: 18, font: 'Calibri', color: C.white })] })],
+              children: [
+                new Paragraph({
+                  alignment: AlignmentType.CENTER,
+                  children: [
+                    new TextRun({
+                      text: 'RED',
+                      bold: true,
+                      size: 18,
+                      font: 'Calibri',
+                      color: C.white,
+                    }),
+                  ],
+                }),
+              ],
             }),
           ],
         }),
         ...categories.map((cat, i) => {
           const catQs = grouped[cat] || [];
-          const avgScore = catQs.length ? catQs.reduce((s, q) => s + (q.committee_score || 0), 0) / catQs.length : 0;
+          const avgScore = catQs.length
+            ? catQs.reduce((s, q) => s + (q.committee_score || 0), 0) / catQs.length
+            : 0;
           const greenCount = catQs.filter((q) => q.confidence === 'GREEN').length;
           const yellowCount = catQs.filter((q) => q.confidence === 'YELLOW').length;
           const redCount = catQs.filter((q) => q.confidence === 'RED').length;
@@ -717,37 +980,112 @@ export async function exportWordReview(data: RFPData, options?: ReviewExportOpti
                 width: { size: 38, type: WidthType.PERCENTAGE },
                 shading: { type: ShadingType.SOLID, color: rowBg },
                 margins: { top: 60, bottom: 60, left: 120, right: 120 },
-                children: [new Paragraph({ children: [new TextRun({ text: `${i + 1}. ${cat}`, size: 18, font: 'Calibri', color: C.dark })] })],
+                children: [
+                  new Paragraph({
+                    children: [
+                      new TextRun({
+                        text: `${i + 1}. ${cat}`,
+                        size: 18,
+                        font: 'Calibri',
+                        color: C.dark,
+                      }),
+                    ],
+                  }),
+                ],
               }),
               new TableCell({
                 width: { size: 10, type: WidthType.PERCENTAGE },
                 shading: { type: ShadingType.SOLID, color: rowBg },
                 margins: { top: 60, bottom: 60, left: 80, right: 80 },
-                children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: `${catQs.length}`, size: 18, font: 'Calibri', color: C.gray })] })],
+                children: [
+                  new Paragraph({
+                    alignment: AlignmentType.CENTER,
+                    children: [
+                      new TextRun({
+                        text: `${catQs.length}`,
+                        size: 18,
+                        font: 'Calibri',
+                        color: C.gray,
+                      }),
+                    ],
+                  }),
+                ],
               }),
               new TableCell({
                 width: { size: 13, type: WidthType.PERCENTAGE },
                 shading: { type: ShadingType.SOLID, color: rowBg },
                 margins: { top: 60, bottom: 60, left: 80, right: 80 },
-                children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: avgScore.toFixed(1), bold: true, size: 18, font: 'Calibri', color: scoreColor })] })],
+                children: [
+                  new Paragraph({
+                    alignment: AlignmentType.CENTER,
+                    children: [
+                      new TextRun({
+                        text: avgScore.toFixed(1),
+                        bold: true,
+                        size: 18,
+                        font: 'Calibri',
+                        color: scoreColor,
+                      }),
+                    ],
+                  }),
+                ],
               }),
               new TableCell({
                 width: { size: 13, type: WidthType.PERCENTAGE },
                 shading: { type: ShadingType.SOLID, color: rowBg },
                 margins: { top: 60, bottom: 60, left: 80, right: 80 },
-                children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: `${greenCount}`, bold: greenCount > 0, size: 18, font: 'Calibri', color: greenCount > 0 ? C.green : C.gray })] })],
+                children: [
+                  new Paragraph({
+                    alignment: AlignmentType.CENTER,
+                    children: [
+                      new TextRun({
+                        text: `${greenCount}`,
+                        bold: greenCount > 0,
+                        size: 18,
+                        font: 'Calibri',
+                        color: greenCount > 0 ? C.green : C.gray,
+                      }),
+                    ],
+                  }),
+                ],
               }),
               new TableCell({
                 width: { size: 13, type: WidthType.PERCENTAGE },
                 shading: { type: ShadingType.SOLID, color: rowBg },
                 margins: { top: 60, bottom: 60, left: 80, right: 80 },
-                children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: `${yellowCount}`, bold: yellowCount > 0, size: 18, font: 'Calibri', color: yellowCount > 0 ? C.yellow : C.gray })] })],
+                children: [
+                  new Paragraph({
+                    alignment: AlignmentType.CENTER,
+                    children: [
+                      new TextRun({
+                        text: `${yellowCount}`,
+                        bold: yellowCount > 0,
+                        size: 18,
+                        font: 'Calibri',
+                        color: yellowCount > 0 ? C.yellow : C.gray,
+                      }),
+                    ],
+                  }),
+                ],
               }),
               new TableCell({
                 width: { size: 13, type: WidthType.PERCENTAGE },
                 shading: { type: ShadingType.SOLID, color: rowBg },
                 margins: { top: 60, bottom: 60, left: 80, right: 80 },
-                children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: `${redCount}`, bold: redCount > 0, size: 18, font: 'Calibri', color: redCount > 0 ? C.red : C.gray })] })],
+                children: [
+                  new Paragraph({
+                    alignment: AlignmentType.CENTER,
+                    children: [
+                      new TextRun({
+                        text: `${redCount}`,
+                        bold: redCount > 0,
+                        size: 18,
+                        font: 'Calibri',
+                        color: redCount > 0 ? C.red : C.gray,
+                      }),
+                    ],
+                  }),
+                ],
               }),
             ],
           });
@@ -759,17 +1097,38 @@ export async function exportWordReview(data: RFPData, options?: ReviewExportOpti
   sections.push(new Paragraph({ children: [new PageBreak()] }));
 
   // ── Action Required ────────────────────────────────────────────────────────
-  const actionQs = questions.filter((q) => q.confidence === 'RED' || q.compliant === 'N' || (q.committee_score > 0 && q.committee_score < 5));
+  const actionQs = questions.filter(
+    (q) =>
+      q.confidence === 'RED' ||
+      q.compliant === 'N' ||
+      (q.committee_score > 0 && q.committee_score < 5),
+  );
   sections.push(
     new Paragraph({
       heading: HeadingLevel.HEADING_1,
       spacing: { before: 200, after: 80 },
       border: { bottom: { style: BorderStyle.SINGLE, size: 8, color: C.red } },
-      children: [new TextRun({ text: `Action Required  (${actionQs.length} questions)`, bold: true, size: 28, font: 'Calibri', color: C.red })],
+      children: [
+        new TextRun({
+          text: `Action Required  (${actionQs.length} questions)`,
+          bold: true,
+          size: 28,
+          font: 'Calibri',
+          color: C.red,
+        }),
+      ],
     }),
     new Paragraph({
       spacing: { before: 0, after: 160 },
-      children: [new TextRun({ text: 'Questions with RED confidence, Non-Compliant status, or committee score below 5/10.', size: 18, font: 'Calibri', color: C.gray, italics: true })],
+      children: [
+        new TextRun({
+          text: 'Questions with RED confidence, Non-Compliant status, or committee score below 5/10.',
+          size: 18,
+          font: 'Calibri',
+          color: C.gray,
+          italics: true,
+        }),
+      ],
     }),
   );
 
@@ -785,37 +1144,113 @@ export async function exportWordReview(data: RFPData, options?: ReviewExportOpti
                 width: { size: 12, type: WidthType.PERCENTAGE },
                 shading: { type: ShadingType.SOLID, color: C.red },
                 margins: { top: 80, bottom: 80, left: 120, right: 120 },
-                children: [new Paragraph({ children: [new TextRun({ text: 'Ref', bold: true, size: 18, font: 'Calibri', color: C.white })] })],
+                children: [
+                  new Paragraph({
+                    children: [
+                      new TextRun({
+                        text: 'Ref',
+                        bold: true,
+                        size: 18,
+                        font: 'Calibri',
+                        color: C.white,
+                      }),
+                    ],
+                  }),
+                ],
               }),
               new TableCell({
                 width: { size: 32, type: WidthType.PERCENTAGE },
                 shading: { type: ShadingType.SOLID, color: C.red },
                 margins: { top: 80, bottom: 80, left: 120, right: 120 },
-                children: [new Paragraph({ children: [new TextRun({ text: 'Topic', bold: true, size: 18, font: 'Calibri', color: C.white })] })],
+                children: [
+                  new Paragraph({
+                    children: [
+                      new TextRun({
+                        text: 'Topic',
+                        bold: true,
+                        size: 18,
+                        font: 'Calibri',
+                        color: C.white,
+                      }),
+                    ],
+                  }),
+                ],
               }),
               new TableCell({
                 width: { size: 18, type: WidthType.PERCENTAGE },
                 shading: { type: ShadingType.SOLID, color: C.red },
                 margins: { top: 80, bottom: 80, left: 80, right: 80 },
-                children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: 'Confidence', bold: true, size: 18, font: 'Calibri', color: C.white })] })],
+                children: [
+                  new Paragraph({
+                    alignment: AlignmentType.CENTER,
+                    children: [
+                      new TextRun({
+                        text: 'Confidence',
+                        bold: true,
+                        size: 18,
+                        font: 'Calibri',
+                        color: C.white,
+                      }),
+                    ],
+                  }),
+                ],
               }),
               new TableCell({
                 width: { size: 18, type: WidthType.PERCENTAGE },
                 shading: { type: ShadingType.SOLID, color: C.red },
                 margins: { top: 80, bottom: 80, left: 80, right: 80 },
-                children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: 'Compliant', bold: true, size: 18, font: 'Calibri', color: C.white })] })],
+                children: [
+                  new Paragraph({
+                    alignment: AlignmentType.CENTER,
+                    children: [
+                      new TextRun({
+                        text: 'Compliant',
+                        bold: true,
+                        size: 18,
+                        font: 'Calibri',
+                        color: C.white,
+                      }),
+                    ],
+                  }),
+                ],
               }),
               new TableCell({
                 width: { size: 10, type: WidthType.PERCENTAGE },
                 shading: { type: ShadingType.SOLID, color: C.red },
                 margins: { top: 80, bottom: 80, left: 80, right: 80 },
-                children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: 'Score', bold: true, size: 18, font: 'Calibri', color: C.white })] })],
+                children: [
+                  new Paragraph({
+                    alignment: AlignmentType.CENTER,
+                    children: [
+                      new TextRun({
+                        text: 'Score',
+                        bold: true,
+                        size: 18,
+                        font: 'Calibri',
+                        color: C.white,
+                      }),
+                    ],
+                  }),
+                ],
               }),
               new TableCell({
                 width: { size: 10, type: WidthType.PERCENTAGE },
                 shading: { type: ShadingType.SOLID, color: C.red },
                 margins: { top: 80, bottom: 80, left: 80, right: 80 },
-                children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: 'Category', bold: true, size: 18, font: 'Calibri', color: C.white })] })],
+                children: [
+                  new Paragraph({
+                    alignment: AlignmentType.CENTER,
+                    children: [
+                      new TextRun({
+                        text: 'Category',
+                        bold: true,
+                        size: 18,
+                        font: 'Calibri',
+                        color: C.white,
+                      }),
+                    ],
+                  }),
+                ],
               }),
             ],
           }),
@@ -829,37 +1264,105 @@ export async function exportWordReview(data: RFPData, options?: ReviewExportOpti
                   width: { size: 12, type: WidthType.PERCENTAGE },
                   shading: { type: ShadingType.SOLID, color: rowBg },
                   margins: { top: 60, bottom: 60, left: 120, right: 120 },
-                  children: [new Paragraph({ children: [new TextRun({ text: q.ref, bold: true, size: 17, font: 'Courier New', color: C.navy })] })],
+                  children: [
+                    new Paragraph({
+                      children: [
+                        new TextRun({
+                          text: q.ref,
+                          bold: true,
+                          size: 17,
+                          font: 'Courier New',
+                          color: C.navy,
+                        }),
+                      ],
+                    }),
+                  ],
                 }),
                 new TableCell({
                   width: { size: 32, type: WidthType.PERCENTAGE },
                   shading: { type: ShadingType.SOLID, color: rowBg },
                   margins: { top: 60, bottom: 60, left: 120, right: 120 },
-                  children: [new Paragraph({ children: [new TextRun({ text: q.topic || '', size: 17, font: 'Calibri', color: C.dark })] })],
+                  children: [
+                    new Paragraph({
+                      children: [
+                        new TextRun({
+                          text: q.topic || '',
+                          size: 17,
+                          font: 'Calibri',
+                          color: C.dark,
+                        }),
+                      ],
+                    }),
+                  ],
                 }),
                 new TableCell({
                   width: { size: 18, type: WidthType.PERCENTAGE },
                   shading: { type: ShadingType.SOLID, color: rowBg },
                   margins: { top: 60, bottom: 60, left: 80, right: 80 },
-                  children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: conf.text, bold: true, size: 17, font: 'Calibri', color: conf.color })] })],
+                  children: [
+                    new Paragraph({
+                      alignment: AlignmentType.CENTER,
+                      children: [
+                        new TextRun({
+                          text: conf.text,
+                          bold: true,
+                          size: 17,
+                          font: 'Calibri',
+                          color: conf.color,
+                        }),
+                      ],
+                    }),
+                  ],
                 }),
                 new TableCell({
                   width: { size: 18, type: WidthType.PERCENTAGE },
                   shading: { type: ShadingType.SOLID, color: rowBg },
                   margins: { top: 60, bottom: 60, left: 80, right: 80 },
-                  children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: comp.text, bold: true, size: 17, font: 'Calibri', color: comp.color })] })],
+                  children: [
+                    new Paragraph({
+                      alignment: AlignmentType.CENTER,
+                      children: [
+                        new TextRun({
+                          text: comp.text,
+                          bold: true,
+                          size: 17,
+                          font: 'Calibri',
+                          color: comp.color,
+                        }),
+                      ],
+                    }),
+                  ],
                 }),
                 new TableCell({
                   width: { size: 10, type: WidthType.PERCENTAGE },
                   shading: { type: ShadingType.SOLID, color: rowBg },
                   margins: { top: 60, bottom: 60, left: 80, right: 80 },
-                  children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: `${q.committee_score}/10`, bold: true, size: 17, font: 'Calibri', color: q.committee_score < 5 ? C.red : C.yellow })] })],
+                  children: [
+                    new Paragraph({
+                      alignment: AlignmentType.CENTER,
+                      children: [
+                        new TextRun({
+                          text: `${q.committee_score}/10`,
+                          bold: true,
+                          size: 17,
+                          font: 'Calibri',
+                          color: q.committee_score < 5 ? C.red : C.yellow,
+                        }),
+                      ],
+                    }),
+                  ],
                 }),
                 new TableCell({
                   width: { size: 10, type: WidthType.PERCENTAGE },
                   shading: { type: ShadingType.SOLID, color: rowBg },
                   margins: { top: 60, bottom: 60, left: 80, right: 80 },
-                  children: [new Paragraph({ children: [new TextRun({ text: q.category, size: 15, font: 'Calibri', color: C.gray })] })],
+                  children: [
+                    new Paragraph({
+                      children: [
+                        new TextRun({ text: q.category, size: 15, font: 'Calibri', color: C.gray }),
+                      ],
+                    }),
+                  ],
                 }),
               ],
             });
@@ -888,11 +1391,32 @@ export async function exportWordReview(data: RFPData, options?: ReviewExportOpti
       new Paragraph({
         spacing: { before: 0, after: 200 },
         children: [
-          new TextRun({ text: `${catQs.length} questions  ·  `, size: 18, font: 'Calibri', color: C.gray }),
-          new TextRun({ text: `Avg score: ${avgScore.toFixed(1)}/10  ·  `, size: 18, font: 'Calibri', color: C.gray }),
+          new TextRun({
+            text: `${catQs.length} questions  ·  `,
+            size: 18,
+            font: 'Calibri',
+            color: C.gray,
+          }),
+          new TextRun({
+            text: `Avg score: ${avgScore.toFixed(1)}/10  ·  `,
+            size: 18,
+            font: 'Calibri',
+            color: C.gray,
+          }),
           new TextRun({ text: `${green} GREEN  `, size: 18, font: 'Calibri', color: C.green }),
-          ...(yellow > 0 ? [new TextRun({ text: `${yellow} YELLOW  `, size: 18, font: 'Calibri', color: C.yellow })] : []),
-          ...(red > 0 ? [new TextRun({ text: `${red} RED`, size: 18, font: 'Calibri', color: C.red })] : []),
+          ...(yellow > 0
+            ? [
+                new TextRun({
+                  text: `${yellow} YELLOW  `,
+                  size: 18,
+                  font: 'Calibri',
+                  color: C.yellow,
+                }),
+              ]
+            : []),
+          ...(red > 0
+            ? [new TextRun({ text: `${red} RED`, size: 18, font: 'Calibri', color: C.red })]
+            : []),
         ],
       }),
     );
@@ -942,10 +1466,25 @@ export async function exportWordReview(data: RFPData, options?: ReviewExportOpti
               new Paragraph({
                 alignment: AlignmentType.CENTER,
                 children: [
-                  new TextRun({ text: 'Confidential — For Internal Review Only · Brim Financial · Page ', size: 16, color: C.gray, font: 'Calibri' }),
-                  new TextRun({ children: [PageNumber.CURRENT], size: 16, color: C.gray, font: 'Calibri' }),
+                  new TextRun({
+                    text: 'Confidential — For Internal Review Only · Brim Financial · Page ',
+                    size: 16,
+                    color: C.gray,
+                    font: 'Calibri',
+                  }),
+                  new TextRun({
+                    children: [PageNumber.CURRENT],
+                    size: 16,
+                    color: C.gray,
+                    font: 'Calibri',
+                  }),
                   new TextRun({ text: ' of ', size: 16, color: C.gray, font: 'Calibri' }),
-                  new TextRun({ children: [PageNumber.TOTAL_PAGES], size: 16, color: C.gray, font: 'Calibri' }),
+                  new TextRun({
+                    children: [PageNumber.TOTAL_PAGES],
+                    size: 16,
+                    color: C.gray,
+                    font: 'Calibri',
+                  }),
                 ],
               }),
             ],

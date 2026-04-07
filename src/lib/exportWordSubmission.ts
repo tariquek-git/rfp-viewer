@@ -353,7 +353,13 @@ export async function exportWordSubmission(data: RFPData, options?: SubmissionEx
       heading: HeadingLevel.HEADING_1,
       spacing: { before: 200, after: 200 },
       children: [
-        new TextRun({ text: 'Executive Summary', bold: true, size: 36, font: 'Calibri', color: C.navy }),
+        new TextRun({
+          text: 'Executive Summary',
+          bold: true,
+          size: 36,
+          font: 'Calibri',
+          color: C.navy,
+        }),
       ],
     }),
     new Paragraph({
@@ -382,7 +388,7 @@ export async function exportWordSubmission(data: RFPData, options?: SubmissionEx
       spacing: { before: 0, after: 160 },
       children: [
         new TextRun({
-          text: 'All responses in this document represent current capabilities deployed in production across Brim Financial\'s live programs, including Continental Bank (US), Manulife Bank, and Affinity Credit Union.',
+          text: "All responses in this document represent current capabilities deployed in production across Brim Financial's live programs, including Continental Bank (US), Manulife Bank, and Affinity Credit Union.",
           size: 22,
           font: 'Calibri',
           color: C.dark,
@@ -399,7 +405,13 @@ export async function exportWordSubmission(data: RFPData, options?: SubmissionEx
       heading: HeadingLevel.HEADING_1,
       spacing: { before: 200, after: 200 },
       children: [
-        new TextRun({ text: 'Table of Contents', bold: true, size: 36, font: 'Calibri', color: C.navy }),
+        new TextRun({
+          text: 'Table of Contents',
+          bold: true,
+          size: 36,
+          font: 'Calibri',
+          color: C.navy,
+        }),
       ],
     }),
   );
@@ -411,9 +423,20 @@ export async function exportWordSubmission(data: RFPData, options?: SubmissionEx
       new Paragraph({
         spacing: { before: 80, after: 80 },
         children: [
-          new TextRun({ text: `${i + 1}.  `, bold: true, size: 22, font: 'Calibri', color: C.navy }),
+          new TextRun({
+            text: `${i + 1}.  `,
+            bold: true,
+            size: 22,
+            font: 'Calibri',
+            color: C.navy,
+          }),
           new TextRun({ text: cat, size: 22, font: 'Calibri', color: C.dark }),
-          new TextRun({ text: `  ·  ${count} requirements`, size: 18, font: 'Calibri', color: C.gray }),
+          new TextRun({
+            text: `  ·  ${count} requirements`,
+            size: 18,
+            font: 'Calibri',
+            color: C.gray,
+          }),
         ],
       }),
     );
@@ -428,11 +451,27 @@ export async function exportWordSubmission(data: RFPData, options?: SubmissionEx
       spacing: { before: 200, after: 80 },
       border: { bottom: { style: BorderStyle.THICK, size: 8, color: C.navy } },
       shading: { type: ShadingType.SOLID, color: C.navyBg },
-      children: [new TextRun({ text: 'Compliance Summary', bold: true, size: 32, font: 'Calibri', color: C.navy })],
+      children: [
+        new TextRun({
+          text: 'Compliance Summary',
+          bold: true,
+          size: 32,
+          font: 'Calibri',
+          color: C.navy,
+        }),
+      ],
     }),
     new Paragraph({
       spacing: { before: 0, after: 160 },
-      children: [new TextRun({ text: `Compliance status for all ${questions.length} requirements across ${categories.length} functional areas.`, size: 20, font: 'Calibri', color: C.gray, italics: true })],
+      children: [
+        new TextRun({
+          text: `Compliance status for all ${questions.length} requirements across ${categories.length} functional areas.`,
+          size: 20,
+          font: 'Calibri',
+          color: C.gray,
+          italics: true,
+        }),
+      ],
     }),
   );
 
@@ -447,25 +486,74 @@ export async function exportWordSubmission(data: RFPData, options?: SubmissionEx
               width: { size: 12, type: WidthType.PERCENTAGE },
               shading: { type: ShadingType.SOLID, color: C.navy },
               margins: { top: 80, bottom: 80, left: 120, right: 120 },
-              children: [new Paragraph({ children: [new TextRun({ text: 'Ref', bold: true, size: 18, font: 'Calibri', color: C.white })] })],
+              children: [
+                new Paragraph({
+                  children: [
+                    new TextRun({
+                      text: 'Ref',
+                      bold: true,
+                      size: 18,
+                      font: 'Calibri',
+                      color: C.white,
+                    }),
+                  ],
+                }),
+              ],
             }),
             new TableCell({
               width: { size: 42, type: WidthType.PERCENTAGE },
               shading: { type: ShadingType.SOLID, color: C.navy },
               margins: { top: 80, bottom: 80, left: 120, right: 120 },
-              children: [new Paragraph({ children: [new TextRun({ text: 'Requirement Topic', bold: true, size: 18, font: 'Calibri', color: C.white })] })],
+              children: [
+                new Paragraph({
+                  children: [
+                    new TextRun({
+                      text: 'Requirement Topic',
+                      bold: true,
+                      size: 18,
+                      font: 'Calibri',
+                      color: C.white,
+                    }),
+                  ],
+                }),
+              ],
             }),
             new TableCell({
               width: { size: 22, type: WidthType.PERCENTAGE },
               shading: { type: ShadingType.SOLID, color: C.navy },
               margins: { top: 80, bottom: 80, left: 120, right: 120 },
-              children: [new Paragraph({ children: [new TextRun({ text: 'Category', bold: true, size: 18, font: 'Calibri', color: C.white })] })],
+              children: [
+                new Paragraph({
+                  children: [
+                    new TextRun({
+                      text: 'Category',
+                      bold: true,
+                      size: 18,
+                      font: 'Calibri',
+                      color: C.white,
+                    }),
+                  ],
+                }),
+              ],
             }),
             new TableCell({
               width: { size: 24, type: WidthType.PERCENTAGE },
               shading: { type: ShadingType.SOLID, color: C.navy },
               margins: { top: 80, bottom: 80, left: 80, right: 80 },
-              children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: 'Compliance Status', bold: true, size: 18, font: 'Calibri', color: C.white })] })],
+              children: [
+                new Paragraph({
+                  alignment: AlignmentType.CENTER,
+                  children: [
+                    new TextRun({
+                      text: 'Compliance Status',
+                      bold: true,
+                      size: 18,
+                      font: 'Calibri',
+                      color: C.white,
+                    }),
+                  ],
+                }),
+              ],
             }),
           ],
         }),
@@ -481,25 +569,61 @@ export async function exportWordSubmission(data: RFPData, options?: SubmissionEx
                 width: { size: 12, type: WidthType.PERCENTAGE },
                 shading: { type: ShadingType.SOLID, color: rowBg },
                 margins: { top: 50, bottom: 50, left: 120, right: 120 },
-                children: [new Paragraph({ children: [new TextRun({ text: q.ref, size: 16, font: 'Courier New', color: C.navy })] })],
+                children: [
+                  new Paragraph({
+                    children: [
+                      new TextRun({ text: q.ref, size: 16, font: 'Courier New', color: C.navy }),
+                    ],
+                  }),
+                ],
               }),
               new TableCell({
                 width: { size: 42, type: WidthType.PERCENTAGE },
                 shading: { type: ShadingType.SOLID, color: rowBg },
                 margins: { top: 50, bottom: 50, left: 120, right: 120 },
-                children: [new Paragraph({ children: [new TextRun({ text: q.topic || '', size: 16, font: 'Calibri', color: C.dark })] })],
+                children: [
+                  new Paragraph({
+                    children: [
+                      new TextRun({
+                        text: q.topic || '',
+                        size: 16,
+                        font: 'Calibri',
+                        color: C.dark,
+                      }),
+                    ],
+                  }),
+                ],
               }),
               new TableCell({
                 width: { size: 22, type: WidthType.PERCENTAGE },
                 shading: { type: ShadingType.SOLID, color: rowBg },
                 margins: { top: 50, bottom: 50, left: 120, right: 120 },
-                children: [new Paragraph({ children: [new TextRun({ text: q.category, size: 15, font: 'Calibri', color: C.gray })] })],
+                children: [
+                  new Paragraph({
+                    children: [
+                      new TextRun({ text: q.category, size: 15, font: 'Calibri', color: C.gray }),
+                    ],
+                  }),
+                ],
               }),
               new TableCell({
                 width: { size: 24, type: WidthType.PERCENTAGE },
                 shading: { type: ShadingType.SOLID, color: rowBg },
                 margins: { top: 50, bottom: 50, left: 80, right: 80 },
-                children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: statusText, bold: true, size: 16, font: 'Calibri', color: statusColor })] })],
+                children: [
+                  new Paragraph({
+                    alignment: AlignmentType.CENTER,
+                    children: [
+                      new TextRun({
+                        text: statusText,
+                        bold: true,
+                        size: 16,
+                        font: 'Calibri',
+                        color: statusColor,
+                      }),
+                    ],
+                  }),
+                ],
               }),
             ],
           });
@@ -604,10 +728,25 @@ export async function exportWordSubmission(data: RFPData, options?: SubmissionEx
                 alignment: AlignmentType.CENTER,
                 border: { top: { style: BorderStyle.SINGLE, size: 4, color: C.grayLight } },
                 children: [
-                  new TextRun({ text: `Brim Financial · BSB RFP Response · ${new Date().getFullYear()} · Confidential · Page `, size: 16, color: C.gray, font: 'Calibri' }),
-                  new TextRun({ children: [PageNumber.CURRENT], size: 16, color: C.gray, font: 'Calibri' }),
+                  new TextRun({
+                    text: `Brim Financial · BSB RFP Response · ${new Date().getFullYear()} · Confidential · Page `,
+                    size: 16,
+                    color: C.gray,
+                    font: 'Calibri',
+                  }),
+                  new TextRun({
+                    children: [PageNumber.CURRENT],
+                    size: 16,
+                    color: C.gray,
+                    font: 'Calibri',
+                  }),
                   new TextRun({ text: ' of ', size: 16, color: C.gray, font: 'Calibri' }),
-                  new TextRun({ children: [PageNumber.TOTAL_PAGES], size: 16, color: C.gray, font: 'Calibri' }),
+                  new TextRun({
+                    children: [PageNumber.TOTAL_PAGES],
+                    size: 16,
+                    color: C.gray,
+                    font: 'Calibri',
+                  }),
                 ],
               }),
             ],

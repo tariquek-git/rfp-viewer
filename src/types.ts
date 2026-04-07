@@ -61,7 +61,34 @@ export type ViewTab =
   | 'submission'
   | 'pricing'
   | 'timeline'
-  | 'sla';
+  | 'sla'
+  | 'assignments';
+
+// === Assignments ===
+export interface TeamMember {
+  id: string;
+  name: string;
+  initials: string;
+  department: string;
+  color: string; // tailwind bg color class like 'bg-blue-500'
+}
+
+export interface SectionAssignment {
+  category: string;
+  ownerId: string;        // TeamMember id
+  department: string;
+  status: 'not-started' | 'in-progress' | 'needs-review' | 'approved';
+  dueDate?: string;
+  notes?: string;
+}
+
+export interface QuestionAssignment {
+  ref: string;             // question ref e.g. "Application Processing 1"
+  assignedTo: string;      // TeamMember id
+  dueDate?: string;
+  reviewedBy?: string[];   // TeamMember ids
+  approvedBy?: string;     // TeamMember id
+}
 export type StatusFilter = 'All Status' | 'draft' | 'reviewed' | 'approved' | 'flagged';
 
 // === Diff / AI Suggestion Types ===

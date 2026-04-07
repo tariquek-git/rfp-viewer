@@ -70,7 +70,9 @@ export async function POST(request: Request) {
   }
   const { data } = body;
   if (!data || !Array.isArray(data.questions) || !Array.isArray(data.categories)) {
-    return new NextResponse('Missing required fields: data.questions, data.categories', { status: 400 });
+    return new NextResponse('Missing required fields: data.questions, data.categories', {
+      status: 400,
+    });
   }
 
   const wb = new ExcelJS.Workbook();
@@ -95,7 +97,11 @@ export async function POST(request: Request) {
     'Feedback Notes',
   ];
   const MAT_WIDTHS = [5, 22, 12, 22, 42, 42, 52, 16, 12, 12, 8, 12, 10, 42, 44];
-  const FEEDBACK_FILL: ExcelJS.Fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFFDE7' } };
+  const FEEDBACK_FILL: ExcelJS.Fill = {
+    type: 'pattern',
+    pattern: 'solid',
+    fgColor: { argb: 'FFFFFDE7' },
+  };
 
   // ── Sheet 1: Compliance Matrix ────────────────────────────────────────────
   const ws1 = wb.addWorksheet('Compliance Matrix');

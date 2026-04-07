@@ -38,6 +38,12 @@ export const STORAGE_KEYS = {
   TEMPLATE_PREFIX: 'rfp-template-',
   /** Submission deadline date string */
   DEADLINE: 'rfp-deadline',
+  /** Section ownership assignments */
+  SECTION_ASSIGNMENTS: 'rfp-section-assignments',
+  /** Per-question assignments */
+  QUESTION_ASSIGNMENTS: 'rfp-question-assignments',
+  /** Team members roster */
+  TEAM_MEMBERS: 'rfp-team-members',
 } as const;
 
 export type StorageKey = (typeof STORAGE_KEYS)[keyof typeof STORAGE_KEYS];

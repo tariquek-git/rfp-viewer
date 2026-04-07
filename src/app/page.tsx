@@ -31,6 +31,7 @@ const VersionCompare = lazy(() => import('@/components/VersionCompare'));
 const TemplateManager = lazy(() => import('@/components/TemplateManager'));
 const HumanizeView = lazy(() => import('@/components/HumanizeView'));
 const IssuesView = lazy(() => import('@/components/IssuesView'));
+const AssignmentsView = lazy(() => import('@/components/AssignmentsView'));
 const SettingsPanel = lazy(() => import('@/components/SettingsPanel'));
 import TourOverlay from '@/components/TourOverlay';
 import { ToastContainer } from '@/components/Toast';
@@ -413,6 +414,7 @@ export default function Home() {
                 sla: 'SLAs',
                 compliance: 'Compliance',
                 submission: 'Export',
+                assignments: 'Assignments',
               }[state.activeTab] || state.activeTab}
             </span>
             {state.activeTab === 'grid' && state.activeCategory !== 'All' && (
@@ -515,6 +517,9 @@ export default function Home() {
                 questions={state.data.questions}
                 onSelectQuestion={handleSelectQuestion}
               />
+            )}
+            {state.activeTab === 'assignments' && state.data && (
+              <AssignmentsView data={state.data} />
             )}
             {state.activeTab === 'submission' && (
               <SubmissionView
