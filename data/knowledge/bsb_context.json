@@ -1,0 +1,242 @@
+[
+  {
+    "id": 1,
+    "category": "profile",
+    "label": "Institution type",
+    "content": "Mutual savings bank — depositor-owned, no shareholders. 170+ year old community bank. Conservative, relationship-driven culture.",
+    "priority": 1,
+    "updated_at": "2026-04-08 19:49:18"
+  },
+  {
+    "id": 2,
+    "category": "profile",
+    "label": "Founded",
+    "content": "February 14, 1852, Bangor, Maine.",
+    "priority": 3,
+    "updated_at": "2026-04-08 19:49:18"
+  },
+  {
+    "id": 3,
+    "category": "profile",
+    "label": "Total assets",
+    "content": "~$7 billion+",
+    "priority": 2,
+    "updated_at": "2026-04-08 19:49:18"
+  },
+  {
+    "id": 4,
+    "category": "profile",
+    "label": "Branches",
+    "content": "60+ across Maine and New Hampshire.",
+    "priority": 3,
+    "updated_at": "2026-04-08 19:49:18"
+  },
+  {
+    "id": 5,
+    "category": "profile",
+    "label": "Employees",
+    "content": "~900",
+    "priority": 3,
+    "updated_at": "2026-04-08 19:49:18"
+  },
+  {
+    "id": 6,
+    "category": "profile",
+    "label": "Brand positioning",
+    "content": "'You Matter More' — strong community identity. Evaluating vendors through relationship and trust lens.",
+    "priority": 2,
+    "updated_at": "2026-04-08 19:49:18"
+  },
+  {
+    "id": 7,
+    "category": "technology",
+    "label": "Core banking",
+    "content": "Jack Henry jXchange — #1 integration risk area. Must be specific, honest, and detailed about what integration covers.",
+    "priority": 1,
+    "updated_at": "2026-04-08 19:49:18"
+  },
+  {
+    "id": 8,
+    "category": "technology",
+    "label": "Fraud monitoring",
+    "content": "Verafin",
+    "priority": 2,
+    "updated_at": "2026-04-08 19:49:18"
+  },
+  {
+    "id": 9,
+    "category": "technology",
+    "label": "Credit bureau",
+    "content": "TransUnion",
+    "priority": 3,
+    "updated_at": "2026-04-08 19:49:18"
+  },
+  {
+    "id": 10,
+    "category": "technology",
+    "label": "Current card processor",
+    "content": "Centrix DTS — being replaced. This is the migration target.",
+    "priority": 1,
+    "updated_at": "2026-04-08 19:49:18"
+  },
+  {
+    "id": 11,
+    "category": "technology",
+    "label": "Customer engagement",
+    "content": "Glia (digital messaging/video)",
+    "priority": 4,
+    "updated_at": "2026-04-08 19:49:18"
+  },
+  {
+    "id": 12,
+    "category": "technology",
+    "label": "Document management",
+    "content": "DocuSign",
+    "priority": 5,
+    "updated_at": "2026-04-08 19:49:18"
+  },
+  {
+    "id": 13,
+    "category": "technology",
+    "label": "Online banking",
+    "content": "Investing in digital transformation. Glia for digital engagement, modernized online banking.",
+    "priority": 3,
+    "updated_at": "2026-04-08 19:49:18"
+  },
+  {
+    "id": 14,
+    "category": "technology",
+    "label": "Merchant acquiring",
+    "content": "Global Payments/TSYS for merchant acquiring, Clover and Toast POS — separate from card issuing RFP.",
+    "priority": 5,
+    "updated_at": "2026-04-08 19:49:18"
+  },
+  {
+    "id": 15,
+    "category": "products",
+    "label": "Consumer card suite",
+    "content": "'Everblue' suite of consumer rewards credit cards.",
+    "priority": 2,
+    "updated_at": "2026-04-08 19:49:18"
+  },
+  {
+    "id": 16,
+    "category": "products",
+    "label": "Youth card",
+    "content": "'Pling' teen/youth card.",
+    "priority": 3,
+    "updated_at": "2026-04-08 19:49:18"
+  },
+  {
+    "id": 17,
+    "category": "products",
+    "label": "Business cards",
+    "content": "Business credit cards.",
+    "priority": 3,
+    "updated_at": "2026-04-08 19:49:18"
+  },
+  {
+    "id": 18,
+    "category": "products",
+    "label": "Mastercard membership",
+    "content": "Principal Mastercard membership — not using BIN sponsorship from another institution. Positive signal for BRIM.",
+    "priority": 2,
+    "updated_at": "2026-04-08 19:49:18"
+  },
+  {
+    "id": 19,
+    "category": "rules",
+    "label": "No Canada/US framing",
+    "content": "Never say 'Canadian and US requirements' or 'Canada and US' in BSB-facing content. Position from US perspective only.",
+    "priority": 1,
+    "updated_at": "2026-04-08 19:49:18"
+  },
+  {
+    "id": 20,
+    "category": "rules",
+    "label": "Mutual savings bank language",
+    "content": "Do not use shareholder-centric language. Frame value in terms of depositor benefit, community impact, and operational efficiency.",
+    "priority": 1,
+    "updated_at": "2026-04-08 19:49:18"
+  },
+  {
+    "id": 21,
+    "category": "rules",
+    "label": "Examiner lens",
+    "content": "Write as if OCC/FDIC examiner will read it during third-party risk review. Every answer must demonstrate BSB retains appropriate oversight.",
+    "priority": 1,
+    "updated_at": "2026-04-08 19:49:18"
+  },
+  {
+    "id": 22,
+    "category": "risks",
+    "label": "Jack Henry integration — #1 risk",
+    "content": "Integration quality determines daily operational experience. Bangor will weight this heavily. Verify engineering depth before committing specifics.",
+    "priority": 1,
+    "updated_at": "2026-04-08 19:49:18"
+  },
+  {
+    "id": 23,
+    "category": "risks",
+    "label": "October 2027 migration deadline",
+    "content": "Tight but achievable. Position with buffer for UAT and parallel run. Work backwards to show adequate runway.",
+    "priority": 2,
+    "updated_at": "2026-04-08 19:49:18"
+  },
+  {
+    "id": 24,
+    "category": "risks",
+    "label": "Centrix DTS migration path",
+    "content": "Need clear plan: cardholder data migration, open dispute transfer, rewards balance migration, communication plan.",
+    "priority": 2,
+    "updated_at": "2026-04-08 19:49:18"
+  },
+  {
+    "id": 25,
+    "category": "risks",
+    "label": "Depositor governance",
+    "content": "Depositor-owned. Frame value in terms of depositor benefit and community impact.",
+    "priority": 3,
+    "updated_at": "2026-04-08 19:49:18"
+  },
+  {
+    "id": 26,
+    "category": "eval_factors",
+    "label": "1 — Jack Henry depth",
+    "content": "Can BRIM integrate cleanly with jXchange? Highest weight factor.",
+    "priority": 1,
+    "updated_at": "2026-04-08 19:49:18"
+  },
+  {
+    "id": 27,
+    "category": "eval_factors",
+    "label": "2 — Migration risk",
+    "content": "How does BRIM de-risk transition from Centrix DTS?",
+    "priority": 1,
+    "updated_at": "2026-04-08 19:49:18"
+  },
+  {
+    "id": 28,
+    "category": "eval_factors",
+    "label": "3 — Rewards flexibility",
+    "content": "Can BRIM support and enhance the Everblue program?",
+    "priority": 2,
+    "updated_at": "2026-04-08 19:49:18"
+  },
+  {
+    "id": 29,
+    "category": "eval_factors",
+    "label": "4 — Community bank fit",
+    "content": "Is BRIM right-sized for a $7B mutual savings bank?",
+    "priority": 2,
+    "updated_at": "2026-04-08 19:49:18"
+  },
+  {
+    "id": 30,
+    "category": "eval_factors",
+    "label": "5 — Regulatory comfort",
+    "content": "Will Maine Bureau / FDIC be comfortable with this vendor?",
+    "priority": 2,
+    "updated_at": "2026-04-08 19:49:18"
+  }
+]

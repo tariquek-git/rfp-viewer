@@ -3,6 +3,7 @@ import Anthropic from '@anthropic-ai/sdk';
 import { sanitizeString } from '@/lib/sanitize';
 import { handleAnthropicError } from '@/lib/parseAIResponse';
 import { HumanizeRequestSchema, parseBody } from '@/lib/schemas';
+import { getBannedWords } from '@/lib/knowledge';
 
 const client = new Anthropic();
 
@@ -22,6 +23,12 @@ export async function POST(req: NextRequest) {
     const context = sanitizeString(parsedBody.data.context, 500);
 
     if (!text) return NextResponse.json({ error: 'No text provided' }, { status: 400 });
+
+    const bannedWords = getBannedWords();
+    const bannedFillerLine =
+      bannedWords.length > 0
+        ? `Remove filler words: ${bannedWords.map((w) => `"${w}"`).join(', ')}`
+        : 'Remove filler words: "comprehensive", "robust", "seamless", "holistic", "cutting-edge", "state-of-the-art", "best-in-class", "world-class", "industry-leading"';
 
     const message = await client.messages.create({
       model: process.env.CLAUDE_MODEL || 'claude-sonnet-4-20250514',
@@ -43,7 +50,7 @@ CONTEXT: ${context}
 RULES FOR HUMANIZING:
 1. Break long sentences (40+ words) into 2-3 shorter ones
 2. Replace em-dashes (—) with periods or commas where natural
-3. Remove filler words: "comprehensive", "robust", "seamless", "holistic", "cutting-edge", "state-of-the-art", "best-in-class", "world-class", "industry-leading"
+3. ${bannedFillerLine}
 4. Replace "utilize" with "use", "facilitate" with "help", "leverage" with "use", "optimize" with "improve"
 5. Remove "furthermore", "moreover", "it is worth noting", "it should be noted"
 6. Convert passive voice to active where possible ("is designed to" -> "does")

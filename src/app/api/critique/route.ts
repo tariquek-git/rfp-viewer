@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
 import { parseAIJson, handleAnthropicError } from '@/lib/parseAIResponse';
 import { CritiqueRequestSchema, parseBody } from '@/lib/schemas';
+import { getBannedWords, getFormatBans } from '@/lib/knowledge';
 
 const client = new Anthropic();
 
@@ -22,6 +23,16 @@ export async function POST(req: NextRequest) {
       ? `\nCOMPANY KNOWLEDGE BASE:\nFacts: ${knowledgeBase.companyFacts}\nMetrics: ${knowledgeBase.keyMetrics}\nDifferentiators: ${knowledgeBase.differentiators}`
       : '';
 
+    const bannedWords = getBannedWords();
+    const formatBansList = getFormatBans()
+      .map((b) => `- ${b.directive}`)
+      .join('\n');
+    const guardrailsSection = bannedWords.length
+      ? `\nBRIM GUARDRAILS (flag any violations as weaknesses):
+- Banned words: ${bannedWords.join(', ')}
+${formatBansList}`
+      : '';
+
     const message = await client.messages.create({
       model: process.env.CLAUDE_MODEL || 'claude-sonnet-4-20250514',
       temperature: 0.4,
@@ -40,7 +51,7 @@ ${question[field]}
 
 Current Confidence: ${question.confidence}
 Current Committee Score: ${question.committee_score}/10
-${kbSection}
+${kbSection}${guardrailsSection}
 
 Analyze this response and return ONLY a JSON object with:
 {

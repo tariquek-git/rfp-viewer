@@ -8,6 +8,7 @@ import {
 } from '@/lib/sanitize';
 import { handleAnthropicError } from '@/lib/parseAIResponse';
 import { RewriteRequestSchema, parseBody } from '@/lib/schemas';
+import { getBannedWords, getFormatBans } from '@/lib/knowledge';
 
 const client = new Anthropic();
 
@@ -60,6 +61,15 @@ Differentiators: ${knowledgeBase.differentiators}
 Competitive Positioning: ${knowledgeBase.competitivePositioning}`
       : '';
 
+    const bannedWords = getBannedWords();
+    const bannedWordsLine =
+      bannedWords.length > 0 ? `- Do NOT use words: ${bannedWords.join(', ')}` : '';
+
+    const formatBansLines = getFormatBans()
+      .map((b) => `- ${b.directive}`)
+      .join('\n');
+    const formatBansSection = formatBansLines ? `\n${formatBansLines}` : '';
+
     const timeout = AbortSignal.timeout(30_000);
     const message = await client.messages.create(
       {
@@ -96,7 +106,7 @@ RULES:
 - Highlight Brim's competitive advantages
 - Address any gaps or risks identified
 - Do NOT fabricate statistics, client names, or metrics not in the knowledge base
-- Do NOT use words: comprehensive, robust, seamless, leverage, utilize, cutting-edge, ecosystem
+${bannedWordsLine}${formatBansSection}
 - Sound confident without being vague${kbSection}${globalRulesSection}${rowRulesSection}${feedbackSection}
 
 Rewrite the response. Output ONLY the rewritten response text, no preamble or explanation.`,

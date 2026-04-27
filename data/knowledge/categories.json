@@ -1,0 +1,72 @@
+[
+  {
+    "id": 1,
+    "code": "COMPANY",
+    "name": "BRIM Company Facts",
+    "description": "Core company facts, investors, certifications",
+    "sort_order": 1
+  },
+  {
+    "id": 2,
+    "code": "CLIENTS",
+    "name": "Client Proof Points",
+    "description": "Live clients, key facts, usage rules",
+    "sort_order": 2
+  },
+  {
+    "id": 3,
+    "code": "METRICS",
+    "name": "Platform Metrics & Numbers",
+    "description": "Quantified platform capabilities and SLAs",
+    "sort_order": 3
+  },
+  {
+    "id": 4,
+    "code": "WRITING",
+    "name": "Writing Rules",
+    "description": "Tone, format, banned words, structure",
+    "sort_order": 4
+  },
+  {
+    "id": 5,
+    "code": "TERMINOLOGY",
+    "name": "Terminology — Say This/Not That",
+    "description": "Specific phrasing rules and substitutions",
+    "sort_order": 5
+  },
+  {
+    "id": 6,
+    "code": "BSB",
+    "name": "BSB-Specific Rules",
+    "description": "Bangor Savings Bank context and rules",
+    "sort_order": 6
+  },
+  {
+    "id": 7,
+    "code": "INTEGRATION",
+    "name": "Integration Knowledge",
+    "description": "Core banking, OLB, third-party connectors",
+    "sort_order": 7
+  },
+  {
+    "id": 8,
+    "code": "COMPLIANCE",
+    "name": "Compliance & Security",
+    "description": "PCI DSS, ISO, encryption, auth, regulatory",
+    "sort_order": 8
+  },
+  {
+    "id": 9,
+    "code": "SUPPORT",
+    "name": "PAM Structure & Support",
+    "description": "Account management, SLAs, implementation",
+    "sort_order": 9
+  },
+  {
+    "id": 10,
+    "code": "RFP_FORMAT",
+    "name": "RFP Format Rules",
+    "description": "How answers are structured and formatted",
+    "sort_order": 10
+  }
+]
