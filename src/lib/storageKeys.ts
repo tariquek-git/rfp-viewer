@@ -44,6 +44,8 @@ export const STORAGE_KEYS = {
   QUESTION_ASSIGNMENTS: 'rfp-question-assignments',
   /** Team members roster */
   TEAM_MEMBERS: 'rfp-team-members',
+  /** Deal-level account intelligence (per-RFP context) */
+  DEAL_CONTEXT: 'rfp-deal-context',
 } as const;
 
 export type StorageKey = (typeof STORAGE_KEYS)[keyof typeof STORAGE_KEYS];

@@ -4,6 +4,7 @@ import { parseAIJson, handleAnthropicError } from '@/lib/parseAIResponse';
 import { CritiqueRequestSchema, parseBody } from '@/lib/schemas';
 import { getBannedWords, getFormatBans } from '@/lib/knowledge';
 import { audienceSection } from '@/lib/audience';
+import { dealContextSection } from '@/lib/dealContextPrompt';
 
 const client = new Anthropic();
 
@@ -18,7 +19,7 @@ export async function POST(req: NextRequest) {
     const raw = await req.json();
     const parsed = parseBody(CritiqueRequestSchema, raw);
     if (parsed.error) return parsed.error;
-    const { question, field, knowledgeBase } = parsed.data;
+    const { question, field, knowledgeBase, dealContext } = parsed.data;
 
     const kbSection = knowledgeBase?.companyFacts
       ? `\nCOMPANY KNOWLEDGE BASE:\nFacts: ${knowledgeBase.companyFacts}\nMetrics: ${knowledgeBase.keyMetrics}\nDifferentiators: ${knowledgeBase.differentiators}`
@@ -35,6 +36,7 @@ ${formatBansList}`
       : '';
 
     const audienceFraming = audienceSection(question.category);
+    const dealFraming = dealContextSection(dealContext, question.category);
 
     const message = await client.messages.create({
       model: process.env.CLAUDE_MODEL || 'claude-sonnet-4-20250514',
@@ -54,6 +56,7 @@ ${question[field]}
 
 Current Confidence: ${question.confidence}
 Current Committee Score: ${question.committee_score}/10
+${dealFraming}
 ${audienceFraming}
 ${kbSection}${guardrailsSection}
 

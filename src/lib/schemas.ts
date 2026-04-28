@@ -47,9 +47,40 @@ const ValidationRuleSchema = z.object({
   type: z.string().max(50).optional(),
 });
 
+// ── Deal context (per-RFP account intelligence) ─────────────────────
+
+const CompetitorNoteSchema = z.object({
+  id: z.string().max(50),
+  name: z.string().max(200),
+  positioning: z.string().max(500),
+});
+
+const SectionContextSchema = z.object({
+  category: z.string().max(200),
+  emphasis: z.string().max(2000).default(''),
+  mustInclude: z.array(z.string().max(500)).max(20).default([]),
+});
+
+const DealContextSchema = z.object({
+  accountName: z.string().max(200).default(''),
+  accountProfile: z.string().max(2000).default(''),
+  relationshipStage: z.enum(['cold', 'warm', 'incumbent_threat', 'follow_on']).default('cold'),
+  priorEngagement: z.string().max(2000).default(''),
+  mustEmphasize: z.array(z.string().max(500)).max(20).default([]),
+  mustAvoid: z.array(z.string().max(500)).max(20).default([]),
+  evaluatorPrimary: z.string().max(1000).default(''),
+  evaluatorTechnical: z.string().max(1000).default(''),
+  evaluatorBusiness: z.string().max(1000).default(''),
+  competitors: z.array(CompetitorNoteSchema).max(20).default([]),
+  freeformNotes: z.string().max(10000).default(''),
+  sectionContexts: z.array(SectionContextSchema).max(50).default([]),
+  lastUpdated: z.number().default(0),
+});
+
 // ── Per-route request schemas ────────────────────────────────────────
 
 const OptionalKB = KnowledgeBaseSchema.optional();
+const OptionalDealContext = DealContextSchema.optional();
 
 export const RewriteRequestSchema = z.object({
   question: QuestionSchema,
@@ -58,12 +89,14 @@ export const RewriteRequestSchema = z.object({
   rowRules: z.string().max(2000).default(''),
   feedback: z.array(FeedbackItemSchema).max(20).default([]),
   knowledgeBase: OptionalKB,
+  dealContext: OptionalDealContext,
 });
 
 export const CritiqueRequestSchema = z.object({
   question: QuestionSchema,
   field: z.enum(['bullet', 'paragraph']),
   knowledgeBase: OptionalKB,
+  dealContext: OptionalDealContext,
 });
 
 export const ScoreRequestSchema = z.object({

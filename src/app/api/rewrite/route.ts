@@ -10,6 +10,7 @@ import { handleAnthropicError } from '@/lib/parseAIResponse';
 import { RewriteRequestSchema, parseBody } from '@/lib/schemas';
 import { getBannedWords, getFormatBans } from '@/lib/knowledge';
 import { audienceSection } from '@/lib/audience';
+import { dealContextSection } from '@/lib/dealContextPrompt';
 
 const client = new Anthropic();
 
@@ -30,6 +31,7 @@ export async function POST(req: NextRequest) {
       rowRules: rawRowRules,
       feedback,
       knowledgeBase,
+      dealContext,
     } = parsed.data;
     const question = sanitizeQuestionForAI(parsed.data.question);
     const field = validateField(rawField);
@@ -42,7 +44,9 @@ export async function POST(req: NextRequest) {
         ? 'Respond in bullet-point format. Use clear, scannable bullet points that a procurement committee can quickly evaluate.'
         : 'Respond in polished paragraph format. Write fluent, professional prose suitable for a formal RFP submission.';
 
-    const audienceFraming = audienceSection(String(question.category ?? ''));
+    const categoryStr = String(question.category ?? '');
+    const audienceFraming = audienceSection(categoryStr);
+    const dealFraming = dealContextSection(dealContext, categoryStr);
 
     const globalRulesSection = globalRules?.length
       ? `\n\nGLOBAL WRITING RULES (apply to all questions):\n${globalRules.map((r: string, i: number) => `${i + 1}. ${r}`).join('\n')}`
@@ -102,6 +106,7 @@ Rationale: ${question.rationale || 'N/A'}
 </scoring>
 
 ${formatInstruction}
+${dealFraming}
 ${audienceFraming}
 
 RULES:

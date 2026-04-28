@@ -13,6 +13,7 @@ const ContextView = lazy(() => import('@/components/ContextView'));
 const RulesPanel = lazy(() => import('@/components/RulesPanel'));
 const DetailPanel = lazy(() => import('@/components/DetailPanel'));
 const KnowledgeBaseView = lazy(() => import('@/components/KnowledgeBase'));
+const DealContextView = lazy(() => import('@/components/DealContextView'));
 const ComplianceView = lazy(() => import('@/components/ComplianceView'));
 const SubmissionView = lazy(() => import('@/components/SubmissionView'));
 const PricingView = lazy(() => import('@/components/PricingView'));
@@ -409,6 +410,7 @@ export default function Home() {
                 humanize: 'AI QA',
                 issues: 'Issues',
                 knowledgebase: 'Knowledge Base',
+                dealcontext: 'Deal Context',
                 pricing: 'Pricing',
                 timeline: 'Timeline',
                 sla: 'SLAs',
@@ -486,6 +488,13 @@ export default function Home() {
               <KnowledgeBaseView
                 kb={state.knowledgeBase}
                 onUpdate={state.updateKnowledgeBase}
+                onSave={state.saveToLocal}
+              />
+            )}
+            {state.activeTab === 'dealcontext' && (
+              <DealContextView
+                dealContext={state.dealContext}
+                onUpdate={state.updateDealContext}
                 onSave={state.saveToLocal}
               />
             )}

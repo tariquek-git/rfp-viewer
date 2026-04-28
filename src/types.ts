@@ -57,12 +57,50 @@ export type ViewTab =
   | 'humanize'
   | 'issues'
   | 'knowledgebase'
+  | 'dealcontext'
   | 'compliance'
   | 'submission'
   | 'pricing'
   | 'timeline'
   | 'sla'
   | 'assignments';
+
+// === Deal / Account Intelligence ===
+
+export type RelationshipStage = 'cold' | 'warm' | 'incumbent_threat' | 'follow_on';
+
+export interface CompetitorNote {
+  id: string;
+  name: string;
+  positioning: string;
+}
+
+export interface SectionContext {
+  category: string;
+  emphasis: string;
+  mustInclude: string[];
+}
+
+/**
+ * Deal-level intelligence — what we (Brim) know about THIS account that should
+ * shape every answer. Distinct from KnowledgeBase (universal company facts) and
+ * row rules (per-question instructions).
+ */
+export interface DealContext {
+  accountName: string;
+  accountProfile: string;
+  relationshipStage: RelationshipStage;
+  priorEngagement: string;
+  mustEmphasize: string[];
+  mustAvoid: string[];
+  evaluatorPrimary: string;
+  evaluatorTechnical: string;
+  evaluatorBusiness: string;
+  competitors: CompetitorNote[];
+  freeformNotes: string;
+  sectionContexts: SectionContext[];
+  lastUpdated: number;
+}
 
 // === Assignments ===
 export interface TeamMember {
@@ -75,7 +113,7 @@ export interface TeamMember {
 
 export interface SectionAssignment {
   category: string;
-  ownerId: string;        // TeamMember id
+  ownerId: string; // TeamMember id
   department: string;
   status: 'not-started' | 'in-progress' | 'needs-review' | 'approved';
   dueDate?: string;
@@ -83,11 +121,11 @@ export interface SectionAssignment {
 }
 
 export interface QuestionAssignment {
-  ref: string;             // question ref e.g. "Application Processing 1"
-  assignedTo: string;      // TeamMember id
+  ref: string; // question ref e.g. "Application Processing 1"
+  assignedTo: string; // TeamMember id
   dueDate?: string;
-  reviewedBy?: string[];   // TeamMember ids
-  approvedBy?: string;     // TeamMember id
+  reviewedBy?: string[]; // TeamMember ids
+  approvedBy?: string; // TeamMember id
 }
 export type StatusFilter = 'All Status' | 'draft' | 'reviewed' | 'approved' | 'flagged';
 

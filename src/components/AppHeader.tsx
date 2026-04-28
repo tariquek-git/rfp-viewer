@@ -19,6 +19,7 @@ import {
   Circle,
   AlertTriangle,
   Users,
+  Briefcase,
 } from 'lucide-react';
 import ProgressBar from '@/components/ProgressBar';
 import { TourLaunchButton } from '@/components/TourOverlay';
@@ -51,6 +52,7 @@ const NAV_GROUPS = [
   {
     label: 'Strategy',
     tabs: [
+      { key: 'dealcontext' as ViewTab, icon: Briefcase, label: 'Deal Context' },
       { key: 'knowledgebase' as ViewTab, icon: BookOpen, label: 'Knowledge Base' },
       { key: 'pricing' as ViewTab, icon: DollarSign, label: 'Pricing' },
       { key: 'timeline' as ViewTab, icon: Calendar, label: 'Timeline' },
