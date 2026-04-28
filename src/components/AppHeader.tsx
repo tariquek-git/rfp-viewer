@@ -20,6 +20,7 @@ import {
   AlertTriangle,
   Users,
   Briefcase,
+  Upload,
 } from 'lucide-react';
 import ProgressBar from '@/components/ProgressBar';
 import { TourLaunchButton } from '@/components/TourOverlay';
@@ -43,6 +44,7 @@ const NAV_GROUPS = [
   {
     label: 'RFP Work',
     tabs: [
+      { key: 'intake' as ViewTab, icon: Upload, label: 'Intake' },
       { key: 'grid' as ViewTab, icon: LayoutGrid, label: 'Response Grid' },
       { key: 'context' as ViewTab, icon: BarChart3, label: 'Dashboard' },
       { key: 'humanize' as ViewTab, icon: Bot, label: 'AI QA' },

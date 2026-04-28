@@ -14,6 +14,7 @@ const RulesPanel = lazy(() => import('@/components/RulesPanel'));
 const DetailPanel = lazy(() => import('@/components/DetailPanel'));
 const KnowledgeBaseView = lazy(() => import('@/components/KnowledgeBase'));
 const DealContextView = lazy(() => import('@/components/DealContextView'));
+const IntakeView = lazy(() => import('@/components/IntakeView'));
 const ComplianceView = lazy(() => import('@/components/ComplianceView'));
 const SubmissionView = lazy(() => import('@/components/SubmissionView'));
 const PricingView = lazy(() => import('@/components/PricingView'));
@@ -411,6 +412,7 @@ export default function Home() {
                 issues: 'Issues',
                 knowledgebase: 'Knowledge Base',
                 dealcontext: 'Deal Context',
+                intake: 'Intake new RFP',
                 pricing: 'Pricing',
                 timeline: 'Timeline',
                 sla: 'SLAs',
@@ -496,6 +498,16 @@ export default function Home() {
                 dealContext={state.dealContext}
                 onUpdate={state.updateDealContext}
                 onSave={state.saveToLocal}
+              />
+            )}
+            {state.activeTab === 'intake' && (
+              <IntakeView
+                currentQuestionCount={state.data?.questions.length ?? 0}
+                dealContext={state.dealContext}
+                onImport={state.loadTemplateData}
+                onUpdateDealContext={state.updateDealContext}
+                addToast={state.addToast}
+                onSwitchToGrid={() => state.setActiveTab('grid')}
               />
             )}
             {state.activeTab === 'pricing' && (

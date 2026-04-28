@@ -58,12 +58,32 @@ export type ViewTab =
   | 'issues'
   | 'knowledgebase'
   | 'dealcontext'
+  | 'intake'
   | 'compliance'
   | 'submission'
   | 'pricing'
   | 'timeline'
   | 'sla'
   | 'assignments';
+
+// === RFP Intake (parsing uploaded RFP files) ===
+
+export interface ExtractedQuestion {
+  ref: string;
+  category: string;
+  number: number;
+  topic: string;
+  requirement: string;
+}
+
+export interface IntakeResult {
+  questions: ExtractedQuestion[];
+  detectedAccountName: string;
+  fileName: string;
+  fileType: 'pdf' | 'xlsx';
+  pageCount?: number;
+  warnings: string[];
+}
 
 // === Deal / Account Intelligence ===
 

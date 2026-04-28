@@ -149,6 +149,18 @@ export const HumanizeRequestSchema = z.object({
   context: z.string().max(500).default(''),
 });
 
+// ── Intake (extracted questions from uploaded RFP files) ────────────
+
+export const ExtractedQuestionSchema = z.object({
+  ref: z.string().max(100),
+  category: z.string().max(200),
+  number: z.number().int().min(1).max(10000),
+  topic: z.string().max(500),
+  requirement: z.string().max(5000),
+});
+
+export const ExtractedQuestionsArraySchema = z.array(ExtractedQuestionSchema).max(1000);
+
 // ── Helper ───────────────────────────────────────────────────────────
 
 import { NextResponse } from 'next/server';
