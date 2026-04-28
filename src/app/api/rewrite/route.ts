@@ -9,6 +9,7 @@ import {
 import { handleAnthropicError } from '@/lib/parseAIResponse';
 import { RewriteRequestSchema, parseBody } from '@/lib/schemas';
 import { getBannedWords, getFormatBans } from '@/lib/knowledge';
+import { audienceSection } from '@/lib/audience';
 
 const client = new Anthropic();
 
@@ -40,6 +41,8 @@ export async function POST(req: NextRequest) {
       field === 'bullet'
         ? 'Respond in bullet-point format. Use clear, scannable bullet points that a procurement committee can quickly evaluate.'
         : 'Respond in polished paragraph format. Write fluent, professional prose suitable for a formal RFP submission.';
+
+    const audienceFraming = audienceSection(String(question.category ?? ''));
 
     const globalRulesSection = globalRules?.length
       ? `\n\nGLOBAL WRITING RULES (apply to all questions):\n${globalRules.map((r: string, i: number) => `${i + 1}. ${r}`).join('\n')}`
@@ -99,6 +102,7 @@ Rationale: ${question.rationale || 'N/A'}
 </scoring>
 
 ${formatInstruction}
+${audienceFraming}
 
 RULES:
 - Be specific with data points and metrics from the knowledge base only

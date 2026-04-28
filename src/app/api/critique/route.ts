@@ -3,6 +3,7 @@ import Anthropic from '@anthropic-ai/sdk';
 import { parseAIJson, handleAnthropicError } from '@/lib/parseAIResponse';
 import { CritiqueRequestSchema, parseBody } from '@/lib/schemas';
 import { getBannedWords, getFormatBans } from '@/lib/knowledge';
+import { audienceSection } from '@/lib/audience';
 
 const client = new Anthropic();
 
@@ -33,6 +34,8 @@ export async function POST(req: NextRequest) {
 ${formatBansList}`
       : '';
 
+    const audienceFraming = audienceSection(question.category);
+
     const message = await client.messages.create({
       model: process.env.CLAUDE_MODEL || 'claude-sonnet-4-20250514',
       temperature: 0.4,
@@ -51,9 +54,10 @@ ${question[field]}
 
 Current Confidence: ${question.confidence}
 Current Committee Score: ${question.committee_score}/10
+${audienceFraming}
 ${kbSection}${guardrailsSection}
 
-Analyze this response and return ONLY a JSON object with:
+Evaluate the response against the audience framing above — does it speak to that evaluator? Then analyze and return ONLY a JSON object with:
 {
   "strengths": ["specific strength 1", "..."],
   "weaknesses": ["specific weakness 1", "..."],
