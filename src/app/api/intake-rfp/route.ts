@@ -4,6 +4,7 @@ import ExcelJS from 'exceljs';
 import { handleAnthropicError, parseAIJson } from '@/lib/parseAIResponse';
 import { ExtractedQuestionsArraySchema } from '@/lib/schemas';
 import type { ExtractedQuestion, IntakeResult } from '@/types';
+import { logAICall } from '@/lib/aiLog';
 
 const client = new Anthropic();
 
@@ -13,6 +14,7 @@ const client = new Anthropic();
 const MAX_FILE_BYTES = 25 * 1024 * 1024;
 
 const MODEL = process.env.CLAUDE_MODEL || 'claude-sonnet-4-20250514';
+const ROUTE = 'intake-rfp';
 
 const EXTRACTION_PROMPT = `You are extracting RFP questions from a document for Brim Financial.
 
@@ -89,6 +91,7 @@ function stripAccountLine(raw: string): string {
 }
 
 export async function POST(req: NextRequest) {
+  const t0 = performance.now();
   try {
     const formData = await req.formData();
     const file = formData.get('file');
@@ -175,6 +178,15 @@ export async function POST(req: NextRequest) {
     const parsed = parseAIJson<unknown[]>(jsonText, [], 'intake-rfp');
     const validated = ExtractedQuestionsArraySchema.safeParse(parsed);
     if (!validated.success) {
+      logAICall({
+        route: ROUTE,
+        model: message.model,
+        latencyMs: performance.now() - t0,
+        usage: message.usage,
+        success: false,
+        error: 'malformed question list',
+        meta: { fileName, fileType },
+      });
       return NextResponse.json(
         {
           error: 'AI returned malformed question list',
@@ -194,14 +206,35 @@ export async function POST(req: NextRequest) {
       warnings,
     };
 
+    logAICall({
+      route: ROUTE,
+      model: message.model,
+      latencyMs: performance.now() - t0,
+      usage: message.usage,
+      success: true,
+      meta: {
+        fileName,
+        fileType,
+        question_count: result.questions.length,
+        detected_account: detectedAccountName,
+      },
+    });
+
     return NextResponse.json(result);
   } catch (error) {
+    logAICall({
+      route: ROUTE,
+      model: MODEL,
+      latencyMs: performance.now() - t0,
+      success: false,
+      error: error instanceof Error ? error.message : String(error),
+    });
     if (error instanceof Error && error.name === 'TimeoutError') {
       return NextResponse.json(
         { error: 'Extraction timed out after 120s. Try a smaller file or split it.' },
         { status: 504 },
       );
     }
-    return handleAnthropicError(error, 'intake-rfp');
+    return handleAnthropicError(error, ROUTE);
   }
 }
