@@ -51,20 +51,35 @@ export interface RFPData {
 
 // === View Types ===
 
-export type ViewTab =
-  | 'grid'
-  | 'context'
-  | 'humanize'
-  | 'issues'
-  | 'knowledgebase'
+/**
+ * Top-level navigation tabs. Consolidated from 13 to 5 (April 2026 IA refactor).
+ *
+ * Workflow-shaped: Intake (one-off per RFP) → Write (the workspace) →
+ * Review (status) → Library (slow-changing reference content as sub-tabs) →
+ * Submit (pre-flight + export).
+ */
+export type ViewTab = 'intake' | 'write' | 'review' | 'library' | 'submit';
+
+/**
+ * Sub-tabs within the Library view (slow-changing reference content).
+ * Replaces the standalone tabs for dealcontext / knowledgebase /
+ * pricing / timeline / sla, plus a Versions panel lifted from
+ * the (deleted) Settings panel.
+ */
+export type LibrarySubtab =
   | 'dealcontext'
-  | 'intake'
-  | 'compliance'
-  | 'submission'
+  | 'knowledgebase'
   | 'pricing'
   | 'timeline'
   | 'sla'
-  | 'assignments';
+  | 'versions';
+
+/**
+ * Mode within the Write tab — segmented control toggles between
+ * single-question editing (grid + DetailPanel) and batch AI-detection
+ * cleanup (formerly the Humanize tab).
+ */
+export type WriteMode = 'edit' | 'batch-qa';
 
 // === RFP Intake (parsing uploaded RFP files) ===
 

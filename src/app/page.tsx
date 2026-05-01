@@ -9,17 +9,16 @@ import CategoryNav from '@/components/CategoryNav';
 import GridToolbar from '@/components/GridToolbar';
 import { useKeyboardShortcuts } from '@/components/KeyboardShortcuts';
 
-const ContextView = lazy(() => import('@/components/ContextView'));
+// Tab views (5 top-level)
+const IntakeView = lazy(() => import('@/components/IntakeView'));
+const ReviewView = lazy(() => import('@/components/ReviewView'));
+const LibraryView = lazy(() => import('@/components/LibraryView'));
+const SubmitView = lazy(() => import('@/components/SubmitView'));
+// Write tab modes (mounted directly; HumanizeView is the Batch QA mode)
+const HumanizeView = lazy(() => import('@/components/HumanizeView'));
+// Always-mounted overlay surfaces
 const RulesPanel = lazy(() => import('@/components/RulesPanel'));
 const DetailPanel = lazy(() => import('@/components/DetailPanel'));
-const KnowledgeBaseView = lazy(() => import('@/components/KnowledgeBase'));
-const DealContextView = lazy(() => import('@/components/DealContextView'));
-const IntakeView = lazy(() => import('@/components/IntakeView'));
-const ComplianceView = lazy(() => import('@/components/ComplianceView'));
-const SubmissionView = lazy(() => import('@/components/SubmissionView'));
-const PricingView = lazy(() => import('@/components/PricingView'));
-const TimelineView = lazy(() => import('@/components/TimelineView'));
-const SLAView = lazy(() => import('@/components/SLAView'));
 const WinThemesPanel = lazy(() => import('@/components/WinThemes'));
 const ConsistencyResults = lazy(() => import('@/components/ConsistencyResults'));
 const ExecutiveSummary = lazy(() => import('@/components/ExecutiveSummary'));
@@ -31,9 +30,6 @@ const KeyboardShortcutsPanel = lazy(() =>
 const Onboarding = lazy(() => import('@/components/Onboarding'));
 const VersionCompare = lazy(() => import('@/components/VersionCompare'));
 const TemplateManager = lazy(() => import('@/components/TemplateManager'));
-const HumanizeView = lazy(() => import('@/components/HumanizeView'));
-const IssuesView = lazy(() => import('@/components/IssuesView'));
-const AssignmentsView = lazy(() => import('@/components/AssignmentsView'));
 const SettingsPanel = lazy(() => import('@/components/SettingsPanel'));
 import TourOverlay from '@/components/TourOverlay';
 import { ToastContainer } from '@/components/Toast';
@@ -119,7 +115,7 @@ export default function Home() {
       const currentIdx = flagged.findIndex((q) => q.ref === state.selectedQuestion?.ref);
       const next = flagged[(currentIdx + 1) % flagged.length];
       state.setSelectedQuestion(next);
-      state.setActiveTab('grid');
+      state.setActiveTab('write');
     }, [state]),
     onNextRed: useCallback(() => {
       if (!state.data) return;
@@ -131,7 +127,7 @@ export default function Home() {
       const currentIdx = red.findIndex((q) => q.ref === state.selectedQuestion?.ref);
       const next = red[(currentIdx + 1) % red.length];
       state.setSelectedQuestion(next);
-      state.setActiveTab('grid');
+      state.setActiveTab('write');
     }, [state]),
   });
 
@@ -330,7 +326,7 @@ export default function Home() {
         setShowTour={setShowTour}
         onFilterConfidence={(conf) => {
           state.setConfidenceFilter(conf);
-          state.setActiveTab('grid');
+          state.setActiveTab('write');
         }}
         deadline={deadline}
         onDeadlineChange={(v) => {
@@ -339,7 +335,7 @@ export default function Home() {
         }}
       />
 
-      {(state.activeTab === 'grid' || state.activeTab === 'compliance') && (
+      {state.activeTab === 'write' && state.writeMode === 'edit' && (
         <CategoryNav
           categories={state.data.categories}
           activeCategory={state.activeCategory}
@@ -348,7 +344,7 @@ export default function Home() {
         />
       )}
 
-      {state.activeTab === 'grid' && (
+      {state.activeTab === 'write' && state.writeMode === 'edit' && (
         <GridToolbar
           search={state.search}
           onSearchChange={state.setSearch}
@@ -387,7 +383,7 @@ export default function Home() {
           onShowNarrativeAudit={() => state.setShowNarrativeAudit(true)}
           onShowSummary={() => state.setShowSummary(true)}
           onBulkAiRewrite={() => {
-            state.setActiveTab('humanize');
+            state.setWriteMode('batch-qa');
             state.setSelectedQuestion(null);
           }}
           needsAttention={liveStats.yellow + liveStats.red}
@@ -406,28 +402,46 @@ export default function Home() {
           <div className="px-4 py-1 text-xs border-b border-gray-100 bg-gray-50/60 flex items-center gap-1.5 flex-shrink-0 select-none">
             <span className="font-semibold text-gray-600 tracking-tight">
               {{
-                grid: 'Response Grid',
-                context: 'Dashboard',
-                humanize: 'AI QA',
-                issues: 'Issues',
-                knowledgebase: 'Knowledge Base',
-                dealcontext: 'Deal Context',
                 intake: 'Intake new RFP',
-                pricing: 'Pricing',
-                timeline: 'Timeline',
-                sla: 'SLAs',
-                compliance: 'Compliance',
-                submission: 'Export',
-                assignments: 'Assignments',
+                write: 'Write',
+                review: 'Review',
+                library: 'Library',
+                submit: 'Submit',
               }[state.activeTab] || state.activeTab}
             </span>
-            {state.activeTab === 'grid' && state.activeCategory !== 'All' && (
-              <>
-                <span className="text-gray-300 text-[10px]">›</span>
-                <span className="text-gray-500">{state.activeCategory}</span>
-              </>
+
+            {state.activeTab === 'write' && (
+              <div className="ml-2 flex items-center bg-gray-100 rounded-md p-0.5">
+                {(
+                  [
+                    { key: 'edit', label: 'Edit' },
+                    { key: 'batch-qa', label: 'Batch QA' },
+                  ] as const
+                ).map((m) => (
+                  <button
+                    key={m.key}
+                    onClick={() => state.setWriteMode(m.key)}
+                    className={`px-2.5 py-0.5 rounded text-[11px] font-medium transition-all ${
+                      state.writeMode === m.key
+                        ? 'bg-white text-gray-900 shadow-sm'
+                        : 'text-gray-500 hover:text-gray-700'
+                    }`}
+                  >
+                    {m.label}
+                  </button>
+                ))}
+              </div>
             )}
-            {state.activeTab === 'grid' && (
+
+            {state.activeTab === 'write' &&
+              state.writeMode === 'edit' &&
+              state.activeCategory !== 'All' && (
+                <>
+                  <span className="text-gray-300 text-[10px]">›</span>
+                  <span className="text-gray-500">{state.activeCategory}</span>
+                </>
+              )}
+            {state.activeTab === 'write' && state.writeMode === 'edit' && (
               <span className="ml-auto text-[10px] text-gray-400 tabular-nums">
                 {state.filteredQuestions.length < liveStats.total ? (
                   <>
@@ -445,7 +459,17 @@ export default function Home() {
             )}
           </div>
           <div className="flex-1 overflow-hidden relative">
-            {state.activeTab === 'grid' && (
+            {state.activeTab === 'intake' && (
+              <IntakeView
+                currentQuestionCount={state.data?.questions.length ?? 0}
+                dealContext={state.dealContext}
+                onImport={state.loadTemplateData}
+                onUpdateDealContext={state.updateDealContext}
+                addToast={state.addToast}
+                onSwitchToGrid={() => state.setActiveTab('write')}
+              />
+            )}
+            {state.activeTab === 'write' && state.writeMode === 'edit' && (
               <GridView
                 questions={state.filteredQuestions}
                 totalCount={state.data?.questions.length ?? 0}
@@ -465,12 +489,20 @@ export default function Home() {
                 searchQuery={state.search}
               />
             )}
-            {state.activeTab === 'context' && (
-              <ContextView
+            {state.activeTab === 'write' && state.writeMode === 'batch-qa' && (
+              <HumanizeView
+                questions={state.data.questions}
+                onUpdateQuestion={state.updateQuestion}
+                addToast={state.addToast}
+              />
+            )}
+            {state.activeTab === 'review' && (
+              <ReviewView
                 data={state.data}
                 onNavigate={handleDashboardNavigate}
                 feedbackItems={state.feedbackItems}
                 onAddFeedback={state.handleAddFeedback}
+                onSelectQuestion={handleSelectQuestion}
                 onBulkApproveGreen={() => {
                   if (!state.data) return;
                   const toApprove = state.data.questions.filter(
@@ -486,64 +518,33 @@ export default function Home() {
                 }}
               />
             )}
-            {state.activeTab === 'knowledgebase' && (
-              <KnowledgeBaseView
-                kb={state.knowledgeBase}
-                onUpdate={state.updateKnowledgeBase}
-                onSave={state.saveToLocal}
-              />
-            )}
-            {state.activeTab === 'dealcontext' && (
-              <DealContextView
+            {state.activeTab === 'library' && (
+              <LibraryView
+                activeSubtab={state.librarySubtab}
+                onChangeSubtab={state.setLibrarySubtab}
                 dealContext={state.dealContext}
-                onUpdate={state.updateDealContext}
-                onSave={state.saveToLocal}
-              />
-            )}
-            {state.activeTab === 'intake' && (
-              <IntakeView
-                currentQuestionCount={state.data?.questions.length ?? 0}
-                dealContext={state.dealContext}
-                onImport={state.loadTemplateData}
                 onUpdateDealContext={state.updateDealContext}
-                addToast={state.addToast}
-                onSwitchToGrid={() => state.setActiveTab('grid')}
+                knowledgeBase={state.knowledgeBase}
+                onUpdateKnowledgeBase={state.updateKnowledgeBase}
+                pricing={state.pricingModel}
+                onUpdatePricing={state.updatePricing}
+                milestones={state.milestones}
+                onUpdateMilestones={state.updateMilestones}
+                slas={state.slaCommitments}
+                onUpdateSLAs={state.updateSLAs}
+                versions={state.versions}
+                onSaveVersion={state.saveVersion}
+                onDeleteVersion={state.deleteVersion}
+                onRestoreVersion={(v) => {
+                  state.loadTemplateData(v.data);
+                  state.addToast('success', `Restored "${v.label}" — press ⌘S to save`);
+                }}
+                onSave={state.saveToLocal}
+                currentData={state.data}
               />
             )}
-            {state.activeTab === 'pricing' && (
-              <PricingView pricing={state.pricingModel} onUpdate={state.updatePricing} />
-            )}
-            {state.activeTab === 'timeline' && (
-              <TimelineView milestones={state.milestones} onUpdate={state.updateMilestones} />
-            )}
-            {state.activeTab === 'sla' && (
-              <SLAView slas={state.slaCommitments} onUpdate={state.updateSLAs} />
-            )}
-            {state.activeTab === 'compliance' && (
-              <ComplianceView
-                questions={state.filteredQuestions}
-                categories={state.data.categories}
-                onUpdateCompliant={handleUpdateCompliant}
-              />
-            )}
-            {state.activeTab === 'humanize' && (
-              <HumanizeView
-                questions={state.data.questions}
-                onUpdateQuestion={state.updateQuestion}
-                addToast={state.addToast}
-              />
-            )}
-            {state.activeTab === 'issues' && (
-              <IssuesView
-                questions={state.data.questions}
-                onSelectQuestion={handleSelectQuestion}
-              />
-            )}
-            {state.activeTab === 'assignments' && state.data && (
-              <AssignmentsView data={state.data} />
-            )}
-            {state.activeTab === 'submission' && (
-              <SubmissionView
+            {state.activeTab === 'submit' && (
+              <SubmitView
                 questions={state.data.questions}
                 categories={state.data.categories}
                 data={state.data}
@@ -551,8 +552,10 @@ export default function Home() {
                 globalRules={state.globalRules}
                 validationRules={state.validationRules}
                 feedbackItems={state.feedbackItems}
+                onUpdateCompliant={handleUpdateCompliant}
                 onAddFeedback={state.handleAddFeedback}
                 onResolveFeedback={state.handleResolveFeedback}
+                onShowChecklist={() => state.setShowChecklist(true)}
               />
             )}
 

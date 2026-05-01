@@ -5,6 +5,8 @@ import type {
   RFPData,
   Question,
   ViewTab,
+  LibrarySubtab,
+  WriteMode,
   CellHistory,
   CellHistoryEntry,
   FeedbackItem,
@@ -51,7 +53,9 @@ export function useRFPState() {
   const [retryCount, setRetryCount] = useState(0);
 
   // UI state
-  const [activeTab, setActiveTab] = useState<ViewTab>('grid');
+  const [activeTab, setActiveTab] = useState<ViewTab>('write');
+  const [librarySubtab, setLibrarySubtabState] = useState<LibrarySubtab>('dealcontext');
+  const [writeMode, setWriteModeState] = useState<WriteMode>('edit');
   const [activeCategory, setActiveCategory] = useState('All');
   const [search, setSearch] = useState('');
   const [confidenceFilter, setConfidenceFilter] = useState('All Confidence');
@@ -185,6 +189,27 @@ export function useRFPState() {
         try {
           const v = localStorage.getItem(STORAGE_KEYS.DEAL_CONTEXT);
           if (v) setDealContext(JSON.parse(v));
+        } catch {
+          /* */
+        }
+        try {
+          const v = localStorage.getItem(STORAGE_KEYS.LIBRARY_SUBTAB);
+          if (
+            v === 'dealcontext' ||
+            v === 'knowledgebase' ||
+            v === 'pricing' ||
+            v === 'timeline' ||
+            v === 'sla' ||
+            v === 'versions'
+          ) {
+            setLibrarySubtabState(v);
+          }
+        } catch {
+          /* */
+        }
+        try {
+          const v = localStorage.getItem(STORAGE_KEYS.WRITE_MODE);
+          if (v === 'edit' || v === 'batch-qa') setWriteModeState(v);
         } catch {
           /* */
         }
@@ -846,6 +871,25 @@ export function useRFPState() {
     setHasUnsaved(true);
   }, []);
 
+  // Persist UI mode toggles immediately so refresh preserves position.
+  const setLibrarySubtab = useCallback((s: LibrarySubtab) => {
+    setLibrarySubtabState(s);
+    try {
+      localStorage.setItem(STORAGE_KEYS.LIBRARY_SUBTAB, s);
+    } catch {
+      /* quota or disabled — fine */
+    }
+  }, []);
+
+  const setWriteMode = useCallback((m: WriteMode) => {
+    setWriteModeState(m);
+    try {
+      localStorage.setItem(STORAGE_KEYS.WRITE_MODE, m);
+    } catch {
+      /* */
+    }
+  }, []);
+
   // === Validation Rules ===
   const updateValidationRules = useCallback((rules: ValidationRule[]) => {
     setValidationRules(rules);
@@ -953,6 +997,10 @@ export function useRFPState() {
     retryLoad,
     activeTab,
     setActiveTab,
+    librarySubtab,
+    setLibrarySubtab,
+    writeMode,
+    setWriteMode,
     activeCategory,
     setActiveCategory,
     // Filters

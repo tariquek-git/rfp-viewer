@@ -5,21 +5,14 @@ import {
   BookOpen,
   LayoutGrid,
   BarChart3,
-  DollarSign,
-  Calendar,
-  Shield,
+  Library,
   ClipboardCheck,
-  FileText,
-  Bot,
   Target,
   ClipboardList,
   FileStack,
   Keyboard,
   Settings,
   Circle,
-  AlertTriangle,
-  Users,
-  Briefcase,
   Upload,
 } from 'lucide-react';
 import ProgressBar from '@/components/ProgressBar';
@@ -40,35 +33,16 @@ interface AppHeaderProps {
   onDeadlineChange?: (v: string) => void;
 }
 
-const NAV_GROUPS = [
-  {
-    label: 'RFP Work',
-    tabs: [
-      { key: 'intake' as ViewTab, icon: Upload, label: 'Intake' },
-      { key: 'grid' as ViewTab, icon: LayoutGrid, label: 'Response Grid' },
-      { key: 'context' as ViewTab, icon: BarChart3, label: 'Dashboard' },
-      { key: 'humanize' as ViewTab, icon: Bot, label: 'AI QA' },
-      { key: 'issues' as ViewTab, icon: AlertTriangle, label: 'Issues' },
-    ],
-  },
-  {
-    label: 'Strategy',
-    tabs: [
-      { key: 'dealcontext' as ViewTab, icon: Briefcase, label: 'Deal Context' },
-      { key: 'knowledgebase' as ViewTab, icon: BookOpen, label: 'Knowledge Base' },
-      { key: 'pricing' as ViewTab, icon: DollarSign, label: 'Pricing' },
-      { key: 'timeline' as ViewTab, icon: Calendar, label: 'Timeline' },
-      { key: 'sla' as ViewTab, icon: Shield, label: 'SLAs' },
-    ],
-  },
-  {
-    label: 'Review & Submit',
-    tabs: [
-      { key: 'compliance' as ViewTab, icon: ClipboardCheck, label: 'Compliance' },
-      { key: 'submission' as ViewTab, icon: FileText, label: 'Export' },
-      { key: 'assignments' as ViewTab, icon: Users, label: 'Assignments' },
-    ],
-  },
+/**
+ * Flat 5-tab nav shaped by user workflow rather than feature inventory.
+ * Replaces the previous 13-tab / 3-group structure (April 2026 IA refactor).
+ */
+const TABS: { key: ViewTab; icon: React.ElementType; label: string }[] = [
+  { key: 'intake', icon: Upload, label: 'Intake' },
+  { key: 'write', icon: LayoutGrid, label: 'Write' },
+  { key: 'review', icon: BarChart3, label: 'Review' },
+  { key: 'library', icon: Library, label: 'Library' },
+  { key: 'submit', icon: ClipboardCheck, label: 'Submit' },
 ];
 
 function formatTimeSince(ts: number | null): string {
@@ -187,40 +161,34 @@ function AppHeaderInner({
         </div>
       </div>
 
-      {/* Grouped Nav Tabs */}
-      <div className="flex items-center gap-1">
-        {NAV_GROUPS.map((group, gi) => (
-          <div key={group.label} className="flex items-center">
-            {gi > 0 && <div className="w-px h-5 bg-gray-200 mx-1.5" />}
-            <span className="text-[8px] text-gray-400 uppercase tracking-wider font-semibold mr-1 hidden lg:inline">
-              {group.label}
-            </span>
-            <div className="flex items-center bg-gray-100 rounded-lg p-0.5">
-              {group.tabs.map((tab) => {
-                const isAssignments = tab.key === 'assignments';
-                const redCount = isAssignments ? liveStats.red : 0;
-                return (
-                  <button
-                    key={tab.key}
-                    data-tour={`tour-${tab.key}-tab`}
-                    onClick={() => {
-                      state.setActiveTab(tab.key);
-                      state.setSelectedQuestion(null);
-                    }}
-                    className={`relative flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium whitespace-nowrap transition-all ${state.activeTab === tab.key ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
-                  >
-                    <tab.icon size={11} /> {tab.label}
-                    {isAssignments && redCount > 0 && (
-                      <span className="ml-0.5 bg-red-500 text-white text-[8px] font-bold px-1 py-0.5 rounded-full leading-none">
-                        {redCount}
-                      </span>
-                    )}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        ))}
+      {/* Flat 5-tab nav */}
+      <div className="flex items-center bg-gray-100 rounded-lg p-0.5">
+        {TABS.map((tab) => {
+          const isReview = tab.key === 'review';
+          const redCount = isReview ? liveStats.red : 0;
+          return (
+            <button
+              key={tab.key}
+              data-tour={`tour-${tab.key}-tab`}
+              onClick={() => {
+                state.setActiveTab(tab.key);
+                state.setSelectedQuestion(null);
+              }}
+              className={`relative flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-medium whitespace-nowrap transition-all ${
+                state.activeTab === tab.key
+                  ? 'bg-white text-gray-900 shadow-sm'
+                  : 'text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              <tab.icon size={12} /> {tab.label}
+              {isReview && redCount > 0 && (
+                <span className="ml-0.5 bg-red-500 text-white text-[10px] font-bold px-1 py-0.5 rounded-full leading-none">
+                  {redCount}
+                </span>
+              )}
+            </button>
+          );
+        })}
       </div>
 
       {/* Right side */}
