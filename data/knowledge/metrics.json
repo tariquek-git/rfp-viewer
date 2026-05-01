@@ -1,0 +1,211 @@
+[
+  {
+    "id": 1,
+    "label": "REST API endpoints",
+    "value": "300+",
+    "category": "platform",
+    "status": "active",
+    "usage_context": "Use in integration and technology questions. Do not dump all metrics at once.",
+    "use_selectively": 1,
+    "notes": null,
+    "updated_at": "2026-04-08 19:49:18"
+  },
+  {
+    "id": 2,
+    "label": "Notification triggers",
+    "value": "150+",
+    "category": "platform",
+    "status": "active",
+    "usage_context": "Use in communications and cardholder experience questions.",
+    "use_selectively": 1,
+    "notes": null,
+    "updated_at": "2026-04-08 19:49:18"
+  },
+  {
+    "id": 3,
+    "label": "Standard reports",
+    "value": "100+",
+    "category": "platform",
+    "status": "active",
+    "usage_context": "Use in reporting and data questions. Never say 'analytics module.'",
+    "use_selectively": 1,
+    "notes": null,
+    "updated_at": "2026-04-08 19:49:18"
+  },
+  {
+    "id": 4,
+    "label": "Self-serve cardholder features",
+    "value": "300+",
+    "category": "platform",
+    "status": "active",
+    "usage_context": "Use in cardholder experience and digital questions.",
+    "use_selectively": 1,
+    "notes": null,
+    "updated_at": "2026-04-08 19:49:18"
+  },
+  {
+    "id": 5,
+    "label": "Implementation timeline",
+    "value": "10-12 weeks",
+    "category": "implementation",
+    "status": "active",
+    "usage_context": "Use in implementation, migration, and timeline questions. Always cite AFFINITY CREDIT UNION as proof.",
+    "use_selectively": 0,
+    "notes": null,
+    "updated_at": "2026-04-08 19:49:18"
+  },
+  {
+    "id": 6,
+    "label": "Merchant onboarding for rewards",
+    "value": "Under 3 minutes",
+    "category": "platform",
+    "status": "active",
+    "usage_context": "Use in rewards and merchant questions.",
+    "use_selectively": 1,
+    "notes": null,
+    "updated_at": "2026-04-08 19:49:18"
+  },
+  {
+    "id": 7,
+    "label": "Rewards posting",
+    "value": "Real-time at point of transaction",
+    "category": "platform",
+    "status": "active",
+    "usage_context": "Always note: not batch. Automated reversal on refund.",
+    "use_selectively": 0,
+    "notes": null,
+    "updated_at": "2026-04-08 19:49:18"
+  },
+  {
+    "id": 8,
+    "label": "P1 SLA — response",
+    "value": "15 minutes",
+    "category": "sla",
+    "status": "active",
+    "usage_context": "Platform down. BSB informed in real time.",
+    "use_selectively": 0,
+    "notes": null,
+    "updated_at": "2026-04-08 19:49:18"
+  },
+  {
+    "id": 9,
+    "label": "P1 SLA — resolution",
+    "value": "4 hours",
+    "category": "sla",
+    "status": "active",
+    "usage_context": "Platform down.",
+    "use_selectively": 0,
+    "notes": null,
+    "updated_at": "2026-04-08 19:49:18"
+  },
+  {
+    "id": 10,
+    "label": "P2 SLA — response",
+    "value": "1 hour",
+    "category": "sla",
+    "status": "active",
+    "usage_context": "Platform degradation. BSB informed in real time.",
+    "use_selectively": 0,
+    "notes": null,
+    "updated_at": "2026-04-08 19:49:18"
+  },
+  {
+    "id": 11,
+    "label": "P2 SLA — resolution",
+    "value": "8 hours",
+    "category": "sla",
+    "status": "active",
+    "usage_context": "Platform degradation.",
+    "use_selectively": 0,
+    "notes": null,
+    "updated_at": "2026-04-08 19:49:18"
+  },
+  {
+    "id": 12,
+    "label": "P3 SLA — response",
+    "value": "4 hours",
+    "category": "sla",
+    "status": "active",
+    "usage_context": "Non-critical issues.",
+    "use_selectively": 0,
+    "notes": null,
+    "updated_at": "2026-04-08 19:49:18"
+  },
+  {
+    "id": 13,
+    "label": "P3 SLA — resolution target",
+    "value": "3 business days",
+    "category": "sla",
+    "status": "active",
+    "usage_context": null,
+    "use_selectively": 0,
+    "notes": null,
+    "updated_at": "2026-04-08 19:49:18"
+  },
+  {
+    "id": 14,
+    "label": "P4 SLA — acknowledgment",
+    "value": "1 business day",
+    "category": "sla",
+    "status": "active",
+    "usage_context": "Feature requests.",
+    "use_selectively": 0,
+    "notes": null,
+    "updated_at": "2026-04-08 19:49:18"
+  },
+  {
+    "id": 15,
+    "label": "Contractual uptime SLA",
+    "value": "99.9%",
+    "category": "sla",
+    "status": "active",
+    "usage_context": "This is the contractual commitment. Do not cite 99.97% or 99.999% without leadership sign-off.",
+    "use_selectively": 0,
+    "notes": null,
+    "updated_at": "2026-04-08 19:49:18"
+  },
+  {
+    "id": 16,
+    "label": "3000 data fields",
+    "value": "BANNED",
+    "category": "banned",
+    "status": "banned",
+    "usage_context": "Do NOT use. Tarique confirmed adds no weight — drop entirely.",
+    "use_selectively": 0,
+    "notes": "BANNED — do not use in any content",
+    "updated_at": "2026-04-08 19:49:18"
+  },
+  {
+    "id": 17,
+    "label": "MANULIFE BANK cardholders",
+    "value": "55,000+",
+    "category": "client",
+    "status": "active",
+    "usage_context": "Use in scale and migration proof points.",
+    "use_selectively": 1,
+    "notes": null,
+    "updated_at": "2026-04-08 19:49:18"
+  },
+  {
+    "id": 18,
+    "label": "ZOLVE BIN migration time",
+    "value": "30 days",
+    "category": "client",
+    "status": "active",
+    "usage_context": "BIN migration from i2c. Use for migration speed proof points.",
+    "use_selectively": 0,
+    "notes": null,
+    "updated_at": "2026-04-08 19:49:18"
+  },
+  {
+    "id": 19,
+    "label": "AFFINITY deployment time",
+    "value": "Under 12 weeks, zero critical post-launch defects",
+    "category": "client",
+    "status": "active",
+    "usage_context": "Use for implementation speed and quality.",
+    "use_selectively": 0,
+    "notes": null,
+    "updated_at": "2026-04-08 19:49:18"
+  }
+]

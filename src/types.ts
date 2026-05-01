@@ -51,18 +51,91 @@ export interface RFPData {
 
 // === View Types ===
 
-export type ViewTab =
-  | 'grid'
-  | 'context'
-  | 'humanize'
-  | 'issues'
+/**
+ * Top-level navigation tabs. Consolidated from 13 to 5 (April 2026 IA refactor).
+ *
+ * Workflow-shaped: Intake (one-off per RFP) → Write (the workspace) →
+ * Review (status) → Library (slow-changing reference content as sub-tabs) →
+ * Submit (pre-flight + export).
+ */
+export type ViewTab = 'intake' | 'write' | 'review' | 'library' | 'submit';
+
+/**
+ * Sub-tabs within the Library view (slow-changing reference content).
+ * Replaces the standalone tabs for dealcontext / knowledgebase /
+ * pricing / timeline / sla, plus a Versions panel lifted from
+ * the (deleted) Settings panel.
+ */
+export type LibrarySubtab =
+  | 'dealcontext'
   | 'knowledgebase'
-  | 'compliance'
-  | 'submission'
   | 'pricing'
   | 'timeline'
   | 'sla'
-  | 'assignments';
+  | 'versions';
+
+/**
+ * Mode within the Write tab — segmented control toggles between
+ * single-question editing (grid + DetailPanel) and batch AI-detection
+ * cleanup (formerly the Humanize tab).
+ */
+export type WriteMode = 'edit' | 'batch-qa';
+
+// === RFP Intake (parsing uploaded RFP files) ===
+
+export interface ExtractedQuestion {
+  ref: string;
+  category: string;
+  number: number;
+  topic: string;
+  requirement: string;
+}
+
+export interface IntakeResult {
+  questions: ExtractedQuestion[];
+  detectedAccountName: string;
+  fileName: string;
+  fileType: 'pdf' | 'xlsx';
+  pageCount?: number;
+  warnings: string[];
+}
+
+// === Deal / Account Intelligence ===
+
+export type RelationshipStage = 'cold' | 'warm' | 'incumbent_threat' | 'follow_on';
+
+export interface CompetitorNote {
+  id: string;
+  name: string;
+  positioning: string;
+}
+
+export interface SectionContext {
+  category: string;
+  emphasis: string;
+  mustInclude: string[];
+}
+
+/**
+ * Deal-level intelligence — what we (Brim) know about THIS account that should
+ * shape every answer. Distinct from KnowledgeBase (universal company facts) and
+ * row rules (per-question instructions).
+ */
+export interface DealContext {
+  accountName: string;
+  accountProfile: string;
+  relationshipStage: RelationshipStage;
+  priorEngagement: string;
+  mustEmphasize: string[];
+  mustAvoid: string[];
+  evaluatorPrimary: string;
+  evaluatorTechnical: string;
+  evaluatorBusiness: string;
+  competitors: CompetitorNote[];
+  freeformNotes: string;
+  sectionContexts: SectionContext[];
+  lastUpdated: number;
+}
 
 // === Assignments ===
 export interface TeamMember {
@@ -75,7 +148,7 @@ export interface TeamMember {
 
 export interface SectionAssignment {
   category: string;
-  ownerId: string;        // TeamMember id
+  ownerId: string; // TeamMember id
   department: string;
   status: 'not-started' | 'in-progress' | 'needs-review' | 'approved';
   dueDate?: string;
@@ -83,11 +156,11 @@ export interface SectionAssignment {
 }
 
 export interface QuestionAssignment {
-  ref: string;             // question ref e.g. "Application Processing 1"
-  assignedTo: string;      // TeamMember id
+  ref: string; // question ref e.g. "Application Processing 1"
+  assignedTo: string; // TeamMember id
   dueDate?: string;
-  reviewedBy?: string[];   // TeamMember ids
-  approvedBy?: string;     // TeamMember id
+  reviewedBy?: string[]; // TeamMember ids
+  approvedBy?: string; // TeamMember id
 }
 export type StatusFilter = 'All Status' | 'draft' | 'reviewed' | 'approved' | 'flagged';
 

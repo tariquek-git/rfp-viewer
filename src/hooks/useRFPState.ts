@@ -5,6 +5,8 @@ import type {
   RFPData,
   Question,
   ViewTab,
+  LibrarySubtab,
+  WriteMode,
   CellHistory,
   CellHistoryEntry,
   FeedbackItem,
@@ -17,7 +19,9 @@ import type {
   WinTheme,
   TimelineMilestone,
   SLACommitment,
+  DealContext,
 } from '@/types';
+import { BSB_DEAL_CONTEXT } from '@/lib/bsbDefaults';
 import { computeWordDiff } from '@/lib/diff';
 import { pushToCloud, pullFromCloud, pushVersion } from '@/lib/supabaseSync';
 import { isSupabaseConfigured } from '@/lib/supabase';
@@ -49,7 +53,9 @@ export function useRFPState() {
   const [retryCount, setRetryCount] = useState(0);
 
   // UI state
-  const [activeTab, setActiveTab] = useState<ViewTab>('grid');
+  const [activeTab, setActiveTab] = useState<ViewTab>('write');
+  const [librarySubtab, setLibrarySubtabState] = useState<LibrarySubtab>('dealcontext');
+  const [writeMode, setWriteModeState] = useState<WriteMode>('edit');
   const [activeCategory, setActiveCategory] = useState('All');
   const [search, setSearch] = useState('');
   const [confidenceFilter, setConfidenceFilter] = useState('All Confidence');
@@ -68,6 +74,7 @@ export function useRFPState() {
   const [globalRules, setGlobalRules] = useState<string[]>([]);
   const [validationRules, setValidationRules] = useState<ValidationRule[]>([]);
   const [knowledgeBase, setKnowledgeBase] = useState<KnowledgeBase>(EMPTY_KB);
+  const [dealContext, setDealContext] = useState<DealContext>(BSB_DEAL_CONTEXT);
 
   // New state for features
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
@@ -180,6 +187,33 @@ export function useRFPState() {
           /* */
         }
         try {
+          const v = localStorage.getItem(STORAGE_KEYS.DEAL_CONTEXT);
+          if (v) setDealContext(JSON.parse(v));
+        } catch {
+          /* */
+        }
+        try {
+          const v = localStorage.getItem(STORAGE_KEYS.LIBRARY_SUBTAB);
+          if (
+            v === 'dealcontext' ||
+            v === 'knowledgebase' ||
+            v === 'pricing' ||
+            v === 'timeline' ||
+            v === 'sla' ||
+            v === 'versions'
+          ) {
+            setLibrarySubtabState(v);
+          }
+        } catch {
+          /* */
+        }
+        try {
+          const v = localStorage.getItem(STORAGE_KEYS.WRITE_MODE);
+          if (v === 'edit' || v === 'batch-qa') setWriteModeState(v);
+        } catch {
+          /* */
+        }
+        try {
           const v = localStorage.getItem(STORAGE_KEYS.PRICING);
           if (v) setPricingModel(JSON.parse(v));
         } catch {
@@ -223,6 +257,7 @@ export function useRFPState() {
       localStorage.setItem(STORAGE_KEYS.VALIDATION_RULES, JSON.stringify(validationRules));
       localStorage.setItem(STORAGE_KEYS.FEEDBACK, JSON.stringify(feedbackItems));
       localStorage.setItem(STORAGE_KEYS.KNOWLEDGE_BASE, JSON.stringify(knowledgeBase));
+      localStorage.setItem(STORAGE_KEYS.DEAL_CONTEXT, JSON.stringify(dealContext));
       localStorage.setItem(STORAGE_KEYS.PRICING, JSON.stringify(pricingModel));
       localStorage.setItem(STORAGE_KEYS.WIN_THEMES, JSON.stringify(winThemes));
       localStorage.setItem(STORAGE_KEYS.MILESTONES, JSON.stringify(milestones));
@@ -276,6 +311,7 @@ export function useRFPState() {
     validationRules,
     feedbackItems,
     knowledgeBase,
+    dealContext,
     pricingModel,
     winThemes,
     milestones,
@@ -498,7 +534,15 @@ export function useRFPState() {
       const res = await fetch('/api/rewrite', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ question, field, globalRules, rowRules, feedback, knowledgeBase }),
+        body: JSON.stringify({
+          question,
+          field,
+          globalRules,
+          rowRules,
+          feedback,
+          knowledgeBase,
+          dealContext,
+        }),
         signal: controller.signal,
       });
       const { text, error } = await res.json();
@@ -569,7 +613,7 @@ export function useRFPState() {
       addToast('info', `AI suggestion ready for ${field} — review the diff`);
       return text;
     },
-    [globalRules, knowledgeBase, validationRules, addToast],
+    [globalRules, knowledgeBase, dealContext, validationRules, addToast],
   );
 
   // === Diff Accept/Reject ===
@@ -822,6 +866,30 @@ export function useRFPState() {
     setHasUnsaved(true);
   }, []);
 
+  const updateDealContext = useCallback((ctx: DealContext) => {
+    setDealContext({ ...ctx, lastUpdated: Date.now() });
+    setHasUnsaved(true);
+  }, []);
+
+  // Persist UI mode toggles immediately so refresh preserves position.
+  const setLibrarySubtab = useCallback((s: LibrarySubtab) => {
+    setLibrarySubtabState(s);
+    try {
+      localStorage.setItem(STORAGE_KEYS.LIBRARY_SUBTAB, s);
+    } catch {
+      /* quota or disabled — fine */
+    }
+  }, []);
+
+  const setWriteMode = useCallback((m: WriteMode) => {
+    setWriteModeState(m);
+    try {
+      localStorage.setItem(STORAGE_KEYS.WRITE_MODE, m);
+    } catch {
+      /* */
+    }
+  }, []);
+
   // === Validation Rules ===
   const updateValidationRules = useCallback((rules: ValidationRule[]) => {
     setValidationRules(rules);
@@ -929,6 +997,10 @@ export function useRFPState() {
     retryLoad,
     activeTab,
     setActiveTab,
+    librarySubtab,
+    setLibrarySubtab,
+    writeMode,
+    setWriteMode,
     activeCategory,
     setActiveCategory,
     // Filters
@@ -972,6 +1044,8 @@ export function useRFPState() {
     deleteVersion,
     knowledgeBase,
     updateKnowledgeBase,
+    dealContext,
+    updateDealContext,
     // Actions
     handleSave,
     saveToLocal,

@@ -47,9 +47,40 @@ const ValidationRuleSchema = z.object({
   type: z.string().max(50).optional(),
 });
 
+// ── Deal context (per-RFP account intelligence) ─────────────────────
+
+const CompetitorNoteSchema = z.object({
+  id: z.string().max(50),
+  name: z.string().max(200),
+  positioning: z.string().max(500),
+});
+
+const SectionContextSchema = z.object({
+  category: z.string().max(200),
+  emphasis: z.string().max(2000).default(''),
+  mustInclude: z.array(z.string().max(500)).max(20).default([]),
+});
+
+const DealContextSchema = z.object({
+  accountName: z.string().max(200).default(''),
+  accountProfile: z.string().max(2000).default(''),
+  relationshipStage: z.enum(['cold', 'warm', 'incumbent_threat', 'follow_on']).default('cold'),
+  priorEngagement: z.string().max(2000).default(''),
+  mustEmphasize: z.array(z.string().max(500)).max(20).default([]),
+  mustAvoid: z.array(z.string().max(500)).max(20).default([]),
+  evaluatorPrimary: z.string().max(1000).default(''),
+  evaluatorTechnical: z.string().max(1000).default(''),
+  evaluatorBusiness: z.string().max(1000).default(''),
+  competitors: z.array(CompetitorNoteSchema).max(20).default([]),
+  freeformNotes: z.string().max(10000).default(''),
+  sectionContexts: z.array(SectionContextSchema).max(50).default([]),
+  lastUpdated: z.number().default(0),
+});
+
 // ── Per-route request schemas ────────────────────────────────────────
 
 const OptionalKB = KnowledgeBaseSchema.optional();
+const OptionalDealContext = DealContextSchema.optional();
 
 export const RewriteRequestSchema = z.object({
   question: QuestionSchema,
@@ -58,12 +89,14 @@ export const RewriteRequestSchema = z.object({
   rowRules: z.string().max(2000).default(''),
   feedback: z.array(FeedbackItemSchema).max(20).default([]),
   knowledgeBase: OptionalKB,
+  dealContext: OptionalDealContext,
 });
 
 export const CritiqueRequestSchema = z.object({
   question: QuestionSchema,
   field: z.enum(['bullet', 'paragraph']),
   knowledgeBase: OptionalKB,
+  dealContext: OptionalDealContext,
 });
 
 export const ScoreRequestSchema = z.object({
@@ -115,6 +148,18 @@ export const HumanizeRequestSchema = z.object({
   triggers: z.array(z.string().max(100)).max(20).default([]),
   context: z.string().max(500).default(''),
 });
+
+// ── Intake (extracted questions from uploaded RFP files) ────────────
+
+export const ExtractedQuestionSchema = z.object({
+  ref: z.string().max(100),
+  category: z.string().max(200),
+  number: z.number().int().min(1).max(10000),
+  topic: z.string().max(500),
+  requirement: z.string().max(5000),
+});
+
+export const ExtractedQuestionsArraySchema = z.array(ExtractedQuestionSchema).max(1000);
 
 // ── Helper ───────────────────────────────────────────────────────────
 

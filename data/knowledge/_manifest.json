@@ -1,0 +1,11 @@
+{
+  "source": "/Users/tarique/archive/brim/brim-rfp-system/db/brim_rfp.sqlite",
+  "tables": {
+    "categories": 10,
+    "rules": 97,
+    "clients": 8,
+    "metrics": 19,
+    "bsb_context": 30
+  },
+  "total_rows": 164
+}
